@@ -11,7 +11,7 @@ class UserIfm(models.Model):
     Email = models.EmailField(blank=False, max_length=100, primary_key=True)
     Username = models.CharField(max_length=30)
     Password = models.CharField(max_length=256)
-    id = models.IntegerField(default=0)
+    id = models.IntegerField(default=0, unique=True)
     Validation = models.BooleanField(default=False)
     Validation_Num = models.IntegerField(default=0)
     Birthday = models.DateField(default='1900-01-01')
