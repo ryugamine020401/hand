@@ -1,0 +1,14 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        {% csrf_token %}
+        <p> 您已經成功註冊我們的網站了，請<spawn style="color: crimson; font-size: 25px;">七天內</spawn>至信箱收驗證信來方可開啟全部功能。 </p>
+        <p> 您註冊的信箱是 {{Email}} </p> 
+
+    </body>
+</html>

@@ -15,7 +15,7 @@ class UserIfm(models.Model):
     Validation = models.BooleanField(default=False)
     Validation_Num = models.IntegerField(default=0)
     Birthday = models.DateField(default='1900-01-01')
-
+    objects = models.Manager()
     class META:
         """
         定義這個DATABESE的名字

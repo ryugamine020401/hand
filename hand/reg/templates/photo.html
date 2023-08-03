@@ -1,0 +1,55 @@
+<!-- <img src="{{photo.image.url}}" alt="pic" /> -->
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+
+<body>
+    <form action="" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <!-- {{ photo }} -->
+        {{ photo }}
+        <br/>
+        
+        <div class="">
+            
+            <br />
+            {%for photo in photo%}
+            <p>{{ photo.image }}</p>
+            <br/>
+            <p>{{ photo.image.url }}</p>
+            <br />
+            <div class="">
+                <div class="">
+                    <img class="card-img-top" src="/first{{ photo.image.url }}" alt="圖片圖片"/>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="">
+            <div class="">
+            </div>
+            <div class="">
+                <input class="" type="submit" value="上傳" />
+            </div>
+            <div class="">
+            </div>
+        </div>
+        <div class="">
+            <div class="">
+            </div>
+            <div class="">
+                {{ form.image }}
+            </div>
+            <div class="">
+            </div>
+        </div>
+    </form>
+</body>
+
+
+
+
+</html>

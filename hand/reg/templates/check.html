@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'Validation' %}" method="POST">
+        {% csrf_token %}
+        <p>{{msg}}</p>  
+        {{msg2}}
+        {{msg3}}
+        <br/>
+        <input class="btn btn-success" type="submit" value="送出" />
+    </form>
+
+</body>
+
+</html>
