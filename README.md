@@ -44,3 +44,11 @@ python manage.py runserver <port>
 ```
 python manage.py startapp <app name>
 ```
+* 建立資料遷移
+```
+python manage.py makemigration
+```
+* 資料遷移
+```
+python manage.py migrate
+```
