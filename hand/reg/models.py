@@ -21,20 +21,3 @@ class UserIfm(models.Model):
         定義這個DATABESE的名字
         """
         db_name = 'UserIfm'
-
-
-class UserDefIfm(models.Model):
-    """
-    使用者基本的資料，驗證狀況。
-    """
-    id = models.IntegerField(primary_key=True)
-    headimg = models.CharField(max_length=100)
-    describe = models.CharField(max_length=256)
-    user_id = models.IntegerField(default=0)
-    score = models.FloatField(default=0.0)
-
-    class META:
-        """
-        定義這個DATABESE的名字
-        """
-        db_name = 'UserDefIfm'
