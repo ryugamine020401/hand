@@ -21,12 +21,24 @@ class RegisterSerializer(serializers.Serializer):
         return UserIfm.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        """
+        第一種更新方式，用來重設密碼。
+        """
+        instance.Password = validated_data.get('Password', instance.Password)
+        instance.Validation_Num = validated_data.get('Validation_Num', instance.Validation_Num)
+        instance.save()
+        return instance
+
+    def update1(self, instance, validated_data):
+        """
+        第二種更新方式，用在app ifm的使用者重設。
+        """
         instance.Email = validated_data.get('Email', instance.Email)
         instance.Username = validated_data.get('Username', instance.Username)
-        instance.Password = validated_data.get('Password', instance.Password)
         instance.Birthday = validated_data.get('Birthday', instance.Birthday)
         instance.save()
         return instance
+
 
 class RegisterValidationSerializer(serializers.Serializer):
     """

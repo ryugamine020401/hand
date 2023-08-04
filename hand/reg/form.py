@@ -27,3 +27,16 @@ class RegisterForm(forms.Form):
         label= "生日",
         widget= DateInput()
     )
+
+class LoginForm(forms.Form):
+    """
+    用來顯示註冊表單。
+    """
+    Email = forms.CharField(
+        label = "帳號",
+        widget=forms.EmailInput()
+    )
+    Password = forms.CharField(
+        label = "密碼",
+        widget=forms.PasswordInput()
+    )

@@ -17,14 +17,16 @@ from django.template.loader import render_to_string
 
 
 from rest_framework.response import Response
-from rest_framework.authentication import get_authorization_header
+# from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 
-from reg.form import RegisterForm
+from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
+from ifm.serializers import UserDefIfmSerializer
+
 from hand.settings import SECRET_KEY
 # ---------------------------- 註冊 ----------------------------------------------
 class RegisterView(APIView):
@@ -73,7 +75,6 @@ class RegisterView(APIView):
         request.data['Password'] = sha512(passward.encode('utf-8')).hexdigest()
         request.data['Validation_Num'] = "".join(random.choices("0123456789", k=6))
         if serializer.is_valid():
-            serializer.save()
             email_template = render_to_string(
                 './signup_success_email.html',
                 {'username': request.data['Username'],
@@ -87,8 +88,11 @@ class RegisterView(APIView):
             )
             email.content_subtype = "html"
             email.fail_silently = False
-            email.send()
-
+            try:
+                email.send()
+            except OSError as error_msg:
+                print(error_msg)
+            serializer.save()
             # 拉出要比對的實例
             user = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{tmp}");')[0]
             payload = {
@@ -158,7 +162,6 @@ class RegisterValidationView(APIView):
 
         request.data['Email'] = payload_validation['Email']
         serializer = RegisterValidationSerializer(data=request.data)
-        # print(payload_Validation['Val1'])
 
 
         try:
@@ -181,6 +184,36 @@ class RegisterValidationView(APIView):
                             "Validation" : " Successful, delete the cookie."
                     }
                     response.delete_cookie('Validation_cookie')
+                    # print(UserIfm.objects.raw(sql)[0].data)
+                    userifm_data = {
+                        'Email' : UserIfm.objects.raw(sql)[0].Email,
+                        'Username' : UserIfm.objects.raw(sql)[0].Username,
+                        'Password' : UserIfm.objects.raw(sql)[0].Password,
+                        'Birthday' : UserIfm.objects.raw(sql)[0].Birthday,
+                        'id' : UserIfm.objects.raw(sql)[0].id,
+                        'Validation' : UserIfm.objects.raw(sql)[0].Validation,
+                        'Validation_Num' : UserIfm.objects.raw(sql)[0].Validation_Num
+                    }
+                    serializer = RegisterSerializer(data=userifm_data)
+                    if serializer.is_valid() :
+                        print('第一個序列器過\n', serializer)
+                        # print(UserIfm.objects.filter(id=userifm_data['id']))
+                        # print(UserIfm.objects.get(id=userifm_data['id']))
+                        seri_data = {
+                            'headimg' : 'N',
+                            'describe' : '還沒有。',
+                            'user_id' : UserIfm.objects.get(id=userifm_data['id']).id,    # 這邊的序列器不同
+                            'score' : 100.0
+                        }
+
+                    else:
+                        print(serializer.errors)
+
+                    serializer = UserDefIfmSerializer(data=seri_data)
+                    if serializer.is_valid() :
+                        serializer.save()
+                    else:
+                        print("驗證沒有過QQ", serializer.errors)
                     return response
                 else:
                     return Response('NONO, ERROR')
@@ -193,6 +226,52 @@ class RegisterValidationView(APIView):
             print(error_msg)
             return Response("NO ACCUNT")    # 已經驗證過或沒有這筆資料導致 index out of range
 # ---------------------------- 註冊驗證 ------------------------------------------
+# ----------------------------- 登入 ---------------------------------------------
+class LoginView(APIView):
+    """
+    使用者登入
+    """
+    def get(self, request):
+        """
+        前端打GET過來想要進入網站
+        """
+        form = LoginForm()
+        context = {
+            'form' : form,
+        }
+        return render(request, './login.html', context=context)
+
+    def post(self, request):
+        """
+        使用者登入的post
+        """
+        # request.data是一個字典，裡面有所有傳入的東西。
+        # 所以可以透過request.data.get('Email')來取得細部。
+        email = request.data.get("Email")
+        password = request.data.get("Password")
+        # 一個實例
+        db_data = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm` WHERE(`Email`="{email}");')
+        if db_data :
+            password += str(db_data[0].id)
+            # print(password)
+            if db_data[0].Password == sha512(password.encode('UTF-8')).hexdigest() :
+                # 如果帳號正確
+                token_access = creat_access_token(db_data[0])
+                token_refresh = creat_refresh_token(db_data[0])
+                response = Response()
+                response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
+                response.data = {
+                    'Status' : "SUCCESSUFL LOGIN",
+                    'Access' : token_access,
+                    'Refresh' :token_refresh,
+                }
+
+                return response
+            else:
+                return Response("Password WRONG")
+        else:
+            return Response("NO ACCUNT")
+# ----------------------------- 登入 ---------------------------------------------
 
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):
@@ -216,7 +295,8 @@ def creat_refresh_token(user):
     """
     payload_refresh = {
         'username' : user.Username,
-        'Val' : user.Validation,
+        'val_num' : user.Validation_Num,
+        'val' : user.Validation,
         'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=7),
         'iat' : datetime.datetime.utcnow(),
     }
@@ -232,7 +312,7 @@ def decode_access_token(token):
     """
     try:
         payload = jwt.decode(token, 'secret_token', algorithms=['HS256'])
-        return payload['Val']
+        return payload['email']
     except Exception as error_msg:
         print(error_msg)
         raise rest_framework.exceptions.AuthenticationFailed("ERROE, TOKEN FAIL.")
@@ -243,10 +323,10 @@ def decode_refresh_token(token):
     """
     try:
         payload = jwt.decode(token, 'refresh_secret', algorithms=['HS256'])
-        return payload['Val']
+        return payload['username']
     except Exception as error_msg:
         print(error_msg)
-        raise rest_framework.exceptions.AuthenticationFailed("ERROE, TOKEN FAIL.")
+        raise rest_framework.exceptions.AuthenticationFailed("erroe,  fail token.")
 
 #------------------------- TOKEN create、decode func. ----------------------------
 
