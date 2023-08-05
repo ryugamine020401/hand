@@ -7,23 +7,23 @@ class RegisterForm(forms.Form):
     """
     用來顯示註冊表單。
     """
-    Username = forms.CharField(
+    username = forms.CharField(
         label = "暱稱",
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
-    Email = forms.CharField(
+    email = forms.CharField(
         label = "帳號",
         widget=forms.EmailInput()
     )
-    Password = forms.CharField(
+    password = forms.CharField(
         label = "密碼",
         widget=forms.PasswordInput()
     )
-    Password_check = forms.CharField(
+    password_check = forms.CharField(
         label = "密碼確認",
         widget=forms.PasswordInput()
     )
-    Birthday = forms.DateField(
+    birthday = forms.DateField(
         label= "生日",
         widget= DateInput()
     )
@@ -32,11 +32,11 @@ class LoginForm(forms.Form):
     """
     用來顯示註冊表單。
     """
-    Email = forms.CharField(
+    email = forms.CharField(
         label = "帳號",
         widget=forms.EmailInput()
     )
-    Password = forms.CharField(
+    password = forms.CharField(
         label = "密碼",
         widget=forms.PasswordInput()
     )

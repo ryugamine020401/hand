@@ -13,7 +13,6 @@ class Billboard(models.Model):
     context = models.TextField()
     upload_date = models.DateField(default=False)
 
-
     class META:
         """
         定義這個DATABESE的名字

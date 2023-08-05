@@ -8,13 +8,13 @@ class UserIfm(models.Model):
     """
     使用者基本的資料，驗證狀況。
     """
-    Email = models.EmailField(blank=False, max_length=100, primary_key=True)
-    Username = models.CharField(max_length=30)
-    Password = models.CharField(max_length=256)
+    email = models.EmailField(blank=False, max_length=100, primary_key=True)
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=256)
     id = models.IntegerField(default=0, unique=True)
-    Validation = models.BooleanField(default=False)
-    Validation_Num = models.IntegerField(default=0)
-    Birthday = models.DateField(default='1900-01-01')
+    validation = models.BooleanField(default=False)
+    validation_num = models.IntegerField(default=0)
+    birthday = models.DateField(default='1900-01-01')
     objects = models.Manager()
     class META:
         """

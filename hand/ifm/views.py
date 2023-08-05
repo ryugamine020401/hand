@@ -16,6 +16,7 @@ from reg.views import decode_access_token
 from reg.serializers import RegisterSerializer
 from ifm.serializers import UserDefIfmSerializer
 from reg.models import UserIfm
+from ifm.models import UserDefIfm
 # from hand.settings import SECRET_KEY
 # ------------------------------登入後的功能------------------------------
 class IfmView(APIView):
@@ -31,19 +32,17 @@ class IfmView(APIView):
 
         if (len(auth) == 2 and auth):
             token = auth[1].decode('utf-8')
-            user_email = decode_access_token(token=token)
+            payload = decode_access_token(token=token)
+            # user_email = payload['email']
+            user_id = payload['id']
         else:
             return Response({"msg":"Permission Denine."})
-        db_userifm = UserIfm.objects.filter(Email=user_email).first()
-        user_id = RegisterSerializer(db_userifm).data.get('id')
-        db_userdefifm = UserIfm.objects.filter(id=user_id).first()
         response = Response()
 
         response.data = {
-            "email":UserDefIfmSerializer(db_userdefifm).data.get('headimg'),
-            "describe":UserDefIfmSerializer(db_userdefifm).data.get('describe'),
-            "使用者名稱":RegisterSerializer(db_userifm).data.get('Username'),
-
+            "email": UserIfm.objects.get(id=user_id).email,
+            "describe": UserDefIfm.objects.get(user_id=user_id).describe,
+            "使用者名稱": UserIfm.objects.get(id=user_id).username,
         }
         return response
     
@@ -54,22 +53,48 @@ class IfmView(APIView):
         UserIfm     使用者名稱、電子郵件、出生日期
         所以需要透過兩個
         """
+        auth = get_authorization_header(request).split()
+        print(auth)
+
+        if (len(auth) == 2 and auth):
+            token = auth[1].decode('utf-8')
+            payload = decode_access_token(token=token)
+            # user_email = payload['email']
+            user_id = payload['id']
+        else:
+            return Response({"msg":"Mo Access token."})
+        
         ser1 = {
             'headimg' : request.data["headimg"],
             'describe' : request.data["describe"],
+            'user_id' : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
+            'score' : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
         }
 
         ser2 = {
-            'Username' : request.data['Username'],
-            'Email' : request.data['Email'],
-            'Birthday' : request.data['Birthday']
+            'username' : request.data['username'],
+            'email' : request.data['email'],
+            'birthday' : request.data['birthday'],
+            'password' : "n",
+            'validation_num' : 0,
+            'id' : user_id,
         }
-        change_userifm = RegisterSerializer(ser1)
-        change_userdefifm = UserDefIfmSerializer(ser2)
+        change_userdefifm = UserDefIfmSerializer(data=ser1)
+        change_userifm = RegisterSerializer(data=ser2)
 
-        
-
-        pass
+        if (change_userdefifm.is_valid() and change_userifm.is_valid()):
+            change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
+            change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
+        else:
+            print(change_userdefifm.error_messages, change_userifm.error_messages)
+        responese = Response()
+        payload = {
+            "msg" : "成功修改",
+            "使用者id" : user_id,
+            "狀態" : "返回ya面"
+        }
+        responese.data = payload
+        return responese
 
     # def get(self, request):
     #     token = request.COOKIES.get('jwt')
