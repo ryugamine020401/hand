@@ -13,7 +13,6 @@ class UserDefIfmSerializer(serializers.Serializer):
     headimg = serializers.CharField(max_length=100)
     describe = serializers.CharField(max_length=256)
     user_id = serializers.IntegerField()
-    # user_id = serializers.StringRelatedField()
     score = serializers.FloatField()
 
     def create(self, validated_data):

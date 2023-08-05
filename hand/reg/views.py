@@ -26,6 +26,7 @@ from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
 from ifm.serializers import UserDefIfmSerializer
+from ifm.models import UserDefIfm
 
 from hand.settings import SECRET_KEY
 # ---------------------------- 註冊 ----------------------------------------------
@@ -208,12 +209,18 @@ class RegisterValidationView(APIView):
                         print(serializer.errors)
 
                     serializer = UserDefIfmSerializer(data=seri_data)
-
-                    if serializer.is_valid() :
+                    
+                    db = UserDefIfm( 
+                        headimg = "no",
+                        describe = "這人還沒寫",
+                        user_id = UserIfm.objects.get(email=db_email),
+                        score = 100.0)
+                    db.save()
+                    # if serializer.is_valid() :
                         
-                        serializer.save()
-                    else:
-                        print("驗證沒有過QQ", serializer.errors)
+                    #     serializer.save()
+                    # else:
+                    #     print("驗證沒有過QQ", serializer.errors)
                     return response
                 else:
                     return Response('NONO, ERROR')
