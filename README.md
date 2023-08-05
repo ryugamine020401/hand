@@ -52,3 +52,9 @@ python manage.py makemigration
 ```
 python manage.py migrate
 ```
+
+## 官方文件
+- 檢索資料庫內的資料**Model.object.get()**、**Model.object.filter()** [https://docs.djangoproject.com/en/4.2/topics/db/queries/](官方文件)
+  - filter出來的結果是Queryset
+  - get是那個modles的實例。 
+- 可以直接寫SQL語法**Model.object.raw(sql)** [https://docs.djangoproject.com/en/4.2/topics/db/sql/](官方文件)
