@@ -35,7 +35,7 @@ DEBUG = config('DEBUG')
 ALLOWED_HOSTS = []
 
 # 上傳圖片需要的網址
-MEDIA_URL = '/media/'
+MEDIA_URL = '/getmedia/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

@@ -7,10 +7,11 @@ from reg.models import UserIfm
 
 class UserDefIfmSerializer(serializers.Serializer):
     """
-    用來傳輸用戶註冊已經驗證可修改資料
+    用來傳輸用戶註冊系統自動生成的資料
     """
     # 使用者輸入
-    headimg = serializers.CharField(max_length=100)
+    # headimg = serializers.CharField(max_length=100)
+    headimg = serializers.ImageField(default='headimage/defaultimage.png')
     describe = serializers.CharField(max_length=256)
     user_id = serializers.IntegerField()
     score = serializers.FloatField()

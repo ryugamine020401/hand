@@ -1,6 +1,11 @@
+import jwt
+
 # import rest_framework.exceptions
 # from django.http.response import HttpResponse
-# from django.shortcuts import render
+"""
+用來處理送到前端的資料
+"""
+from django.shortcuts import render
 # from django.core.mail import EmailMessage
 # from django.conf import settings
 # from django.template.loader import render_to_string
@@ -14,8 +19,9 @@ from rest_framework.views import APIView
 from reg.views import decode_access_token
 # from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
-from ifm.serializers import UserDefIfmSerializer
 from reg.models import UserIfm
+
+from ifm.serializers import UserDefIfmSerializer
 from ifm.models import UserDefIfm
 # from hand.settings import SECRET_KEY
 # ------------------------------登入後的功能------------------------------
@@ -27,25 +33,37 @@ class IfmView(APIView):
         """
         前端打get需要查看個人資訊
         """
-        auth = get_authorization_header(request).split()
-        print(auth)
+        # auth = get_authorization_header(request).split()
+        # print(auth)
 
-        if (len(auth) == 2 and auth):
-            token = auth[1].decode('utf-8')
-            payload = decode_access_token(token=token)
-            # user_email = payload['email']
-            user_id = payload['id']
-        else:
-            return Response({"msg":"Permission Denine."})
+        # if (len(auth) == 2 and auth):
+        #     token = auth[1].decode('utf-8')
+        #     payload = decode_access_token(token=token)
+        #     # user_email = payload['email']
+        #     user_id = payload['id']
+        # else:
+        #     return Response({"msg":"no header."})
+        token = request.COOKIES.get('access_token')
+        payload = decode_access_token(token=token)
+        user_id = payload['id']
         response = Response()
 
         response.data = {
-            "email": UserIfm.objects.get(id=user_id).email,
-            "describe": UserDefIfm.objects.get(user_id=user_id).describe,
-            "使用者名稱": UserIfm.objects.get(id=user_id).username,
+            "email" : UserIfm.objects.get(id=user_id).email,
+            "describe" : UserDefIfm.objects.get(user_id=user_id).describe,
+            "username" : UserIfm.objects.get(id=user_id).username,
+            "headimage" : UserDefIfm.objects.get(user_id=user_id).headimg,
         }
+        payload = {
+            "email" : UserIfm.objects.get(id=user_id).email,
+            "describe" : UserDefIfm.objects.get(user_id=user_id).describe,
+            "username" : UserIfm.objects.get(id=user_id).username,
+            "headimage" : UserDefIfm.objects.get(user_id=user_id),
+        }
+        html = render(request, 'getinformation.html', payload).content.decode('utf-8')
+        response.content = html
         return response
-    
+
     def post(self, request):
         """
         修改使用者的資訊，會獲得
@@ -63,7 +81,7 @@ class IfmView(APIView):
             user_id = payload['id']
         else:
             return Response({"msg":"Mo Access token."})
-        
+
         ser1 = {
             'headimg' : request.data["headimg"],
             'describe' : request.data["describe"],

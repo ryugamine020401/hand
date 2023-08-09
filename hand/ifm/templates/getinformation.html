@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        {% csrf_token %}
+        <p> 獲取使用者資料。 </p>
+
+        </p>使用者名稱 : {{username}}</p>
+        </p>使用者簡介 : {{describe}}</p>
+        </p>使用者信箱 : {{email}}</p>
+        </p>使用者頭貼 : {{headimage}}</p>
+        </p>headimage.image : {{headimage.headimg}}</p>
+        </p>headimage.image.url : {{headimage.headimg.url}}</p>
+        <div class="">
+            <div class="">
+                <img class="card-img-top" src="/ifm{{ headimage.headimg.url }}" alt="圖片圖片"/>
+            </div>
+        </div>
+
+    </body>
+</html>

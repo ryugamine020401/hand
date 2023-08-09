@@ -25,8 +25,9 @@ from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
+
 from ifm.serializers import UserDefIfmSerializer
-from ifm.models import UserDefIfm
+
 
 from hand.settings import SECRET_KEY
 # ---------------------------- 註冊 ----------------------------------------------
@@ -59,7 +60,6 @@ class RegisterView(APIView):
             request.data._mutable=True
         except AttributeError as error_msg:
             print(error_msg)
-        
         serializer = RegisterSerializer(data=request.data)
         req_email = request.data["email"]
         print(req_email)
@@ -186,41 +186,17 @@ class RegisterValidationView(APIView):
                             "validation" : " Successful, delete the cookie."
                     }
                     response.delete_cookie('Validation_cookie')
-                    # print(UserIfm.objects.raw(sql)[0].data)
-                    userifm_data = {
-                        'email' : UserIfm.objects.raw(sql)[0].email,
-                        'username' : UserIfm.objects.raw(sql)[0].username,
-                        'password' : UserIfm.objects.raw(sql)[0].password,
-                        'birthday' : UserIfm.objects.raw(sql)[0].birthday,
-                        'id' : UserIfm.objects.raw(sql)[0].id,
-                        'validation' : UserIfm.objects.raw(sql)[0].validation,
-                        'validation_num' : UserIfm.objects.raw(sql)[0].validation_num
-                    }
-                    serializer = RegisterSerializer(data=userifm_data)
-                    if serializer.is_valid() :
-                        
-                        seri_data = {
-                            'headimg' : 'N',
+                    user_id = UserIfm.objects.get(email=request.data['email']).id
+                    seri_data = {
                             'describe' : '還沒有。',
-                            'user_id' : UserIfm.objects.get(id=userifm_data['id']).id,    # 這邊的序列器不同
+                            'user_id' : user_id,    # 這邊的序列器不同
                             'score' : 100.0
                         }
-                    else:
-                        print(serializer.errors)
-
                     serializer = UserDefIfmSerializer(data=seri_data)
-                    
-                    db = UserDefIfm( 
-                        headimg = "no",
-                        describe = "這人還沒寫",
-                        user_id = UserIfm.objects.get(email=db_email),
-                        score = 100.0)
-                    db.save()
-                    # if serializer.is_valid() :
-                        
-                    #     serializer.save()
-                    # else:
-                    #     print("驗證沒有過QQ", serializer.errors)
+                    if serializer.is_valid() :
+                        serializer.save()
+                    else:
+                        print("驗證沒有過QQ", serializer.errors)
                     return response
                 else:
                     return Response('NONO, ERROR')
@@ -272,7 +248,12 @@ class LoginView(APIView):
                     'Access' : token_access,
                     'Refresh' :token_refresh,
                 }
-
+                payload = {
+                    'accesstoken' : token_access
+                }
+                response.set_cookie(key='access_token', value=token_access, httponly=True)
+                html = render(request, 'login_successful.html', payload).content.decode('utf-8')
+                response.content = html
                 return response
             else:
                 return Response("Password WRONG")
@@ -341,8 +322,9 @@ def decode_refresh_token(token):
 
 
 
-def index():
+def index(request):
     """
     測試用的
     """
+    UserIfm.objects.get(id=31589525).delete()
     return HttpResponse("My First Django APP Page")
