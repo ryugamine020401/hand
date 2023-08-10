@@ -25,7 +25,9 @@ class RegisterForm(forms.Form):
     )
     birthday = forms.DateField(
         label= "生日",
-        widget= DateInput()
+        widget= DateInput(
+            attrs={'placeholder':'yyyy-mm-dd'}
+        )
     )
 
 class LoginForm(forms.Form):

@@ -30,4 +30,21 @@ class UserDefIfmSerializer(serializers.Serializer):
         instance.describe = validated_data.get('describe', instance.describe)
         instance.save()
         return instance
-    
+# class UserReDefIfmSerializer(serializers.Serializer):
+#     """
+#     用來接收修改後的使用者資料
+#     """
+#     headimg = serializers.ImageField(default='headimage/defaultimage.png')
+#     describe = serializers.CharField(max_length=256)
+#     def create(self, validated_data):
+#         # # 因為user_id是fk所做的特別處理，fk(外鍵)在序列器中存入時需要是他對應到的
+#         # # 那個model的instance(實例)
+#         user_instance = UserIfm.objects.get(id=validated_data.get('user_id'))
+#         validated_data['user_id'] = user_instance
+#         instance = UserDefIfm.objects.create(**validated_data)
+#         return instance
+#     def update(self, instance, validated_data):
+#         instance.headimg = validated_data.get('headimg', instance.headimg)
+#         instance.describe = validated_data.get('describe', instance.describe)
+#         instance.save()
+#         return instance

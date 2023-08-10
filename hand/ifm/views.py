@@ -1,11 +1,9 @@
-import jwt
-
 # import rest_framework.exceptions
 # from django.http.response import HttpResponse
 """
 用來處理送到前端的資料
 """
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # from django.core.mail import EmailMessage
 # from django.conf import settings
 # from django.template.loader import render_to_string
@@ -14,7 +12,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
-# from rest_framework import status
+from rest_framework import status
 
 from reg.views import decode_access_token
 # from reg.form import RegisterForm, LoginForm
@@ -23,6 +21,7 @@ from reg.models import UserIfm
 
 from ifm.serializers import UserDefIfmSerializer
 from ifm.models import UserDefIfm
+from ifm.forms import ReProfileForm
 # from hand.settings import SECRET_KEY
 # ------------------------------登入後的功能------------------------------
 class IfmView(APIView):
@@ -66,6 +65,7 @@ class IfmView(APIView):
 
     def post(self, request):
         """
+        測試用的 v1.1版本後改變URL了
         修改使用者的資訊，會獲得
         UserDefIfm  頭像、個人簡介
         UserIfm     使用者名稱、電子郵件、出生日期
@@ -139,3 +139,66 @@ class IfmView(APIView):
     #     return Response(serializer.data)
 
 # ------------------------------登入後的功能------------------------------
+
+# ------------------------------進入修改頁面------------------------------
+class ResetprofileView(APIView):
+    """
+    使用者的修改個人資訊頁面
+    """
+    def get(self, request):
+        """
+        獲得修改的頁面
+        """
+        token = request.COOKIES.get('access_token')
+        if token:
+            decode_access_token(token=token)
+        else :
+            return Response("NO TOKEN")
+        form = ReProfileForm()
+        context = {
+            'form' : form,
+        }
+        response  = Response(status=status.HTTP_202_ACCEPTED)
+        html =  render(request, './remeishi.html', context=context)
+        response.content = html
+        return response
+
+    def post(self, request):
+        """
+        送出修改後的資料
+        """
+        token = request.COOKIES.get('access_token')
+        if token:
+            payload = decode_access_token(token=token)
+            user_id = payload['id']
+        else:
+            return Response("NO TOKEN")
+        ser1 = {
+            "headimg" : request.data["headimg"],
+            "describe" : request.data["describe"],
+            "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
+            "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
+        }
+        ser2 = {
+            "username" : request.data['username'],
+            "email" : request.data['email'],
+            "birthday" : request.data['birthday'],
+            "password" : "nochange",
+            "validation_num" : 0,
+            "id" : user_id,
+        }
+        # print(ser1)
+        # print(ser2)
+        change_userdefifm = UserDefIfmSerializer(data=ser1)
+        change_userifm = RegisterSerializer(data=ser2)
+
+        if (change_userdefifm.is_valid() and change_userifm.is_valid()):
+            change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
+            change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
+        else:
+            change_userdefifm.is_valid()
+            change_userifm.is_valid()
+            print(change_userdefifm.errors,'\n', change_userifm.errors)
+        # response = Response()
+        # html = render(request, './getinformation', context={"msg" : "update successful."})
+        return redirect('./Meishi')

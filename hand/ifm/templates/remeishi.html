@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <!-- 下面按鈕用的URL對應到urls.py -->
+    <form action="{% url 'ReMeishi' %}" enctype="multipart/form-data" method="POST">
+                                        <!-- 要寫enctype="multipart/form-data"才會正常收到檔案 -->
+        {% csrf_token %}
+        {{form}}
+        <br/>
+        <input class="btn" type="submit" value="送出" />
+    </form>
+
+</body>
+
+</html>

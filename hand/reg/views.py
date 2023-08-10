@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from reg.form import RegisterForm, LoginForm
+from reg.forms import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
@@ -304,7 +304,7 @@ def decode_access_token(token):
         return {'email' : payload['email'], 'id' : payload['id']}
     except Exception as error_msg:
         print(error_msg)
-        raise rest_framework.exceptions.AuthenticationFailed("ERROE, TOKEN FAIL.")
+        raise rest_framework.exceptions.AuthenticationFailed("Forbidden, Signature has expired.")
 
 def decode_refresh_token(token):
     """
@@ -322,7 +322,7 @@ def decode_refresh_token(token):
 
 
 
-def index(request):
+def index():
     """
     測試用的
     """
