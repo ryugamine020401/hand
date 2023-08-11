@@ -32,16 +32,17 @@ class IfmView(APIView):
         """
         前端打get需要查看個人資訊
         """
-        # auth = get_authorization_header(request).split()
-        # print(auth)
+        auth = get_authorization_header(request).split()
+        print(auth)
 
-        # if (len(auth) == 2 and auth):
-        #     token = auth[1].decode('utf-8')
-        #     payload = decode_access_token(token=token)
-        #     # user_email = payload['email']
-        #     user_id = payload['id']
-        # else:
-        #     return Response({"msg":"no header."})
+        if (len(auth) == 2 and auth):
+            token = auth[1].decode('utf-8')
+            payload = decode_access_token(token=token)
+            # user_email = payload['email']
+            user_id = payload['id']
+        else:
+            # return Response({"msg":"no header."})
+            print("msg :", "no header.")
         token = request.COOKIES.get('access_token')
         payload = decode_access_token(token=token)
         user_id = payload['id']
@@ -63,56 +64,56 @@ class IfmView(APIView):
         response.content = html
         return response
 
-    def post(self, request):
-        """
-        測試用的 v1.1版本後改變URL了
-        修改使用者的資訊，會獲得
-        UserDefIfm  頭像、個人簡介
-        UserIfm     使用者名稱、電子郵件、出生日期
-        所以需要透過兩個
-        """
-        auth = get_authorization_header(request).split()
-        print(auth)
+    # def post(self, request):
+    #     """
+    #     測試用的 v1.1版本後改變URL了
+    #     修改使用者的資訊，會獲得
+    #     UserDefIfm  頭像、個人簡介
+    #     UserIfm     使用者名稱、電子郵件、出生日期
+    #     所以需要透過兩個
+    #     """
+    #     auth = get_authorization_header(request).split()
+    #     print(auth)
 
-        if (len(auth) == 2 and auth):
-            token = auth[1].decode('utf-8')
-            payload = decode_access_token(token=token)
-            # user_email = payload['email']
-            user_id = payload['id']
-        else:
-            return Response({"msg":"Mo Access token."})
+    #     if (len(auth) == 2 and auth):
+    #         token = auth[1].decode('utf-8')
+    #         payload = decode_access_token(token=token)
+    #         # user_email = payload['email']
+    #         user_id = payload['id']
+    #     else:
+    #         return Response({"msg":"Mo Access token."})
 
-        ser1 = {
-            'headimg' : request.data["headimg"],
-            'describe' : request.data["describe"],
-            'user_id' : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
-            'score' : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
-        }
+    #     ser1 = {
+    #         'headimg' : request.data["headimg"],
+    #         'describe' : request.data["describe"],
+    #         'user_id' : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
+    #         'score' : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
+    #     }
 
-        ser2 = {
-            'username' : request.data['username'],
-            'email' : request.data['email'],
-            'birthday' : request.data['birthday'],
-            'password' : "n",
-            'validation_num' : 0,
-            'id' : user_id,
-        }
-        change_userdefifm = UserDefIfmSerializer(data=ser1)
-        change_userifm = RegisterSerializer(data=ser2)
+    #     ser2 = {
+    #         'username' : request.data['username'],
+    #         'email' : request.data['email'],
+    #         'birthday' : request.data['birthday'],
+    #         'password' : "n",
+    #         'validation_num' : 0,
+    #         'id' : user_id,
+    #     }
+    #     change_userdefifm = UserDefIfmSerializer(data=ser1)
+    #     change_userifm = RegisterSerializer(data=ser2)
 
-        if (change_userdefifm.is_valid() and change_userifm.is_valid()):
-            change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
-            change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
-        else:
-            print(change_userdefifm.error_messages, change_userifm.error_messages)
-        responese = Response()
-        payload = {
-            "msg" : "成功修改",
-            "使用者id" : user_id,
-            "狀態" : "返回ya面"
-        }
-        responese.data = payload
-        return responese
+    #     if (change_userdefifm.is_valid() and change_userifm.is_valid()):
+    #         change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
+    #         change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
+    #     else:
+    #         print(change_userdefifm.error_messages, change_userifm.error_messages)
+    #     responese = Response()
+    #     payload = {
+    #         "msg" : "成功修改",
+    #         "使用者id" : user_id,
+    #         "狀態" : "返回ya面"
+    #     }
+    #     responese.data = payload
+    #     return responese
 
     # def get(self, request):
     #     token = request.COOKIES.get('jwt')
@@ -140,7 +141,7 @@ class IfmView(APIView):
 
 # ------------------------------登入後的功能------------------------------
 
-# ------------------------------進入修改頁面------------------------------
+# --------------------------------修改頁面--------------------------------
 class ResetprofileView(APIView):
     """
     使用者的修改個人資訊頁面
@@ -202,3 +203,26 @@ class ResetprofileView(APIView):
         # response = Response()
         # html = render(request, './getinformation', context={"msg" : "update successful."})
         return redirect('./Meishi')
+
+# --------------------------------修改頁面--------------------------------
+# --------------------------------字卡頁面--------------------------------
+class KadoView(APIView):
+    """
+    使用者個人字卡的頁面。
+    """
+    def get(self, request):
+        """
+        獲取使用者個人字卡
+        """
+        pass
+    def post(self, request):
+        """
+        新增字卡
+        """
+        pass
+    def delete(self, request):
+        """
+        刪除字卡
+        """
+        pass
+# --------------------------------字卡頁面--------------------------------

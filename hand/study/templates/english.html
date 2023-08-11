@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'TeachCenterType' %}" method="POST" >
+        {% for e in english_alphabet %}
+        <p>{{e.img.url}}</p>
+        <img src="/study{{e.img.url}}" style="max-width: 100%; max-height: 200px;">
+        <br>
+        {% endfor %}
+        <br/>
+        <!-- <input class="btn btn-success" type="submit" value="送出" /> -->
+    </form>
+
+</body>
+
+</html>
