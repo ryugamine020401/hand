@@ -6,12 +6,14 @@ from django.conf.urls.static import static
 
 from ifm.views import IfmView
 from ifm.views import ResetprofileView
+from ifm.views import KadoView
 from reg.views import index
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
     path('api/Meishi', IfmView.as_view(), name='Imformation'),
     path('api/reMeishi', ResetprofileView.as_view(), name='ReMeishi'),
+    path('api/kado', KadoView.as_view(), name='Kado'),
     path('delete', index, name="TEST")
 ]
 

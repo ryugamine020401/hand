@@ -18,10 +18,10 @@ from reg.views import decode_access_token
 # from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.models import UserIfm
-
 from ifm.serializers import UserDefIfmSerializer
-from ifm.models import UserDefIfm
+from ifm.models import UserDefIfm, UseWordCard
 from ifm.forms import ReProfileForm
+
 # from hand.settings import SECRET_KEY
 # ------------------------------登入後的功能------------------------------
 class IfmView(APIView):
@@ -214,7 +214,20 @@ class KadoView(APIView):
         """
         獲取使用者個人字卡
         """
-        pass
+        token = request.COOKIES.get('access_token')
+        if token:
+            user_id = decode_access_token(token)['id']
+            print(user_id)
+            # get預期是會拿回一個instance 但filter可以拿回多個
+        # wordcard_db = UseWordCard.objects.get(user_id=user_id)
+        wordcard_db = UseWordCard.objects.filter(user_id=user_id)
+        context = {
+            "allwordcard" : wordcard_db
+        }
+        response = Response(status=status.HTTP_202_ACCEPTED)
+        html = render(request, './userwordcard.html', context=context).content.decode('utf-8')
+        response.content = html
+        return response
     def post(self, request):
         """
         新增字卡

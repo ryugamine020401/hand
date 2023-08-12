@@ -1,7 +1,8 @@
+"""
+用來處理使用者引入字卡的時間
+"""
+import datetime
 
-"""
-用來處理送到前端的資料
-"""
 from django.shortcuts import render
 
 from rest_framework.response import Response
@@ -9,8 +10,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+
+from reg.views import decode_access_token
 from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
+from study.serializers import UseWordCardSerializer
 # from hand.settings import SECRET_KEY
 
 # --------------------------------上傳教學圖片--------------------------------
@@ -105,14 +109,13 @@ class TeachingCenterView(APIView):
         }
         html = render(request, './home.html', context=context).content.decode('utf-8')
         response.content = html
-        
         return response
 
 # ----------------------------學習中心------------------------------------
 # ------------------------學習中心_英文------------------------------------
 class TeachingCenterEnglishView(APIView):
     """
-    讓使用者獲取目前擁有的教學資源    
+    讓使用者獲取目前擁有的詳細教學資源    
     """
     def get(self, request):
         """
@@ -123,8 +126,39 @@ class TeachingCenterEnglishView(APIView):
         context = {
             "english_alphabet" : english_alphabet,
         }
-        print(context)
         html = render(request, './english.html', context=context).content.decode('utf-8')
         response.content = html
+        return response
+
+    def post(self, request):
+        """
+        加入使用者個人字卡
+        """
+
+        token = request.COOKIES.get('access_token')
+        if token:
+            user_id = decode_access_token(token)['id']
+        else:
+            return Response("NO TOKEN")
+        now_time = datetime.datetime.now()
+        for key in request.data:
+            print(str(key).rsplit('_', maxsplit=1)[-1])
+            card_id = str(key).rsplit('_', maxsplit=1)[-1]
+            print(card_id, type(card_id), type(now_time.strftime("%Y-%m-%d")))
+            print(TeachWordCard.objects.get(id = int(card_id)).img)
+        ser = {
+            "user_id" : user_id,
+            "img" : TeachWordCard.objects.get(id = int(card_id)).img,
+            "word" : chr(int(card_id) + 96),    # ASCII a是97 card_id是從1~26
+            "upload_date" : now_time.strftime("%Y-%m-%d"),
+        }
+        serializer = UseWordCardSerializer(data=ser)
+
+        if serializer.is_valid():
+            print("success")
+            serializer.save()
+        else:
+            print(serializer.errors)
+        response = Response(status=status.HTTP_202_ACCEPTED)
         return response
 # ------------------------學習中心_英文------------------------------------

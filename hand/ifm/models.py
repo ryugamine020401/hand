@@ -8,9 +8,9 @@ class UseWordCard(models.Model):
     """
     使用者基本的資料，驗證狀況。
     """
-    id = models.IntegerField(primary_key=True)
-    user_id_ifm = models.ForeignKey('reg.UserIfm', to_field='id', on_delete=models.CASCADE)
-    img = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('reg.UserIfm', to_field='id', on_delete=models.CASCADE)
+    img = models.ImageField()
     word = models.CharField(max_length=10)
     upload_date = models.DateTimeField(default=False)
     objects = models.Manager()
