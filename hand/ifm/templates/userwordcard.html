@@ -11,12 +11,35 @@
         {{word.word}}
         
         <img src="\study{{word.img.url}}" style="max-width: 100%; max-height: 200px;">
+        <input type="submit" value="刪除字卡" name="card_info_{{word.word}}">
         <br/>
         {% endfor %}
         <br/>
         
     </form>
-
+    <!-- <script>
+        function deleteCard(cardId) {
+            if (confirm("確定要刪除這張字卡吗？")) {
+                fetch(`/delete-card/${cardId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // 重製
+                        location.reload();
+                    } else {
+                        // 失敗
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+    </script> -->
 </body>
 
 </html>

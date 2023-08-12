@@ -232,10 +232,19 @@ class KadoView(APIView):
         """
         新增字卡
         """
-        pass
+        token = request.COOKIES.get('access_token')
+        if token:
+            user_id = decode_access_token(token)['id']
+        print(request.data)
+        for word in request.data:
+            # print(str(word).rsplit('_', maxsplit=1)[-1])
+            key = str(word).rsplit('_', maxsplit=1)[-1]
+        UseWordCard.objects.filter(user_id = user_id, word = key).delete()
+        return redirect('./kado')
     def delete(self, request):
         """
         刪除字卡
         """
-        pass
+        print(request.data)
+        return Response("delete")
 # --------------------------------字卡頁面--------------------------------
