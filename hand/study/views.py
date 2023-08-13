@@ -143,13 +143,15 @@ class TeachingCenterEnglishView(APIView):
             return Response("NO TOKEN")
         now_time = datetime.datetime.now()
         for key in request.data:
-            print(str(key).rsplit('_', maxsplit=1)[-1])
+            # print(str(key).rsplit('_', maxsplit=1)[-1])
             card_id = str(key).rsplit('_', maxsplit=1)[-1]
-            print(card_id, type(card_id), type(now_time.strftime("%Y-%m-%d")))
-            print(TeachWordCard.objects.get(id = int(card_id)).img)
+            # print(card_id, type(card_id), type(now_time.strftime("%Y-%m-%d")))
+            # print(TeachWordCard.objects.get(id = int(card_id)).img)
         try:
             word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
             check_multiple = UseWordCard.objects.get(user_id = user_id, word = word)
+            if (check_multiple):
+                return Response("字卡已經存在")
             print(check_multiple)
         # 查無此資料可以儲存，但會例外所以expect
         except UseWordCard.DoesNotExist as error: # pylint: disable=E1101
@@ -157,7 +159,8 @@ class TeachingCenterEnglishView(APIView):
 
         # 已經存在的字卡不需要重新儲存
         except UseWordCard.MultipleObjectsReturned as error:    # pylint: disable=E1101
-            print("多了，不存", error)
+            print("不存", error)
+            # 超過兩個以上的情況。
             return redirect('./english')
 
         ser = {
