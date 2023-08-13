@@ -14,7 +14,6 @@ class UseWordCard(models.Model):
     word = models.CharField(max_length=10)
     upload_date = models.DateTimeField(default=False)
     objects = models.Manager()
-
     class META:
         """
         定義這個DATABESE的名字

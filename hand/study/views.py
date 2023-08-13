@@ -3,7 +3,7 @@
 """
 import datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from rest_framework.response import Response
 # from rest_framework.authentication import get_authorization_header
@@ -12,6 +12,7 @@ from rest_framework import status
 
 
 from reg.views import decode_access_token
+from ifm.models import UseWordCard
 from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
@@ -146,10 +147,23 @@ class TeachingCenterEnglishView(APIView):
             card_id = str(key).rsplit('_', maxsplit=1)[-1]
             print(card_id, type(card_id), type(now_time.strftime("%Y-%m-%d")))
             print(TeachWordCard.objects.get(id = int(card_id)).img)
+        try:
+            word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
+            check_multiple = UseWordCard.objects.get(user_id = user_id, word = word)
+            print(check_multiple)
+        # 查無此資料可以儲存，但會例外所以expect
+        except UseWordCard.DoesNotExist as error: # pylint: disable=E1101
+            print("目前無此資料，正常儲存。", error)
+
+        # 已經存在的字卡不需要重新儲存
+        except UseWordCard.MultipleObjectsReturned as error:    # pylint: disable=E1101
+            print("多了，不存", error)
+            return redirect('./english')
+
         ser = {
             "user_id" : user_id,
             "img" : TeachWordCard.objects.get(id = int(card_id)).img,
-            "word" : chr(int(card_id) + 96),    # ASCII a是97 card_id是從1~26
+            "word" : word,    
             "upload_date" : now_time.strftime("%Y-%m-%d"),
         }
         serializer = UseWordCardSerializer(data=ser)

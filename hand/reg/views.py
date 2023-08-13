@@ -10,7 +10,7 @@ import jwt
 
 import rest_framework.exceptions
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -30,6 +30,30 @@ from ifm.serializers import UserDefIfmSerializer
 
 
 from hand.settings import SECRET_KEY
+# ------------------------- 登入驗證裝飾器 ------------------------------
+def loging_check(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(request):
+        token = request.COOKIES.get('access_token')
+        if not token:
+            return redirect('../reg/api/login')
+        else:
+            result = func(request)
+        return result
+    return wrapper
+# ------------------------- 登入驗證裝飾器 ------------------------------
+
+@loging_check
+def index(request):
+    """
+    測試用的
+    """
+    print(UserIfm.objects.get(id=52545386))
+    print(request)
+    return HttpResponse("My First Django APP Page")
+
 # ---------------------------- 註冊 ----------------------------------------------
 class RegisterView(APIView):
     """
@@ -318,13 +342,3 @@ def decode_refresh_token(token):
         raise rest_framework.exceptions.AuthenticationFailed("erroe,  fail token.")
 
 #------------------------- TOKEN create、decode func. ----------------------------
-
-
-
-
-def index():
-    """
-    測試用的
-    """
-    UserIfm.objects.get(id=31589525).delete()
-    return HttpResponse("My First Django APP Page")
