@@ -12,17 +12,38 @@ from rest_framework import status
 
 
 from reg.views import decode_access_token
+from reg.models import UserIfm
 from ifm.models import UseWordCard
 from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
-# from hand.settings import SECRET_KEY
+from hand.settings import ROOT_EMAIL
+def root_check(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request):
+        print("\n",request)
+        token = request.COOKIES.get('access_token')
 
+        if not token:
+            return redirect('../reg/api/login')#
+
+        user = decode_access_token(token)['id']
+        root_id = UserIfm.objects.get(email=ROOT_EMAIL).id
+        if user == root_id:
+
+            result = func(req, request)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
+        return result
+    return wrapper
 # --------------------------------上傳教學圖片--------------------------------
 class UploadStudyFileView(APIView):
     """
     上傳圖片用的
     """
+    @root_check
     def get(self, request):
         """
         獲得修改的頁面
@@ -35,7 +56,7 @@ class UploadStudyFileView(APIView):
         html =  render(request, './uploadimage.html', context=context)
         response.content = html
         return response
-
+    @root_check
     def post(self, request):
         """
         送出修改後的資料
@@ -44,14 +65,21 @@ class UploadStudyFileView(APIView):
         img = request.data.getlist('img')
         print(des)
         print(img)
-        for i in len(des):
-            print(type(i))
+        # for i in range(len(des)):
+        #     print(type(i))
+        #     database = TeachWordCard()
+        #     database.img = img[i]
+        #     database.describe = des[i]
+        #     database.upload_date = '2023-08-11'
+        #     database.save()
+        #     print(database)
+        for i, item in enumerate(img):
             database = TeachWordCard()
             database.img = img[i]
             database.describe = des[i]
             database.upload_date = '2023-08-11'
             database.save()
-            print(database)
+            print(database, f'已經儲存到第{i+1}筆資料。{item}')
         return Response({"successful"})
 
 # ----------------------------上傳教學圖片--------------------------------
@@ -150,9 +178,10 @@ class TeachingCenterEnglishView(APIView):
         try:
             word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
             check_multiple = UseWordCard.objects.get(user_id = user_id, word = word)
-            if (check_multiple):
+            if check_multiple:
                 return Response("字卡已經存在")
             print(check_multiple)
+
         # 查無此資料可以儲存，但會例外所以expect
         except UseWordCard.DoesNotExist as error: # pylint: disable=E1101
             print("目前無此資料，正常儲存。", error)

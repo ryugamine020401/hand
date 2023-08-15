@@ -29,7 +29,7 @@ from reg.models import UserIfm
 from ifm.serializers import UserDefIfmSerializer
 
 
-from hand.settings import SECRET_KEY
+from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -299,7 +299,7 @@ def creat_access_token(user):
         'iat' : datetime.datetime.utcnow(),
         'iss' : 'YMZK',
     }
-    token_access = jwt.encode(payload_access, 'secret_token', algorithm="HS256")
+    token_access = jwt.encode(payload_access, JWT_ACCRSS_TOKEN_KEY, algorithm="HS256")
     return token_access
 
 def creat_refresh_token(user):
@@ -314,7 +314,7 @@ def creat_refresh_token(user):
         'iat' : datetime.datetime.utcnow(),
     }
 
-    token_refresh = jwt.encode(payload_refresh, 'refresh_secret', algorithm="HS256")
+    token_refresh = jwt.encode(payload_refresh, JWT_REFRESH_TOKEN_KEY, algorithm="HS256")
     return token_refresh
 
 
@@ -324,7 +324,7 @@ def decode_access_token(token):
     拆解access_token
     """
     try:
-        payload = jwt.decode(token, 'secret_token', algorithms=['HS256'])
+        payload = jwt.decode(token, JWT_ACCRSS_TOKEN_KEY, algorithms=['HS256'])
         return {'email' : payload['email'], 'id' : payload['id']}
     except Exception as error_msg:
         print(error_msg)
@@ -335,7 +335,7 @@ def decode_refresh_token(token):
     拆解refresh_token
     """
     try:
-        payload = jwt.decode(token, 'refresh_secret', algorithms=['HS256'])
+        payload = jwt.decode(token, JWT_REFRESH_TOKEN_KEY, algorithms=['HS256'])
         return payload['username']
     except Exception as error_msg:
         print(error_msg)

@@ -27,6 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = config('SECRET_KEY')
+JWT_ACCRSS_TOKEN_KEY = config('JWT_ACCRSS_TOKEN_KEY')
+JWT_REFRESH_TOKEN_KEY = config('JWT_REFRESH_TOKEN_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -151,6 +153,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email
+ROOT_EMAIL = config('ROOT_EMAIL')
+
 
 # SMTP Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
