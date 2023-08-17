@@ -9,8 +9,8 @@ from study.views import TeachingCenterEnglishView, TeachingCenterView
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
-    path('api/uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),
-    path('api/uploadteachtype', UploadTeachTypeView.as_view(), name='UploadTeachType'),
+    path('uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),
+    path('uploadteachtype', UploadTeachTypeView.as_view(), name='UploadTeachType'),
     path('home', TeachingCenterView.as_view(), name='TeachCenterType'),
     path('english', TeachingCenterEnglishView.as_view(), name='TeachingCenterEnglish'),
 ]
