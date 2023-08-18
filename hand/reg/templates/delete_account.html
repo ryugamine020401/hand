@@ -1,0 +1,30 @@
+<!-- <img src="{{photo.image.url}}" alt="pic" /> -->
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+
+<body>
+    <form action="" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="">
+            <form action="{% url 'DeleteUserIfm' %}" method="POST">
+                {{ form }}
+                {% for instance in user_instance %}
+                <div >
+                    <p >{{ instance }}</p>
+                    <input class="btn btn-success"  type="submit" value="刪除" name="instance_info_{{instance.id}}"/>
+                </div>
+                
+                {% endfor %}
+            </form>
+            
+    </form>
+</body>
+
+
+
+
+</html>

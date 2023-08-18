@@ -13,6 +13,7 @@ from rest_framework import status
 
 from reg.views import decode_access_token
 from reg.models import UserIfm
+from reg.forms import LoginForm, EmailCheckForm
 from ifm.models import UseWordCard
 from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
@@ -30,14 +31,54 @@ def root_check(func):
             return redirect('../reg/api/login')#
 
         user = decode_access_token(token)['id']
-        root_id = UserIfm.objects.get(email=ROOT_EMAIL).id
+        instance = UserIfm.objects.get(email=ROOT_EMAIL)
+        root_id = instance.id
         if user == root_id:
-
             result = func(req, request)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
         return result
     return wrapper
+
+# ------------------------- 登入驗證裝飾器 ------------------------------
+def loging_check(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request):
+        token = request.COOKIES.get('access_token')
+        if not token:
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_200_OK)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
+        else:
+            valdation = decode_access_token(token)['val']
+            if valdation:
+                # 驗證成功，代表使用信箱已經驗證了
+                print("valdation success.")
+            else:
+                # 驗證失敗，代表使用信箱沒有驗證
+                print()
+                form = EmailCheckForm()
+                payload = {
+                    "form" : form,
+                }
+                response = Response(status=status.HTTP_200_OK)
+                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
+                response.content = html
+                return response
+
+            result = func(req, request)
+        return result
+    return wrapper
+# ------------------------- 登入驗證裝飾器 ------------------------------
+
 # --------------------------------上傳教學圖片--------------------------------
 class UploadStudyFileView(APIView):
     """
@@ -89,6 +130,7 @@ class UploadTeachTypeView(APIView):
     """
     上傳圖片用的
     """
+    @root_check
     def get(self, request):
         """
         獲得修改的頁面
@@ -101,7 +143,7 @@ class UploadTeachTypeView(APIView):
         html =  render(request, './upload.html', context=context)
         response.content = html
         return response
-
+    @root_check
     def post(self, request):
         """
         送出修改後的資料
@@ -158,7 +200,7 @@ class TeachingCenterEnglishView(APIView):
         html = render(request, './english.html', context=context).content.decode('utf-8')
         response.content = html
         return response
-
+    @loging_check
     def post(self, request):
         """
         加入使用者個人字卡

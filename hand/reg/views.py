@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from reg.forms import RegisterForm, LoginForm
+from reg.forms import RegisterForm, LoginForm, ResetPasswordForm, EmailCheckForm, DeleteForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
@@ -30,6 +30,7 @@ from ifm.serializers import UserDefIfmSerializer
 
 
 from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY
+from hand.settings import ROOT_EMAIL
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -37,9 +38,17 @@ def loging_check(func):
     """
     def wrapper(request):
         token = request.COOKIES.get('access_token')
+        valdation = decode_access_token(token)['val']
         if not token:
             return redirect('../reg/api/login')
         else:
+            if valdation:
+                # 驗證成功，代表使用信箱已經驗證了
+                print("valdation success.")
+            else:
+                # 驗證失敗，代表使用信箱沒有驗證
+                print()
+                return Response("未驗證電子信箱")
             result = func(request)
         return result
     return wrapper
@@ -48,12 +57,32 @@ def loging_check(func):
 @loging_check
 def index(request):
     """
-    測試用的
+    測試用的w
     """
-    print(UserIfm.objects.get(id=52545386))
+    print(UserIfm.objects.get(id=6333890))
     print(request)
     return HttpResponse("My First Django APP Page")
 
+def root_check(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request):
+        print("\n",request)
+        token = request.COOKIES.get('access_token')
+
+        if not token:
+            return redirect('../reg/api/login')#
+
+        user = decode_access_token(token)['id']
+        instance = UserIfm.objects.get(email=ROOT_EMAIL)
+        root_id = instance.id
+        if user == root_id:
+            result = func(req, request)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
+        return result
+    return wrapper
 # ---------------------------- 註冊 ----------------------------------------------
 class RegisterView(APIView):
     """
@@ -211,9 +240,10 @@ class RegisterValidationView(APIView):
                     }
                     response.delete_cookie('Validation_cookie')
                     user_id = UserIfm.objects.get(email=request.data['email']).id
+                    # 驗證成功後會生成使用者的預設個人資料
                     seri_data = {
-                            'describe' : '還沒有。',
-                            'user_id' : user_id,    # 這邊的序列器不同
+                            'describe' : '還沒有留言。',
+                            'user_id' : user_id,    # 先把數字送進去，之後再序列器內調整
                             'score' : 100.0
                         }
                     serializer = UserDefIfmSerializer(data=seri_data)
@@ -257,14 +287,15 @@ class LoginView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         # 一個實例
-        db_data = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm` WHERE(`email`="{email}");')
+        # db_data = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm` WHERE(`email`="{email}");')
+        db_data = UserIfm.objects.get(email = email)
         if db_data :
-            password += str(db_data[0].id)
+            password += str(db_data.id)
             # print(password)
-            if db_data[0].password == sha512(password.encode('UTF-8')).hexdigest() :
+            if db_data.password == sha512(password.encode('UTF-8')).hexdigest() :
                 # 如果帳號正確
-                token_access = creat_access_token(db_data[0])
-                token_refresh = creat_refresh_token(db_data[0])
+                token_access = creat_access_token(db_data)
+                token_refresh = creat_refresh_token(db_data)
                 response = Response()
                 response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
                 response.data = {
@@ -284,7 +315,163 @@ class LoginView(APIView):
         else:
             return Response("NO ACCUNT")
 # ----------------------------- 登入 ---------------------------------------------
+# ---------------------------- 重設密碼 ------------------------------------------
+class PasswordResetViews(APIView):
+    """
+    使用者重設密碼的視圖
+    """
+    def get(self, request):
+        """
+        使用者得到重設密碼的頁面。
+        """
+        form = ResetPasswordForm()
+        payload = {
+            "form" : form
+        }
+        response = Response(status=status.HTTP_200_OK)
+        html = render(request, 'reset_password.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
 
+    def post(self, request):
+        """
+        使用者送出更新的密碼
+        """
+        # print(request.data)
+        email = request.data['email']
+        password_old = request.data['password_old']
+        password_new = request.data['password_new']
+        print(password_old, password_new, email)
+        userifm_instance = UserIfm.objects.get(email = email)
+        password_old += str(userifm_instance.id)
+        if userifm_instance.password == sha512(password_old.encode('UTF-8')).hexdigest():
+            print("密碼正確，更新密碼。")
+            password_new += str(userifm_instance.id)
+            userifm_instance.password = sha512(password_new.encode('UTF-8')).hexdigest()
+            userifm_instance.save()
+            print("儲存")
+        else:
+            print("使用者密碼錯誤。")
+            return Response("密碼錯誤")
+        response = Response(status=status.HTTP_200_OK)
+        return response
+# ---------------------------- 重設密碼 ------------------------------------------
+
+# ------------------------- email驗證 ------------------------------
+class EmailValdationView(APIView):
+    """
+    可以拿到驗證信箱的畫面
+    """
+    def get(self, request):
+        """
+        可以得到驗證的頁面
+        """
+        form = EmailCheckForm
+        payload = {
+            "form" : form
+        }
+        response = Response(status=status.HTTP_200_OK)
+        html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+    def post(self, request):
+        """
+        用來送出驗證碼
+        """
+        token = request.COOKIES.get('access_token')
+        payload = decode_access_token(token)
+        email = payload['email']
+
+        instance = UserIfm.objects.get(email = email)
+        print(type(instance.validation_num), type(request.data["validation_num"]))
+        if instance.validation_num == int(request.data["validation_num"]):
+            instance.validation_num = -1
+            instance.validation = True
+            instance.save()
+        else:
+            print("驗證碼錯誤")
+            return Response("驗證碼錯誤")
+        print(request.data)
+        token_access = creat_access_token(instance)
+        token_refresh = creat_refresh_token(instance)
+        response = Response()
+        response.delete_cookie('refresh_token')
+        response.delete_cookie('access_token')
+        response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
+        response.set_cookie(key='access_token', value=token_access, httponly=True)
+        response.data = {"msg" : "驗證成功請重新登入。"}
+        return response
+# ------------------------- email驗證 ------------------------------
+# ------------------------- email重新寄送 ------------------------------
+class EmailReSendView(APIView):
+    """
+    重新寄送註冊顏見
+    """
+    def post(self, request):
+        """
+        POST使後端重新寄送驗證信，需要帶有access token.
+        """
+        print(request.data)
+        token = request.COOKIES.get('access_token')
+        user_id = decode_access_token(token=token)['id']
+        instance = UserIfm.objects.get(id=user_id)
+        email_template = render_to_string(
+            './signup_success_email.html',
+            {'username': instance.username,
+                'validation_num' : instance.validation_num}
+        )
+        email = EmailMessage(
+            '註冊成功通知信',  # 電子郵件標題
+            email_template,  # 電子郵件內容
+            settings.EMAIL_HOST_USER,  # 寄件者
+            [instance.email]  # 收件者
+        )
+        email.content_subtype = "html"
+        email.fail_silently = False
+        try:
+            email.send()
+        except OSError as error_msg:
+            print(error_msg)
+        return redirect('../valemail')
+# ------------------------- email重新寄送 ------------------------------
+# ------------------------- 刪除使用者 ---------------------------------
+class DeleteUserIfmView(APIView):
+    """
+    root刪除使用者的視圖
+    """
+    @root_check
+    def get(self, request):
+        """
+        獲得刪除的頁面，需要有root權限。
+        """
+        all_inatance = UserIfm.objects.all()
+        response = Response(status=status.HTTP_202_ACCEPTED)
+        form = DeleteForm()
+        payload = {
+            "form" : form,
+            "user_instance" : all_inatance
+        }
+        html = render(request, 'delete_account.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+    @root_check
+    def post(self, request):
+        """
+        刪除選定的使用者，需要有root權限。
+        """
+        print(request.data)
+        for key in request.data:
+            # print(str(key).rsplit('_', 1)) ['instance_info', '52545386']
+            req_list = str(key).rsplit('_', 1)
+        user_id = req_list[1]
+        UserIfm.objects.get(id = user_id).delete()
+        response = Response(status=status.HTTP_202_ACCEPTED)
+        response.data = {
+            "msg" : f'已刪除 {user_id} 。'
+        }
+        # print("刪除了", user_id)
+        return redirect('/reg/deleteaccount')
+# ------------------------- 刪除使用者 ---------------------------------
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):
     """
@@ -293,7 +480,7 @@ def creat_access_token(user):
     payload_access = {
         'email' : user.email,
         'username' : user.username,
-        'Val' : user.validation,
+        'val' : user.validation,
         'id' : user.id,
         'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         'iat' : datetime.datetime.utcnow(),
@@ -325,7 +512,7 @@ def decode_access_token(token):
     """
     try:
         payload = jwt.decode(token, JWT_ACCRSS_TOKEN_KEY, algorithms=['HS256'])
-        return {'email' : payload['email'], 'id' : payload['id']}
+        return {'email' : payload['email'], 'id' : payload['id'], 'val' : payload['val']}
     except Exception as error_msg:
         print(error_msg)
         raise rest_framework.exceptions.AuthenticationFailed("Forbidden, Signature has expired.")

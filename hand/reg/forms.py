@@ -42,3 +42,43 @@ class LoginForm(forms.Form):
         label = "密碼",
         widget=forms.PasswordInput()
     )
+
+class ResetPasswordForm(forms.Form):
+    """
+    用來顯示註冊表單。
+    """
+    email = forms.CharField(
+        label = "帳號",
+        widget=forms.EmailInput()
+    )
+    password_old = forms.CharField(
+        label = "舊密碼",
+        widget=forms.PasswordInput()
+    )
+    password_new = forms.CharField(
+        label = "新密碼",
+        widget=forms.PasswordInput()
+    )
+    password_check = forms.CharField(
+        label = "確認密碼",
+        widget=forms.PasswordInput()
+    )
+
+class EmailCheckForm(forms.Form):
+    """
+    用來顯示驗證碼表單。
+    """
+    validation_num = forms.IntegerField(
+        label = "驗證碼",
+        widget=forms.NumberInput()
+    )
+
+class DeleteForm(forms.Form):
+    """
+    用來顯示欲刪除使用者表單。
+    """
+    delete_num = forms.IntegerField(
+        label = "欲刪除使用者id",
+        widget=forms.NumberInput()
+    )
+    

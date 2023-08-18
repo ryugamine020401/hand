@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'EmailValdation' %}" method="POST">
+        {% csrf_token %}
+        <p>請至信箱收取驗證碼並驗證。</p>
+        {{form}}
+        <p>沒有收到?</p>
+        
+        <br/>
+        <input class="btn btn-success" type="submit" value="送出" />
+    </form>
+    <form action="{% url 'EmailReSend' %}" method="POST">
+        {% csrf_token %}
+        <p>沒有收到?</p>
+        <input class="btn btn-success" type="submit" value="再試一次" />
+    </form>
+
+</body>
+
+</html>
