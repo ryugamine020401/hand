@@ -18,16 +18,56 @@ from reg.views import decode_access_token
 # from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.models import UserIfm
+from reg.forms import EmailCheckForm, LoginForm
 from ifm.serializers import UserDefIfmSerializer
 from ifm.models import UserDefIfm, UseWordCard
 from ifm.forms import ReProfileForm
 
 # from hand.settings import SECRET_KEY
+# ------------------------- 登入驗證裝飾器 ------------------------------
+def loging_check(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request):
+        token = request.COOKIES.get('access_token')
+        if not token:
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_200_OK)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
+        else:
+            valdation = decode_access_token(token)['val']
+            if valdation:
+                # 驗證成功，代表使用信箱已經驗證了
+                print("valdation success.")
+            else:
+                # 驗證失敗，代表使用信箱沒有驗證
+                print()
+                form = EmailCheckForm()
+                payload = {
+                    "form" : form,
+                }
+                response = Response(status=status.HTTP_200_OK)
+                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
+                response.content = html
+                return response
+
+            result = func(req, request)
+        return result
+    return wrapper
+# ------------------------- 登入驗證裝飾器 ------------------------------
 # ------------------------------登入後的功能------------------------------
 class IfmView(APIView):
     """
     使用者查看、修改自己個人資訊
     """
+    @loging_check
     def get(self, request):
         """
         前端打get需要查看個人資訊
@@ -146,6 +186,7 @@ class ResetprofileView(APIView):
     """
     使用者的修改個人資訊頁面
     """
+    
     def get(self, request):
         """
         獲得修改的頁面

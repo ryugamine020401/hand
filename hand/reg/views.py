@@ -37,20 +37,36 @@ def loging_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
-    def wrapper(request):
+    def wrapper(req, request):
         token = request.COOKIES.get('access_token')
-        valdation = decode_access_token(token)['val']
         if not token:
-            return redirect('../reg/api/login')
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_200_OK)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
         else:
+            valdation = decode_access_token(token)['val']
             if valdation:
                 # 驗證成功，代表使用信箱已經驗證了
                 print("valdation success.")
             else:
                 # 驗證失敗，代表使用信箱沒有驗證
                 print()
-                return Response("未驗證電子信箱")
-            result = func(request)
+                form = EmailCheckForm()
+                payload = {
+                    "form" : form,
+                }
+                response = Response(status=status.HTTP_200_OK)
+                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
+                response.content = html
+                return response
+
+            result = func(req, request)
         return result
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
@@ -214,7 +230,7 @@ class RegisterValidationView(APIView):
         try:
             payload_validation = jwt.decode(token, SECRET_KEY, algorithms="HS256")
         except jwt.ExpiredSignatureError:
-            return Response({"ERROR":"TOKEN SIGNATURE ERROR qq, REJECT."})
+            return Response({"ERROR":"TOKEN SIGNATURE ERROR, REJECT."})
 
         request.data['email'] = payload_validation['email']
         serializer = RegisterValidationSerializer(data=request.data)
@@ -466,7 +482,7 @@ class PasswordResetViews(APIView):
         email = request.data['email']
         password_old = request.data['password_old']
         password_new = request.data['password_new']
-        print(password_old, password_new, email)
+        # print(password_old, password_new, email)
         userifm_instance = UserIfm.objects.get(email = email)
         password_old += str(userifm_instance.id)
         if userifm_instance.password == sha512(password_old.encode('UTF-8')).hexdigest():
@@ -474,7 +490,7 @@ class PasswordResetViews(APIView):
             password_new += str(userifm_instance.id)
             userifm_instance.password = sha512(password_new.encode('UTF-8')).hexdigest()
             userifm_instance.save()
-            print("儲存")
+            # print("儲存")
         else:
             print("使用者密碼錯誤。")
             return Response("密碼錯誤")
@@ -530,6 +546,16 @@ class EmailValdationView(APIView):
         response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
         response.set_cookie(key='access_token', value=token_access, httponly=True)
         response.data = {"msg" : "驗證成功請重新登入。"}
+        seri_data = {
+                'describe' : '還沒有留言。',
+                'user_id' : instance.id,    # 先把數字送進去，之後再序列器內調整
+                'score' : 100.0
+            }
+        serializer = UserDefIfmSerializer(data=seri_data)
+        if serializer.is_valid() :
+            serializer.save()
+        else:
+            print("驗證沒有過QQ", serializer.errors)
         return response
 # ------------------------- email驗證 ------------------------------
 
