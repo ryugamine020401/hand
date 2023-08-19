@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'test' %}" enctype="multipart/form-data" method="POST" >
+        {% csrf_token %}
+        {{form}}
+        <input class="btn btn-success" type="submit" value="送出" />
+    </form>
+
+</body>
+
+</html>

@@ -2,6 +2,9 @@
 用來處理使用者引入字卡的時間
 """
 import datetime
+import numpy as np
+import mediapipe as mp
+import cv2
 
 from django.shortcuts import render, redirect
 
@@ -78,6 +81,56 @@ def loging_check(func):
         return result
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
+
+# ------------------------- test ------------------------------
+def aaa(img):
+    mp_hands = mp.solutions.hands                    # mediapipe 偵測手掌方法
+    # img = cv2.imread('D:/work/aaa.jpg')
+    with mp_hands.Hands(
+        model_complexity=1,     # 複雜度越高越準確，但會增加延遲
+        max_num_hands=2,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
+        results = hands.process(img)  # 偵測手掌
+        if results.multi_hand_landmarks:
+            return True
+        else:
+            return False
+
+class TestUploadImgView(APIView):
+    """
+    上傳圖片用的
+    """
+
+    def get(self, request):
+        """
+        獲得修改的頁面
+        """
+        form = UploadEnglishForm()
+        context = {
+            'form' : form,
+        }
+        response  = Response(status=status.HTTP_202_ACCEPTED)
+        html =  render(request, './test.html', context=context)
+        response.content = html
+        return response
+
+    def post(self, request):
+        """
+        送出修改後的資料
+        """
+        img = request.FILES['img']
+        print(request.data)
+        # print(img.read()) #獲得二進制資料
+        # 將二進位資料轉換成NumPy陣列
+        np_image = np.frombuffer(img.read(), np.uint8)
+        print(np_image)
+        # 使用OpenCV讀取圖片
+        img = cv2.imdecode(np_image, cv2.IMREAD_COLOR)  # pylint: disable=E1101
+        print(img)
+        print(aaa(img=img))
+        return Response({"successful"})
+# ------------------------- test ------------------------------
 
 # --------------------------------上傳教學圖片--------------------------------
 class UploadStudyFileView(APIView):
