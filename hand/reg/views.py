@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from reg.forms import RegisterForm, LoginForm, ResetPasswordForm, EmailCheckForm, DeleteForm
+from reg.forms import ForgetPasswordForm, ResetForgetPasswordForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
@@ -315,6 +316,127 @@ class LoginView(APIView):
         else:
             return Response("NO ACCUNT")
 # ----------------------------- 登入 ---------------------------------------------
+
+
+# ----------------------------- 登出 ---------------------------------------------
+class LogoutAPIView(APIView):
+    """
+    用來登出的API
+    """
+    def get(self, request):
+        """
+        使用者打POST刪除COOKIES
+        """
+        print("使用者登出", request.COOKIES.get('access_token'))
+        response = Response(status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
+# ----------------------------- 登出 ---------------------------------------------
+
+
+# ---------------------------- 忘記密碼 ------------------------------------------
+class ForgetPasswordView(APIView):
+    """
+    處理使用者忘記密碼時的操作。
+    """
+    def get(self, request):
+        """
+        在登入時選擇忘記密碼所跳轉的頁面
+        """
+        form = ForgetPasswordForm()
+        payload = {
+            "form" : form,
+        }
+        response = Response(status=status.HTTP_200_OK)
+        html = render(request, 'forget_password.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+    def post(self, request):
+        """
+        驗證完成功後進入修改密碼
+        """
+        email = request.data['email']
+        form = ResetForgetPasswordForm(initial={"email":email})
+        payload = {
+            "form" : form,
+            "email" : email
+        }
+        instance = UserIfm.objects.get(email=email)
+        instance.validation = True
+        instance.validation_num = -1
+        instance.save()
+        response = Response(status=status.HTTP_200_OK)
+        html = render(request, 'forget_password_reset.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+# --------------- email重新寄送api ---------------
+class ForgetPasswordValNumResendAPIView(APIView):
+    """
+    重新寄送使用者忘記密碼時註冊郵件
+    """
+    def post(self, request):
+        """
+        POST使後端重新寄送驗證信，需要帶有access token.
+        """
+        email = request.data['email']
+        try:
+            instance = UserIfm.objects.get(email=email)
+        except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
+            print("使用者不存在", error_msg)
+            return Response(status=status.HTTP_400_BAD_REQUEST)       
+        instance.validation = False
+        instance.validation_num = "".join(random.choices("0123456789", k=6))
+        instance.save()
+        email_template = render_to_string(
+            './forget_password_email.html',
+            {'username': instance.username,
+                'validation_num' : instance.validation_num}
+        )
+        email = EmailMessage(
+            '重設密碼通知信',  # 電子郵件標題
+            email_template,  # 電子郵件內容
+            settings.EMAIL_HOST_USER,  # 寄件者
+            [instance.email]  # 收件者
+        )
+        email.content_subtype = "html"
+        email.fail_silently = False
+        try:
+            email.send()
+        except OSError as error_msg:
+            print(error_msg)
+        # response = HttpResponseRedirect('../forgetpassword')
+        # return response
+        form = ForgetPasswordForm(initial={"email":request.data['email']})
+        payload = {
+            "form" : form,
+            "email" : email
+        }
+        response = Response(status=status.HTTP_200_OK)
+        access_token = creat_access_token(instance)
+        response.set_cookie(key='access_token', value=access_token, httponly=True)
+        html = render(request, 'forget_password.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+# --------------- email重新寄送 ---------------
+# --------------- 修改密碼 --------------------
+class ResetPasswordAPIView(APIView):
+    """
+    忘記密碼驗證完後方可修改。
+    """
+    def post(self, request):
+        email = request.data['email']
+        password = request.data['password1']
+        instance = UserIfm.objects.get(email = email)
+        password += str(instance.id)
+        instance.password = sha512(password.encode('UTF-8')).hexdigest()
+        instance.save()
+        # print(password, instance)
+        return Response(status=status.HTTP_202_ACCEPTED)
+# --------------- 修改密碼 --------------------
+# ---------------------------- 忘記密碼 ------------------------------------------
+
+
 # ---------------------------- 重設密碼 ------------------------------------------
 class PasswordResetViews(APIView):
     """
@@ -379,7 +501,15 @@ class EmailValdationView(APIView):
         用來送出驗證碼
         """
         token = request.COOKIES.get('access_token')
-        payload = decode_access_token(token)
+        # print(token)
+        if (not token):
+            print(request.data['validation_num'])
+
+
+
+            return Response("msg:哈哈")
+        else:
+            payload = decode_access_token(token)
         email = payload['email']
 
         instance = UserIfm.objects.get(email = email)
@@ -402,6 +532,8 @@ class EmailValdationView(APIView):
         response.data = {"msg" : "驗證成功請重新登入。"}
         return response
 # ------------------------- email驗證 ------------------------------
+
+
 # ------------------------- email重新寄送 ------------------------------
 class EmailReSendView(APIView):
     """
@@ -434,6 +566,8 @@ class EmailReSendView(APIView):
             print(error_msg)
         return redirect('../valemail')
 # ------------------------- email重新寄送 ------------------------------
+
+
 # ------------------------- 刪除使用者 ---------------------------------
 class DeleteUserIfmView(APIView):
     """

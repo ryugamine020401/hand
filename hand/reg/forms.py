@@ -81,4 +81,34 @@ class DeleteForm(forms.Form):
         label = "欲刪除使用者id",
         widget=forms.NumberInput()
     )
+
+class ForgetPasswordForm(forms.Form):
+    """
+    用來顯示驗證碼表單。
+    """
+    email = forms.EmailField(
+        label = "電子郵件",
+        widget= forms.EmailInput()
+    )
+    validation_num = forms.IntegerField(
+        label = "驗證碼",
+        widget=forms.NumberInput()
+    )
+
+class ResetForgetPasswordForm(forms.Form):
+    """
+    用來顯示驗證碼表單。
+    """
+    email = forms.EmailField(
+        label = "電子郵件",
+        widget= forms.EmailInput(attrs={'readonly': 'readonly'})
+    )
+    password1 = forms.CharField(
+        label = "密碼",
+        widget=forms.PasswordInput()
+    )
+    password2 = forms.CharField(
+        label = "確認密碼",
+        widget=forms.PasswordInput()
+    )
     
