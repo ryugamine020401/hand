@@ -384,7 +384,7 @@ class ForgetPasswordValNumResendAPIView(APIView):
             instance = UserIfm.objects.get(email=email)
         except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
             print("使用者不存在", error_msg)
-            return Response(status=status.HTTP_400_BAD_REQUEST)       
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         instance.validation = False
         instance.validation_num = "".join(random.choices("0123456789", k=6))
         instance.save()
@@ -425,6 +425,9 @@ class ResetPasswordAPIView(APIView):
     忘記密碼驗證完後方可修改。
     """
     def post(self, request):
+        """
+        使用者輸入密碼後POST儲存
+        """
         email = request.data['email']
         password = request.data['password1']
         instance = UserIfm.objects.get(email = email)
@@ -502,12 +505,9 @@ class EmailValdationView(APIView):
         """
         token = request.COOKIES.get('access_token')
         # print(token)
-        if (not token):
+        if not token:
             print(request.data['validation_num'])
-
-
-
-            return Response("msg:哈哈")
+            return Response("沒有token。")
         else:
             payload = decode_access_token(token)
         email = payload['email']
