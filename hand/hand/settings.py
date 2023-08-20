@@ -44,6 +44,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    # 'onlinechat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,6 +64,9 @@ INSTALLED_APPS = [
     'bugreport.apps.BugreportConfig',
 
 ]
+
+
+ASGI_APPLICATION = 'hand.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -163,3 +168,13 @@ EMAIL_PORT = 587  #TLS通訊埠號
 EMAIL_USE_TLS = True  #開啟TLS(傳輸層安全性)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')  #寄件者電子郵件
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  #Gmail應用程式的密碼
+
+# channels設定
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

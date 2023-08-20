@@ -21,7 +21,7 @@ urlpatterns = [
     path('reg/', include('reg.urls')),
     # path('forum/', include('forum.urls')),
     path('ifm/', include('ifm.urls')),
-    # path('onlinechat/', include('onlinechat.urls')),
+    path('onlinechat/', include('onlinechat.urls')),
     path('study/', include('study.urls')),
     # path('billboard/', include('billboard.urls')),
 ]
