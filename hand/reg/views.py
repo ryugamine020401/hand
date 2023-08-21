@@ -305,7 +305,11 @@ class LoginView(APIView):
         password = request.data.get("password")
         # 一個實例
         # db_data = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm` WHERE(`email`="{email}");')
-        db_data = UserIfm.objects.get(email = email)
+        try:
+            db_data = UserIfm.objects.get(email = email)
+        except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
+            print(error_msg)
+            return Response("Account does not exist.")
         if db_data :
             password += str(db_data.id)
             # print(password)
