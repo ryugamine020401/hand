@@ -71,26 +71,29 @@ class ChatConsumer(WebsocketConsumer):
             token = self.scope['cookies']['access_token']
             user_id = decode_access_token(token)['id']
             username = UserIfm.objects.get(id=user_id).username
+            headimg = UserDefIfm.objects.get(user_id=user_id).headimg
         except:
             username = "匿名"
+            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type' : 'chat_message',
-                'message' : f'{username} : {message}'
+                'message' : f'{message}',
+                'headimg' : str(headimg.url),
+                'username' : username
             }
         )
-        # print('Message', message)
-        # self.send(text_data=json.dumps({
-        #     'type':'chat',
-        #     'message': message
-        # }))
         
     def chat_message(self, event):
         message = event['message']
+        headimg = event['headimg']
+        username = event['username']
         self.send(text_data=json.dumps({
             'type' : 'chat',
-            'message' : message
+            'message' : message,
+            'headimg' : headimg,
+            'username' : username
         }))

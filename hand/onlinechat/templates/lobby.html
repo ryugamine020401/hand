@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,42 +6,60 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Lobby</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-
+    <link rel="stylesheet" type="text/css" href="{% static 'css/lobby.css' %}">
 </head>
 <body>
-    <h1>let chat!</h1>
-    <form id="form">
-        <input type="text" name="message"/>
+    <h1>Online Chat ROOM!</h1>
+    <form id="textarea">
+        <div id="messages"></div>
     </form>
+    <form id="form">
+        <input type="text" name="message", id="input"/>
+    </form>
+    
 
-    <div id="messages" style="width: 100px; height: 300px; margin: auto;"></div>
-    <script type="text/javascript">
+    <script>
         let url = `ws://${window.location.host}/ws/socket-server/`
-        
         const chatSocket = new WebSocket(url)
-        
-        chatSocket.onmessage = function(e){
-            let data = JSON.parse(e.data)
-            console.log('Data:', data)
 
-            if(data.type === 'chat'){
-                let messages = document.getElementById('messages')
-                messages.insertAdjacentHTML('beforeend', `<div>
-                        <p>${data.message}</p>
-                    </div>`)
-            }
+        var messagesContainer = document.getElementById('messages');
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        chatSocket.onmessage = function(e){
+                let data = JSON.parse(e.data)
+                console.log('Data:', data)
+                if(data.type === 'chat'){
+                    // let messages = documnt.getElementById('messages')
+                    messagesContainer.insertAdjacentHTML('beforeend', 
+                        `<div class = "chat_container">
+                            <div id = "headimgcontainer" class = "chat_container_part1">
+                                <img id = "headimg" src="/ifm${data.headimg}"/>
+                                <p class = "user_name">${data.username}</p>
+                                
+                            </div>
+                            <p class = "user_message">${data.message}</p>
+                        </div>`)
+                    scrollToBottom();
+                }
+        }
+        function receiveNewMessage(message) {
+            scrollToBottom();
         }
 
-        let form = document.getElementById('form')
         form.addEventListener('submit', (e)=> {
-            e.preventDefault()
+            event.preventDefault(); // 阻止表單提交
             let message = e.target.message.value 
             chatSocket.send(JSON.stringify({
                 'message':message
             }))
             form.reset()
-        })
-        
-    </script>
+        });
+
+        scrollToBottom(); // 初始化時捲至底部
+    </script> 
 </body>
 </html>
