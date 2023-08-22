@@ -84,6 +84,9 @@ def loging_check(func):
 
 # ------------------------- test ------------------------------
 def aaa(img):
+    """
+    老鐘寫的，可以用來辨識是否有手。
+    """
     mp_hands = mp.solutions.hands                    # mediapipe 偵測手掌方法
     # img = cv2.imread('D:/work/aaa.jpg')
     with mp_hands.Hands(

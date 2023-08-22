@@ -10,8 +10,10 @@ from django.shortcuts import render
 from channels.generic.websocket import WebsocketConsumer
 from reg.forms import LoginForm, EmailCheckForm
 from reg.models import UserIfm
-from ifm.models import UserDefIfm
 from reg.views import decode_access_token
+from ifm.models import UserDefIfm
+
+
 from asgiref.sync import async_to_sync
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
@@ -37,7 +39,6 @@ def loging_check(func):
                 print("valdation success.")
             else:
                 # 驗證失敗，代表使用信箱沒有驗證
-                print()
                 form = EmailCheckForm()
                 payload = {
                     "form" : form,
@@ -52,9 +53,14 @@ def loging_check(func):
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
 class ChatConsumer(WebsocketConsumer):
-    
-    def connect(self):
+    """
+    線上聊天室的comsumer
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.room_group_name = 'test'
+
+    def connect(self):
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
@@ -64,16 +70,23 @@ class ChatConsumer(WebsocketConsumer):
         #     'type':'connection_established',
         #     'message':'You are now connected!'
         # }))
-    
-    def receive(self, text_data):
-        # print(self.scope['cookies']['access_token'])
+
+    def receive(self, text_data=None, bytes_data=None):
+        """
+        使用者送出訊息。
+        """
         try:
             token = self.scope['cookies']['access_token']
             user_id = decode_access_token(token)['id']
             username = UserIfm.objects.get(id=user_id).username
             headimg = UserDefIfm.objects.get(user_id=user_id).headimg
-        except:
+        except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
+            print(error_msg, "1")
             username = "匿名"
+            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
+        except KeyError as error_msg:
+            print(error_msg, "沒有登入。")
+            username = "我沒有登入"
             headimg = UserDefIfm.objects.get(user_id=80928899).headimg
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
@@ -86,8 +99,11 @@ class ChatConsumer(WebsocketConsumer):
                 'username' : username
             }
         )
-        
+
     def chat_message(self, event):
+        """
+        發送訊息到已經建立連接的聊天室內。
+        """
         message = event['message']
         headimg = event['headimg']
         username = event['username']
