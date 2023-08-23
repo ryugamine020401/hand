@@ -71,25 +71,18 @@ def loging_check(func):
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
 
-@loging_check
-def index(request):
-    """
-    測試用的w
-    """
-    print(UserIfm.objects.get(id=6333890))
-    print(request)
-    return HttpResponse("My First Django APP Page")
-
+# ------------------------- root驗證裝飾器 ------------------------------
 def root_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
     def wrapper(req, request):
-        print("\n",request)
+        print("request:",request, "\nreq:", req)
+
         token = request.COOKIES.get('access_token')
 
         if not token:
-            return redirect('../reg/api/login')#
+            return redirect('../reg/login')
 
         user = decode_access_token(token)['id']
         instance = UserIfm.objects.get(email=ROOT_EMAIL)
@@ -100,6 +93,19 @@ def root_check(func):
             return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
         return result
     return wrapper
+# ------------------------- root驗證裝飾器 ------------------------------
+
+# ------------------------- test ------------------------------
+@loging_check
+def index(request):
+    """
+    測試用的w
+    """
+    print(UserIfm.objects.get(id=6333890))
+    print(request)
+    return HttpResponse("My First Django APP Page")
+# ------------------------- test ------------------------------
+
 # ---------------------------- 註冊 ----------------------------------------------
 class RegisterView(APIView):
     """
@@ -547,7 +553,7 @@ class EmailValdationView(APIView):
         response = Response()
         response.delete_cookie('refresh_token')
         response.delete_cookie('access_token')
-        response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
+        response.set_cookie(key='refresh_token', value=token_refresh, httponly=True) # max_age
         response.set_cookie(key='access_token', value=token_access, httponly=True)
         response.data = {"msg" : "驗證成功請重新登入。"}
         seri_data = {
@@ -679,7 +685,7 @@ def decode_access_token(token):
         return {'email' : payload['email'], 'id' : payload['id'], 'val' : payload['val']}
     except Exception as error_msg:
         print(error_msg)
-        raise rest_framework.exceptions.AuthenticationFailed("Forbidden, Signature has expired.")
+        raise rest_framework.exceptions.AuthenticationFailed("Forbidden, Signature has expired. TOKEN過期了。")
 
 def decode_refresh_token(token):
     """

@@ -5,6 +5,7 @@ import json
 
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from django.shortcuts import render
 
 from channels.generic.websocket import WebsocketConsumer
@@ -77,7 +78,14 @@ class ChatConsumer(WebsocketConsumer):
         """
         try:
             token = self.scope['cookies']['access_token']
-            user_id = decode_access_token(token)['id']
+            try:
+                user_id = decode_access_token(token)['id']
+            except AuthenticationFailed as error_msg:
+                print(error_msg, "登入時效已過。")
+                self.send(json.dumps({
+                    'redirect': '../reg/login'
+                }))
+
             username = UserIfm.objects.get(id=user_id).username
             headimg = UserDefIfm.objects.get(user_id=user_id).headimg
         except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
@@ -96,7 +104,7 @@ class ChatConsumer(WebsocketConsumer):
                 'type' : 'chat_message',
                 'message' : f'{message}',
                 'headimg' : str(headimg.url),
-                'username' : username
+                'username' : username,
             }
         )
 

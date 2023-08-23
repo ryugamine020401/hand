@@ -9,10 +9,11 @@ class Billboard(models.Model):
     """
     使用者基本的資料，驗證狀況。
     """
-    id = models.IntegerField(primary_key=True)
-    context = models.TextField()
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=30, default="公告")
+    content = models.TextField()
     upload_date = models.DateField(default=False)
-
+    objects = models.Manager()
     class META:
         """
         定義這個DATABESE的名字

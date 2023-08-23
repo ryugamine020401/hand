@@ -27,7 +27,7 @@ def root_check(func):
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
     def wrapper(req, request):
-        print("\n",request)
+        print("\n",request, req)
         token = request.COOKIES.get('access_token')
 
         if not token:

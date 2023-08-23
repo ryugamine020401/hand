@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/lobby.css' %}">
 </head>
 <body>
-    <h1>Online Chat ROOM!</h1>
+    <h1>Online ChatRoom!</h1>
     <form id="textarea">
         <div id="messages"></div>
     </form>
@@ -32,7 +32,10 @@
         chatSocket.onmessage = function(e){
                 let data = JSON.parse(e.data)
                 console.log('Data:', data)
-                if(data.type === 'chat'){
+                if (data.redirect){
+                    console.log(data.redirect)
+                    window.location.href = data.redirect
+                } else if (data.type === 'chat'){
                     // let messages = documnt.getElementById('messages')
                     messagesContainer.insertAdjacentHTML('beforeend', 
                         `<div class = "chat_container">

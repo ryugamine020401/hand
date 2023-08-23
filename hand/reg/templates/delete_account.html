@@ -11,7 +11,7 @@
         {% csrf_token %}
         <div class="">
             <form action="{% url 'DeleteUserIfm' %}" method="POST">
-                {{ form }}
+                
                 {% for instance in user_instance %}
                 <div >
                     <p >{{ instance }}</p>

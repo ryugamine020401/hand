@@ -23,5 +23,5 @@ urlpatterns = [
     path('ifm/', include('ifm.urls')),
     path('onlinechat/', include('onlinechat.urls')),
     path('study/', include('study.urls')),
-    # path('billboard/', include('billboard.urls')),
+    path('billboard/', include('billboard.urls')),
 ]

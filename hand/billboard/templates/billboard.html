@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'BillboardSend' %}" method="POST" >
+
+        
+        {% for i in instance %}
+        <div><a href="{{ i.id }}">{{ i.title }}</a><h6>{{ i.upload_date }}</h6></div>
+        
+        
+        {% endfor %}
+
+    </form>
+
+</body>
+
+</html>
