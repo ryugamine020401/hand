@@ -685,7 +685,8 @@ def decode_access_token(token):
         return {'email' : payload['email'], 'id' : payload['id'], 'val' : payload['val']}
     except Exception as error_msg:
         print(error_msg)
-        raise rest_framework.exceptions.AuthenticationFailed("Forbidden, Signature has expired. TOKEN過期了。")
+        text = "Forbidden, Signature has expired. TOKEN過期了。"
+        raise rest_framework.exceptions.AuthenticationFailed(text)
 
 def decode_refresh_token(token):
     """

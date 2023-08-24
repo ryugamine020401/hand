@@ -87,10 +87,10 @@ class BillboardView(APIView):
         html = render(request, 'billboard.html', payload).content.decode('utf-8')
         response.content = html
         return response
-    
+
 class BillboardArticalView(APIView):
     """
-    有root權限可以使用發布公告的功能。
+    所有人都可以閱讀布告欄
     """
     def get(self, request, artical_id):
         """

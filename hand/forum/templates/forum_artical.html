@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        h1, h6 {
+          display: inline; /* 或使用 inline-block */
+        }
+      </style>
+</head>
+<body>
+    
+    <div><h1 href="google.com">{{ instance.title }}</h1><h6>{{ instance.upload_date }}</h6></div>
+      <div><img src="/ifm{{ headimg }}"><p href="">{{ announcer }}</div>
+      <div><p>{{ instance.content }}</p></div>
+    <hr>
+    {% for r in response %}
+    <div><img src="/ifm{{ r.headimg}}" style="width: 30px; height: 30px;"><samp>{{ r.username }}</samp><p>{{ r.response }}</p></div>
+    
+    {% endfor %}
+    <form action="{% url 'ForumArtical' artical_id=request.resolver_match.kwargs.artical_id %}" method="POST" >
+      {{ forms }}
+      <input class="btn" type="submit" value="送出" />
+    </form>
+
+</body>
+
+</html>
