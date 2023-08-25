@@ -180,7 +180,7 @@ class ForumArticalView(APIView):
     @loging_check
     def post(self, request, artical_id):
         """
-        使用者回覆留言
+        使用者回覆留言a
         """
         token = request.COOKIES.get('access_token')
         payload = decode_access_token(token=token)

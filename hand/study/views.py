@@ -2,11 +2,13 @@
 用來處理使用者引入字卡的時間
 """
 import datetime
+import base64
 import numpy as np
 import mediapipe as mp
 import cv2
 
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 from rest_framework.response import Response
 # from rest_framework.authentication import get_authorization_header
@@ -133,6 +135,32 @@ class TestUploadImgView(APIView):
         print(img)
         print(aaa(img=img))
         return Response({"successful"})
+
+class UpLoadImgView(APIView):
+    """
+    測試test用的views
+    """
+    def get(self, request):
+        """
+        開相機跟傳輸資料基本上只有前端再處理。
+        """
+        return render(request, 'kamera.html', {})
+    def post(self, request):
+        """
+        後端接收照片並處理後
+        """
+        encoded_image = request.data['image']
+        # 從 Base64 編碼的字符串中解碼圖片數據
+        decoded_image = base64.b64decode(encoded_image.split(',')[1])
+        # 將二進制圖片數據轉換為 NumPy 數組
+        image_array = np.frombuffer(decoded_image, dtype=np.uint8)
+        image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        print(image_array.size)
+        result = aaa(img=image_array)
+        print(result)
+        # path = '/home/ymzk/桌面/HAND/hand/study/TEST/img.png'
+        # cv2.imwrite(path, image_array) # pylint: disable=E1101
+        return JsonResponse({'message': 'Photo uploaded successfully'})
 # ------------------------- test ------------------------------
 
 # --------------------------------上傳教學圖片--------------------------------

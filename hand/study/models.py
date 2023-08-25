@@ -36,7 +36,7 @@ class Test1(models.Model):
     """
     英文測驗的題目，
     """
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     mondai = models.CharField(max_length=50)
     objects = models.Manager()
 
@@ -51,7 +51,7 @@ class Test2(models.Model):
     """
     中文測驗的題目，
     """
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     mondai = models.CharField(max_length=50)
     objects = models.Manager()
 
@@ -65,7 +65,7 @@ class Test1Ans(models.Model):
     """
     英文測驗的題目，
     """
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     kotae_ichi = models.CharField(max_length=20)
     kotae_ni = models.CharField(max_length=20)
     kotae_san = models.CharField(max_length=20)
@@ -85,7 +85,7 @@ class Test2Ans(models.Model):
     """
     英文測驗的題目，
     """
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     kotae_ichi = models.CharField(max_length=20)
     kotae_ni = models.CharField(max_length=20)
     kotae_san = models.CharField(max_length=20)

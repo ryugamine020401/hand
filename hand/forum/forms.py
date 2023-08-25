@@ -4,7 +4,7 @@
 from django import forms
 class ForumForm(forms.Form):
     """
-    用來顯示註冊表單。
+    用來顯示發送文章的表單。
     """
     title = forms.CharField(
         label = "標題",
@@ -16,6 +16,9 @@ class ForumForm(forms.Form):
     )
 
 class ResponseForm(forms.Form):
+    """
+    用來顯示送出留言的表單。
+    """
     response =forms.CharField(
         label = "回覆",
         widget=forms.Textarea()
