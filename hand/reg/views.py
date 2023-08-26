@@ -193,7 +193,7 @@ class RegisterView(APIView):
             # 透過Response返回HTML結果和設定的Cookie
             response = Response(status=status.HTTP_201_CREATED)
             response.content = html
-            response.set_cookie(key="Validation_cookie", value=token, httponly=True)
+            response.set_cookie(key="Validation_cookie", value=token, httponly=True, max_age=3600)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -333,7 +333,7 @@ class LoginView(APIView):
                 payload = {
                     'accesstoken' : token_access
                 }
-                response.set_cookie(key='access_token', value=token_access, httponly=True)
+                response.set_cookie(key='access_token', value=token_access, httponly=True, max_age=3600)
                 html = render(request, 'login_successful.html', payload).content.decode('utf-8')
                 response.content = html
                 return response
@@ -440,7 +440,7 @@ class ForgetPasswordValNumResendAPIView(APIView):
         }
         response = Response(status=status.HTTP_200_OK)
         access_token = creat_access_token(instance)
-        response.set_cookie(key='access_token', value=access_token, httponly=True)
+        response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=3600)
         html = render(request, 'forget_password.html', payload).content.decode('utf-8')
         response.content = html
         return response
@@ -554,7 +554,7 @@ class EmailValdationView(APIView):
         response.delete_cookie('refresh_token')
         response.delete_cookie('access_token')
         response.set_cookie(key='refresh_token', value=token_refresh, httponly=True) # max_age
-        response.set_cookie(key='access_token', value=token_access, httponly=True)
+        response.set_cookie(key='access_token', value=token_access, httponly=True, max_age=3600)
         response.data = {"msg" : "驗證成功請重新登入。"}
         seri_data = {
                 'describe' : '還沒有留言。',

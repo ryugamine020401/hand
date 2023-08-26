@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Capture</title>
+</head>
+<body>
+
+    {% csrf_token %}
+    <h1>第 {{ num }} 題</h1>
+    <h2>請比出 {{ mondai }}</h2>
+    <div id="error-message" style="display: none; color: red;">沒有偵測到手，請重試。</div>
+    <video id="camera" autoplay></video>
+    <button id="capture">Capture Photo</button>
+    <!-- <img id="photo" alt="Captured Image"> -->
+    
+    <script>
+        const video = document.getElementById('camera');
+        const captureButton = document.getElementById('capture');
+        const errorMessage = document.getElementById('error-message');
+        // const photo = document.getElementById('photo');
+
+        // 啟用攝影機
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => video.srcObject = stream);
+
+        // 捕獲照片
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataURL = canvas.toDataURL('image/png');
+            
+            // 使用 AJAX 發送圖片到 Django 服務器
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '{% url "test_one" param1=request.resolver_match.kwargs.param1 param2=request.resolver_match.kwargs.param2 %}', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // photo.src = imageDataURL;
+                    const jsonResponse = JSON.parse(xhr.responseText);
+                    if (jsonResponse.detected) {
+                        window.location.href = jsonResponse.redirect_url;
+                    } else {
+                        
+                        errorMessage.style.display = 'block';
+                    }
+                }
+            };
+            xhr.send('image=' + encodeURIComponent(imageDataURL));
+        });
+
+    </script>
+</body>
+</html>

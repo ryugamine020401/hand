@@ -3,6 +3,7 @@
 """
 import datetime
 import base64
+import random
 import numpy as np
 import mediapipe as mp
 import cv2
@@ -93,7 +94,7 @@ def aaa(img):
     # img = cv2.imread('D:/work/aaa.jpg')
     with mp_hands.Hands(
         model_complexity=1,     # 複雜度越高越準確，但會增加延遲
-        max_num_hands=2,
+        max_num_hands=1,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
         results = hands.process(img)  # 偵測手掌
@@ -334,3 +335,83 @@ class TeachingCenterEnglishView(APIView):
         response = Response(status=status.HTTP_202_ACCEPTED)
         return response
 # ------------------------學習中心_英文------------------------------------
+
+
+# ------------------------測驗_1-------------------------------------------
+# ------------------- 登入驗證裝飾器 ---------------------
+def loging_check_test(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request, param1, param2):
+        token = request.COOKIES.get('access_token')
+        if not token:
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_200_OK)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
+        else:
+            valdation = decode_access_token(token)['val']
+            if valdation:
+                # 驗證成功，代表使用信箱已經驗證了
+                print("valdation success.")
+            else:
+                # 驗證失敗，代表使用信箱沒有驗證
+                form = EmailCheckForm()
+                payload = {
+                    "form" : form,
+                }
+                response = Response(status=status.HTTP_200_OK)
+                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
+                response.content = html
+                return response
+
+            result = func(req, request, param1, param2)
+        return result
+    return wrapper
+# ------------------- 登入驗證裝飾器 ---------------------
+
+class TestOneViews(APIView):
+    """
+    測驗1 英文26字母手勢辨識
+    """
+    @loging_check_test
+    def get(self, request, param1, param2):
+        """
+        獲得頁面。
+        """
+        random_int = random.randint(1, 26)
+        alphabet = TeachWordCard.objects.get(id=random_int).describe
+        response = Response(status=status.HTTP_202_ACCEPTED)
+        payload = {
+            "para1": param1,
+            "para2": param2,
+            "msg :" : 'test',
+            "num" : param2+1,
+            "mondai" : alphabet
+        }
+        html = render(request, 'test_one.html', payload).content.decode('utf-8')
+        response.content = html
+        return response
+    def post(self, request, param1, param2):
+        """
+        使用者送出圖片。
+        """
+        # print(request.path, param1, param2)
+        # print(param2+1)
+        encoded_image = request.data['image']
+        # 從 Base64 編碼的字符串中解碼圖片數據
+        decoded_image = base64.b64decode(encoded_image.split(',')[1])
+        # 將二進制圖片數據轉換為 NumPy 數組
+        image_array = np.frombuffer(decoded_image, dtype=np.uint8)
+        image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        print(image_array.size)
+        result = aaa(img=image_array)
+        print(result)
+        return JsonResponse({'redirect_url' : f'../../{param1}/{param2+1}', 'detected':result})
+# ------------------------測驗_1------------------------------------
