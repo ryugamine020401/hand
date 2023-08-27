@@ -32,6 +32,7 @@ def loging_check(func):
     def wrapper(req, request):
         token = request.COOKIES.get('access_token')
         if not token:
+            print("沒有token")
             form = LoginForm()
             payload = {
                 "form" : form,
@@ -45,7 +46,7 @@ def loging_check(func):
             valdation = decode_access_token(token)['val']
             if valdation:
                 # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.")
+                print("valdation success.已驗證信箱的使用者操作。")
             else:
                 # 驗證失敗，代表使用信箱沒有驗證
                 print()
@@ -186,7 +187,7 @@ class ResetprofileView(APIView):
     """
     使用者的修改個人資訊頁面
     """
-    
+    @loging_check
     def get(self, request):
         """
         獲得修改的頁面
@@ -251,6 +252,7 @@ class KadoView(APIView):
     """
     使用者個人字卡的頁面。
     """
+    @loging_check
     def get(self, request):
         """
         獲取使用者個人字卡

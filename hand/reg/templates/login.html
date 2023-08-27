@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <form action="{% url 'Login' %}" method="POST">
+    <form action="{% url 'Login' %}?next={{ request.path }}" method="POST">
         {% csrf_token %}
         {{form}}
         <br/>

@@ -7,8 +7,32 @@
 
     <body>
         {% csrf_token %}
-        <p> 登入成功。 </p>
+        <p> 登入成功。 <span id="countdown">0</span> 秒後跳轉 </p>
         </p>{{accesstoken}}</p>
+        <p>{{next_url}}</p>
 
+
+        <script>
+            // 設定倒數秒數
+            var countdownSeconds = 0;
+
+            // 更新倒數並顯示在畫面上
+            function updateCountdown() {
+                var countdownElement = document.getElementById('countdown');
+                countdownElement.textContent = countdownSeconds;
+                countdownSeconds--;
+
+                if (countdownSeconds < 0) {
+                    // 倒數結束，進行導向
+                    var backendPageUrl = "{{ next_url }}";
+                    var relativeUrl = backendPageUrl.replace('/reg/login', '');
+                    var absoluteUrl = window.location.origin + relativeUrl;
+                    window.location.href = absoluteUrl;
+                }
+            }
+
+            // 每秒更新一次倒數
+            var countdownInterval = setInterval(updateCountdown, 1000);
+        </script>
     </body>
 </html>

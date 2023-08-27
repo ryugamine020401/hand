@@ -39,6 +39,7 @@ def loging_check(func):
     """
     def wrapper(req, request):
         token = request.COOKIES.get('access_token')
+
         if not token:
             form = LoginForm()
             payload = {
@@ -321,22 +322,45 @@ class LoginView(APIView):
             # print(password)
             if db_data.password == sha512(password.encode('UTF-8')).hexdigest() :
                 # 如果帳號正確
-                token_access = creat_access_token(db_data)
-                token_refresh = creat_refresh_token(db_data)
+                access_token = creat_access_token(db_data)
+                refresh_token = creat_refresh_token(db_data)
                 response = Response()
-                response.set_cookie(key='refresh_token', value=token_refresh, httponly=True)
+                next_url = request.GET.get('next')
                 response.data = {
-                    'Status' : "SUCCESSUFL LOGIN",
-                    'Access' : token_access,
-                    'Refresh' :token_refresh,
+                    'Status' : "SUCCESSUFL LOGIN",    
                 }
                 payload = {
-                    'accesstoken' : token_access
+                    'accesstoken' : access_token,
+                    'next_url' : next_url
                 }
-                response.set_cookie(key='access_token', value=token_access, httponly=True, max_age=3600)
+                #                   key=,            value=,
+                response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
+                response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
                 html = render(request, 'login_successful.html', payload).content.decode('utf-8')
+                # print('access_token : ', access_token, '\nrefresh_token : ', refresh_token)
                 response.content = html
-                return response
+
+                if (next_url and next_url != '/reg/login'):
+                    print('有next_url', next_url)
+                    return response
+                else:
+                    # 如果沒有 next 參數，重定向到默認頁面
+                    print("沒有next參數。")
+                    response = Response()
+                    response.data = {
+                        'Status' : "SUCCESSUFL LOGIN",
+                        'Access' : access_token,
+                        'Refresh' :refresh_token,
+                    }
+                    payload = {
+                        'accesstoken' : access_token
+                    }
+                    #                   key=,            value=,
+                    response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
+                    response.set_cookie('refresh_token', refresh_token, httponly=True)
+                    html = render(request, 'login_successful.html', payload).content.decode('utf-8')
+                    response.content = html
+                    return response   # 待修正
             else:
                 return Response("Password WRONG")
         else:
