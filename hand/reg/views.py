@@ -276,7 +276,7 @@ class RegisterValidationView(APIView):
                         print("驗證沒有過QQ", serializer.errors)
                     return response
                 else:
-                    return Response('NONO, ERROR')
+                    return Response('error,  資料格式錯誤。')
             else:
                 if payload_validation['email'] == db_email:
                     return Response("Validation Fail, cuz u maybe already valdition.")

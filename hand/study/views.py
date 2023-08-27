@@ -410,6 +410,8 @@ class TestOneViews(APIView):
         # 將二進制圖片數據轉換為 NumPy 數組
         image_array = np.frombuffer(decoded_image, dtype=np.uint8)
         image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
+        print("儲存")
         print(image_array.size)
         result = aaa(img=image_array)
         print(result)
