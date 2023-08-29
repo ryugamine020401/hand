@@ -6,16 +6,16 @@ from django.conf.urls.static import static
 
 from study.views import UploadStudyFileView, UploadTeachTypeView
 from study.views import TeachingCenterEnglishView, TeachingCenterView, TestUploadImgView
-from study.views import UpLoadImgView, TestOneViews
+from study.views import TestOneViews
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
     path('uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),
     path('uploadteachtype', UploadTeachTypeView.as_view(), name='UploadTeachType'),
-    path('home', TeachingCenterView.as_view(), name='TeachCenterType'),
+    path('', TeachingCenterView.as_view(), name='TeachCenterType'),
     path('english', TeachingCenterEnglishView.as_view(), name='TeachingCenterEnglish'),
     path('test', TestUploadImgView.as_view(), name='test'),
-    path('upload_photo', UpLoadImgView.as_view(), name='upload_photo'),
+    # path('upload_photo', UpLoadImgView.as_view(), name='upload_photo'),
     path('test/<int:param1>/<int:param2>/', TestOneViews.as_view(), name='test_one'),
 ]
 

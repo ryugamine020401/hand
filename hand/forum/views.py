@@ -112,7 +112,7 @@ class ForumSendView(APIView):
         instance.upload_date = str(datetime.date.today())
         instance.save()
 
-        return Response("發佈成功")
+        return redirect('./main')
 
 class ForumView(APIView):
     """

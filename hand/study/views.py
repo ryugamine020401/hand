@@ -257,15 +257,27 @@ class TeachingCenterView(APIView):
         """
         讓使用者得到可以選擇的學習資源
         """
-        tecahtype = TeachType.objects.all()
-        print(tecahtype)
         response = Response(status=status.HTTP_200_OK)
+        tecahtype = {
+            'english': '英文字母',
+            'test/1/0' : '測驗1',
+            'test/2/0' : '測驗2'
+        }
         context = {
-            "type" : tecahtype,
+            "resourcetype" : tecahtype,
         }
         html = render(request, './home.html', context=context).content.decode('utf-8')
         response.content = html
         return response
+
+    def post(self, request):
+        """
+        使用者點選後自動跳轉
+        """
+        keys_list = list(request.data.keys())
+        redirect_path = keys_list[-1]
+        # print(redirect_path)
+        return redirect(f'./{redirect_path}')
 
 # ----------------------------學習中心------------------------------------
 # ------------------------學習中心_英文------------------------------------
@@ -306,7 +318,8 @@ class TeachingCenterEnglishView(APIView):
             word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
             check_multiple = UseWordCard.objects.get(user_id = user_id, word = word)
             if check_multiple:
-                return Response("字卡已經存在")
+                msg = 'UseWordCardExist'
+                return redirect(f'./english?msg={msg}')
             print(check_multiple)
 
         # 查無此資料可以儲存，但會例外所以expect
@@ -317,6 +330,7 @@ class TeachingCenterEnglishView(APIView):
         except UseWordCard.MultipleObjectsReturned as error:    # pylint: disable=E1101
             print("不存", error)
             # 超過兩個以上的情況。
+            msg = 'UseWordCardExist'
             return redirect('./english')
 
         ser = {
@@ -332,8 +346,8 @@ class TeachingCenterEnglishView(APIView):
             serializer.save()
         else:
             print(serializer.errors)
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        return response
+        # response = Response(status=status.HTTP_202_ACCEPTED)
+        return redirect('../ifm/kado')
 # ------------------------學習中心_英文------------------------------------
 
 
@@ -376,6 +390,7 @@ def loging_check_test(func):
     return wrapper
 # ------------------- 登入驗證裝飾器 ---------------------
 
+# ------------------------測驗_1------------------------------------
 class TestOneViews(APIView):
     """
     測驗1 英文26字母手勢辨識
@@ -410,6 +425,8 @@ class TestOneViews(APIView):
         # 將二進制圖片數據轉換為 NumPy 數組
         image_array = np.frombuffer(decoded_image, dtype=np.uint8)
         image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
+        print(type(image_array))
         cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
         print("儲存")
         print(image_array.size)

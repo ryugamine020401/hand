@@ -6,7 +6,7 @@ from django.urls import path
 
 from reg.views import RegisterView, RegisterValidationView
 from reg.views import LoginView, PasswordResetViews, ResetPasswordAPIView
-from reg.views import DeleteUserIfmView, LogoutAPIView
+from reg.views import DeleteUserIfmView, LogoutAPIView, HomePageView
 from reg.views import ForgetPasswordView, ForgetPasswordValNumResendAPIView
 from reg.views import EmailValdationView, EmailReSendView
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('valemail', EmailValdationView.as_view(), name='EmailValdation'),
     path('forgetpassword', ForgetPasswordView.as_view(), name='ForgetPassword'),
     path('deleteaccount', DeleteUserIfmView.as_view(), name='DeleteUserIfm'),
+    path('uchi', HomePageView.as_view(), name='HomePage'),
     path('api/logout', LogoutAPIView.as_view(), name='LogoutAPI'),
     path('api/emailresend', EmailReSendView.as_view(), name='EmailReSend'),
     path('api/forgetpwdvalresend', ForgetPasswordValNumResendAPIView.as_view(), name = 'ForgetPasswordValNumResend'),

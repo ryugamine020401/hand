@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <form action="{% url 'HomePage' %}" method="POST">
+        {% csrf_token %}
+        
+        {% for key, t in title.items %}
+        
+        <input class="btn btn-success" type="submit" value="{{ t }}"  name="{{ key }}" />
+        {% endfor %}
+        
+        
+        <br/>
+        
+        
+        
+    </form>
+
+</body>
+
+</html>

@@ -296,10 +296,14 @@ class LoginView(APIView):
         """
         前端打GET過來想要進入網站
         """
-        form = LoginForm()
-        context = {
-            'form' : form,
-        }
+        token = request.COOKIES.get('access_token')
+        if token:
+            return redirect('./uchi')
+        else:
+            form = LoginForm()
+            context = {
+                'form' : form,
+            }
         return render(request, './login.html', context=context)
 
     def post(self, request):
@@ -345,20 +349,23 @@ class LoginView(APIView):
                     return response
                 else:
                     # 如果沒有 next 參數，重定向到默認頁面
+                    # 即從一般的登入介面
                     print("沒有next參數。")
                     response = Response()
-                    response.data = {
-                        'Status' : "SUCCESSUFL LOGIN",
-                        'Access' : access_token,
-                        'Refresh' :refresh_token,
+                    title_list = {
+                        'billboard':'佈告欄',
+                        'forum':'討論區',
+                        'study':'學習中心',
+                        'onlinechat':'線上聊天室',
+                        'ifm':'個人資訊'
                     }
                     payload = {
-                        'accesstoken' : access_token
+                        'title' : title_list,
                     }
                     #                   key=,            value=,
                     response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
                     response.set_cookie('refresh_token', refresh_token, httponly=True)
-                    html = render(request, 'login_successful.html', payload).content.decode('utf-8')
+                    html = render(request, 'homepage.html', payload).content.decode('utf-8')
                     response.content = html
                     return response   # 待修正
             else:
@@ -666,6 +673,36 @@ class DeleteUserIfmView(APIView):
         # print("刪除了", user_id)
         return redirect('/reg/deleteaccount')
 # ------------------------- 刪除使用者 ---------------------------------
+# ------------------------- 主頁 ---------------------------------
+class HomePageView(APIView):
+    """
+    使用者進入網站後的預設頁面
+    """
+    def get(self, request):
+        """
+        獲得該頁面的資訊
+        """
+        title_list = {
+            'billboard':'佈告欄',
+            'forum':'討論區',
+            'study':'學習中心',
+            'onlinechat':'線上聊天室',
+            'ifm':'個人資訊'
+        }
+        payload = {
+            'title' : title_list,
+        }
+        return render(request, 'homepage.html', payload)
+    def post(self, request):
+        """
+        可以跳轉到該跳轉的地方。
+        """
+        # print(request.data)
+        keys_list = list(request.data.keys())
+        redirect_path = keys_list[-1]
+        print(redirect_path)
+        return redirect(f'/{redirect_path}')
+# ------------------------- 主頁 ---------------------------------
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):
     """

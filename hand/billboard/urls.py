@@ -8,6 +8,6 @@ from billboard.views import BillboardSendView, BillboardView, BillboardArticalVi
 
 urlpatterns = [
     path('send', BillboardSendView.as_view(), name='BillboardSend'),
-    path('home', BillboardView.as_view(), name='Billboard'),
+    path('', BillboardView.as_view(), name='Billboard'),
     path('<int:artical_id>/', BillboardArticalView.as_view(), name='BillboardArtical'),
 ]

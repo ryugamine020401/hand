@@ -4,9 +4,9 @@
 </head>
 <body>
     <form action="{% url 'TeachCenterType' %}" method="POST" >
-        {% for teachingtype in type %}
-        {{teachingtype.type}}
-        <br>
+        
+        {% for key, techtype in resourcetype.items %}
+        <input type="submit" value="{{ techtype }}" name="{{key}}"/>
         {% endfor %}
         <br/>
         <!-- <input class="btn btn-success" type="submit" value="送出" /> -->
