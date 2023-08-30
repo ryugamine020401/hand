@@ -68,9 +68,8 @@ python manage.py migrate
 
 ## 後端
 
-
 # 套件版本
-channels-redis==4.1.0
+**channels-redis==4.1.0**
   - asgiref [required: >=3.2.10,<4, installed: 3.7.2]
     - typing-extensions [required: >=4, installed: 4.7.1]
   - channels [required: Any, installed: 3.0.5]
@@ -107,14 +106,16 @@ channels-redis==4.1.0
   - msgpack [required: ~=1.0, installed: 1.0.5]
   - redis [required: >=4.5.3, installed: 5.0.0]
     - async-timeout [required: >=4.0.2, installed: 4.0.3]
-djangorestframework==3.14.0
+
+**djangorestframework==3.14.0**
   - django [required: >=3.0, installed: 3.2]
     - asgiref [required: >=3.3.2,<4, installed: 3.7.2]
       - typing-extensions [required: >=4, installed: 4.7.1]
     - pytz [required: Any, installed: 2023.3]
     - sqlparse [required: >=0.2.2, installed: 0.4.4]
   - pytz [required: Any, installed: 2023.3]
-mediapipe==0.9.3.0
+
+**mediapipe==0.9.3.0**
   - absl-py [required: Any, installed: 1.4.0]
   - attrs [required: >=19.1.0, installed: 23.1.0]
   - flatbuffers [required: >=2.0, installed: 23.5.26]
@@ -140,14 +141,19 @@ mediapipe==0.9.3.0
   - sounddevice [required: >=0.4.4, installed: 0.4.6]
     - CFFI [required: >=1.0, installed: 1.15.1]
       - pycparser [required: Any, installed: 2.21]
-PyJWT==2.8.0
-PyMySQL==1.1.0
-pyOpenSSL==23.2.0
+
+**PyJWT==2.8.0**
+
+**PyMySQL==1.1.0**
+
+**pyOpenSSL==23.2.0**
   - cryptography [required: >=38.0.0,<42,!=40.0.1,!=40.0.0, installed: 41.0.3]
     - cffi [required: >=1.12, installed: 1.15.1]
       - pycparser [required: Any, installed: 2.21]
-python-decouple==3.8
-service-identity==23.1.0
+
+**python-decouple==3.8**
+
+**service-identity==23.1.0**
   - attrs [required: >=19.1.0, installed: 23.1.0]
   - cryptography [required: Any, installed: 41.0.3]
     - cffi [required: >=1.12, installed: 1.15.1]
