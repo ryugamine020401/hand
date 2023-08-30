@@ -3,12 +3,13 @@
 """
 import datetime
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from reg.models import UserIfm
+from reg.forms import LoginForm
 from reg.views import decode_access_token
 from billboard.forms import BillboardForm
 from billboard.models import Billboard
@@ -27,7 +28,15 @@ def root_check(func):
         token = request.COOKIES.get('access_token')
 
         if not token:
-            return redirect('../reg/login')
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_202_ACCEPTED)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
 
         user = decode_access_token(token)['id']
         instance = UserIfm.objects.get(email=ROOT_EMAIL)

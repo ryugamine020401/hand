@@ -34,8 +34,15 @@ def root_check(func):
         token = request.COOKIES.get('access_token')
 
         if not token:
-            return redirect('../reg/api/login')#
-
+            form = LoginForm()
+            payload = {
+                "form" : form,
+                "msg" : "請先登入後再執行該操作。"
+            }
+            response = Response(status=status.HTTP_202_ACCEPTED)
+            html = render(request, 'login.html', payload).content.decode('utf-8')
+            response.content = html
+            return response
         user = decode_access_token(token)['id']
         instance = UserIfm.objects.get(email=ROOT_EMAIL)
         root_id = instance.id
