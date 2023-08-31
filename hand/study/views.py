@@ -1,12 +1,16 @@
 """
 用來處理使用者引入字卡的時間
 """
+import os
 import datetime
 import base64
 import random
 import numpy as np
 import mediapipe as mp
 import cv2
+from cvzone.HandTrackingModule import HandDetector
+from keras.models import load_model
+
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -25,6 +29,8 @@ from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
 from hand.settings import ROOT_EMAIL
+# from .hand.prediction import num2alphabet, predict
+from hand.settings import MODEL_FILE_PATH
 def root_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
@@ -91,7 +97,109 @@ def loging_check(func):
         return result
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
+# ------------------------- 辨識 ------------------------------
+model = load_model("/home/ymzk/桌面/HAND/hand/static/models/signDot.h5")  # 關節點手勢辨識模型
+def num2alphabet(text):
+    """
+    將預測結果轉為英文字母
+    """
+    alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXY'
+    return alphabet[text]
 
+                # 正解
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# MODEL_FILE_PATH = os.path.join(BASE_DIR, 'static', 'models', 'signDot.h5')
+
+def predict(img, correct):
+    """
+    預測結果
+    """
+
+    detector = HandDetector(detectionCon=0.5, maxHands=1)  # cvzone,用於抓出手部位置
+    # model_file_path = os.path.join(os.path.dirname(__file__), 'static', 'models', 'signDot.h5')
+
+    mp_hands = mp.solutions.hands  # mediapipe 偵測手掌方法
+    hands_dot = mp_hands.Hands(
+        model_complexity=1,  # 複雜度越高越準確，但會增加延遲
+        max_num_hands=1,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5)
+
+    hands = detector.findHands(img, draw=False)  # 使用cvzone抓出手部位置
+    if hands:  # 若畫面中有手，並成功偵測到
+        hand1 = hands[0]
+        img_x, img_y, img_w, img_h = hand1['bbox']  # 抓出手部座標
+        # print(x, y, w, h, sep=' ')
+        if img_w > img_h:  # 擷取手部的影像，並且確保擷取結果為爭方形，且不超出原圖範圍
+            img_y = int(img_y - (img_w - img_h) / 2)
+            img_h = img_w
+        else:
+            img_x = int(img_x - (img_h - img_w) / 2)
+            img_w = img_h
+        img = img[img_y - 20:img_y + img_h + 20, img_x - 20:img_x + img_w + 20]
+        if img_x - 20 > 0 and img_x + img_w + 20 < 765 and img_y - 20 > 0:
+            rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # 轉RGB # pylint: disable=E1101
+            rgb_img = cv2.resize(rgb_img, (128, 128))  # 調整圖片大小 # pylint: disable=E1101
+            results = hands_dot.process(rgb_img)  # 偵測手部關節點座標
+            finger_points = []  # 記錄手指節點座標的陣列
+
+            if results.multi_hand_landmarks:  # 若成功抓到座標
+                for hand_landmarks in results.multi_hand_landmarks:
+                    for i in hand_landmarks.landmark:
+                        # 將 21 個節點換算成座標，記錄到 finger_points
+                        finger_points.append(i.x)
+                        finger_points.append(i.y)
+                finger_points = np.array(finger_points)  # 轉為numpy array
+                finger_points = finger_points.reshape(1, 42)  # reshape
+                # print(finger_points.shape)
+                prediction = model.predict(finger_points, verbose=0)  # 輸出的是編碼
+                index = np.argmax(prediction)  # 將編碼轉換後才是結果
+                text = num2alphabet(index)
+                # return round(prediction.max(), 3), text
+                ans = {}
+                alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXY'
+                count = 0
+                for a in alphabet:
+                    ans[a] = prediction[0][count]
+                    count = count + 1
+                response = {
+                    'result': text,
+                    'result_score': ans[text],
+                    'correct_score': ans[correct]
+                }
+                return response
+            else:
+                # response = {
+                #     'result': False,
+                #     'result_score': ans[text],
+                #     'correct_score': ans[correct],
+                #     'msg' : 'mediapipe沒偵測到',
+                #     'detected' : False
+                # }
+                print('mediapipe沒偵測到')
+                return 'mediapipe沒偵測到'
+        else:
+            # response = {
+            #         'result': False,
+            #         'result_score': ans[text],
+            #         'correct_score': ans[correct],
+            #         'msg' : '手太靠近螢幕邊緣',
+            #         'detected' : False
+            #     }
+            print('手太靠近螢幕邊緣')
+            return '手太靠近螢幕邊緣'
+    else:
+        # response = {
+        #             'result': False,
+        #             'result_score': ans[text],
+        #             'correct_score': ans[correct],
+        #             'msg' : '沒手',
+        #             'detected' : False
+        #         }
+        print('no hands')
+        return 'no hands'
+
+# ------------------------- 辨識 ------------------------------
 # ------------------------- test ------------------------------
 def aaa(img):
     """
@@ -137,16 +245,23 @@ class TestUploadImgView(APIView):
         # print(img.read()) #獲得二進制資料
         # 將二進位資料轉換成NumPy陣列
         np_image = np.frombuffer(img.read(), np.uint8)
-        print(np_image)
-        # 使用OpenCV讀取圖片
-        img = cv2.imdecode(np_image, cv2.IMREAD_COLOR)  # pylint: disable=E1101
-        print(img)
-        print(aaa(img=img))
+        image_array = cv2.imdecode(np_image, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
+        print(image_array.size)
+        result = aaa(img=image_array)
+        print("結果一", result)
+        result = predict(img=image_array, correct='c')
+        print("結果二", result)
+        # print(np_image)
+        # # 使用OpenCV讀取圖片
+        # img = cv2.imdecode(np_image, cv2.IMREAD_COLOR)  # pylint: disable=E1101
+        # print(img)
+        # print(aaa(img=img))
         return Response({"successful"})
 
 class UpLoadImgView(APIView):
     """
-    測試test用的views
+    已棄用
     """
     def get(self, request):
         """
@@ -163,13 +278,17 @@ class UpLoadImgView(APIView):
         # 將二進制圖片數據轉換為 NumPy 數組
         image_array = np.frombuffer(decoded_image, dtype=np.uint8)
         image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+        image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
         print(image_array.size)
         result = aaa(img=image_array)
-        print(result)
+        print("結果一", result)
+        result = predict(img=image_array, correct='c')
+        print("結果二", result)
         # path = '/home/ymzk/桌面/HAND/hand/study/TEST/img.png'
         # cv2.imwrite(path, image_array) # pylint: disable=E1101
         return JsonResponse({'message': 'Photo uploaded successfully'})
 # ------------------------- test ------------------------------
+
 
 # --------------------------------上傳教學圖片--------------------------------
 class UploadStudyFileView(APIView):
@@ -408,7 +527,7 @@ class TestOneViews(APIView):
         獲得頁面。
         """
         random_int = random.randint(1, 26)
-        alphabet = TeachWordCard.objects.get(id=random_int).describe
+        alphabet = chr(TeachWordCard.objects.get(id=random_int).id)
         response = Response(status=status.HTTP_202_ACCEPTED)
         payload = {
             "para1": param1,
@@ -433,11 +552,14 @@ class TestOneViews(APIView):
         image_array = np.frombuffer(decoded_image, dtype=np.uint8)
         image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
         image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
+        # image_array = cv2.resize(image_array, (128, 128)) # pylint: disable=E1101
         print(type(image_array))
         cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
         print("儲存")
         print(image_array.size)
         result = aaa(img=image_array)
+        result = predict(img = image_array, correct = 'c')
         print(result)
+        result = False
         return JsonResponse({'redirect_url' : f'../../{param1}/{param2+1}', 'detected':result})
 # ------------------------測驗_1------------------------------------

@@ -13,8 +13,11 @@ djangorestframework = "==3.14.0"
 mediapipe = "==0.9.3.0"
 channels = "==3.0.5"
 channels-redis = "*"
+cvzone = "*"
+keras = "*"
+tensorflow = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.8.10"
