@@ -98,7 +98,8 @@ def loging_check(func):
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
 # ------------------------- 辨識 ------------------------------
-model = load_model("/home/ymzk/桌面/HAND/hand/static/models/signDot.h5")  # 關節點手勢辨識模型
+
+model = load_model("study/signDot.h5")
 def num2alphabet(text):
     """
     將預測結果轉為英文字母
