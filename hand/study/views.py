@@ -1,7 +1,6 @@
 """
 用來處理使用者引入字卡的時間
 """
-import os
 import datetime
 import base64
 import random
@@ -30,7 +29,6 @@ from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
 from hand.settings import ROOT_EMAIL
 # from .hand.prediction import num2alphabet, predict
-from hand.settings import MODEL_FILE_PATH
 def root_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。

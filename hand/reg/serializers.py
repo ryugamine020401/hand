@@ -56,4 +56,3 @@ class RegisterValidationSerializer(serializers.Serializer):
         instance.validation_num = validated_data.get('validation_num', instance.validation_num)
         instance.save()
         return instance
-    

@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'forum.apps.ForumConfig',
     'billboard.apps.BillboardConfig',
     'bugreport.apps.BugreportConfig',
-
 ]
 
 

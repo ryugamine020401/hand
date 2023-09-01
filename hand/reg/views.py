@@ -6,9 +6,9 @@ import datetime
 from hashlib import sha512  # hash加密
 import random
 import jwt
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
-
-import rest_framework.exceptions
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
@@ -20,6 +20,7 @@ from rest_framework.response import Response
 # from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
+import rest_framework.exceptions
 
 from reg.forms import RegisterForm, LoginForm, ResetPasswordForm, EmailCheckForm, DeleteForm
 from reg.forms import ForgetPasswordForm, ResetForgetPasswordForm
@@ -127,6 +128,23 @@ class RegisterView(APIView):
         # form = UserRegisterSerializer(data=request.data)
 
         # return Response(form.data)
+    @swagger_auto_schema(
+        operation_summary='我是摘要',
+        operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'name': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Name'
+                ),
+                'email': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Email'
+                )
+            }
+        )
+    )
     def post(self, request):
         """
         前端打POST過來輸入好準備註冊
@@ -141,7 +159,7 @@ class RegisterView(APIView):
         req_email = request.data["email"]
         print(req_email)
         if UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`email`="{req_email}");'):
-            return Response("Create ACCUNT Fail Account exist.")
+            return Response("帳號已經存在。")
         while True:   # 生成一個8位不重複的id
             # tmp = int(random.random()*10**8)
             tmp = int("".join(random.choices("0123456789", k=8)))   # 生成一個8位的數字
