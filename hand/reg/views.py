@@ -115,6 +115,9 @@ class RegisterView(APIView):
     GET 獲得表單
     POST 註冊
     """
+    @swagger_auto_schema(
+        operation_summary='獲得註冊頁面',
+    )
     def get(self, request):
         """
         前端打GET過來想要進入網站
@@ -129,8 +132,8 @@ class RegisterView(APIView):
 
         # return Response(form.data)
     @swagger_auto_schema(
-        operation_summary='我是摘要',
-        operation_description='我是說明',
+        operation_summary='送出註冊的內容',
+        # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -139,9 +142,21 @@ class RegisterView(APIView):
                     description='User Name'
                 ),
                 'email': openapi.Schema(
-                    type=openapi.TYPE_STRING,
+                    type=openapi.FORMAT_EMAIL,
                     description='User Email'
-                )
+                ),
+                'password1': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Password'
+                ),
+                'password2': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Check User Password'
+                ),
+                'birthday': openapi.Schema(
+                    type=openapi.FORMAT_DATE,
+                    description='User Birthday'
+                ),
             }
         )
     )
@@ -223,6 +238,9 @@ class RegisterValidationView(APIView):
     """
     處理使用者的各種驗證狀態。
     """
+    @swagger_auto_schema(
+        operation_summary='驗證使用者信箱',
+    )
     def get(self, request):
         """
         當用戶註冊完成後得到驗證的網址所打的GET
@@ -238,10 +256,13 @@ class RegisterValidationView(APIView):
         }
         print(jwt.decode(token, SECRET_KEY, algorithms="HS256"))
         return render(request, 'check.html', context=respomse.data)
-
+    @swagger_auto_schema(
+        operation_summary='驗證使用者信箱',
+    )
     def post(self, request):
         """
         當用戶註冊完成後使用得到驗證碼進行驗證所打的POST
+        直接抓取cookie方便在註冊完成後直接點及連結進行驗證
         """
         try:
             # pylint: disable=protected-access
@@ -310,6 +331,9 @@ class LoginView(APIView):
     """
     使用者登入
     """
+    @swagger_auto_schema(
+        operation_summary='獲得登入頁面',
+    )
     def get(self, request):
         """
         前端打GET過來想要進入網站
@@ -323,7 +347,23 @@ class LoginView(APIView):
                 'form' : form,
             }
         return render(request, './login.html', context=context)
-
+    @swagger_auto_schema(
+        operation_summary='送出登入的內容',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='User Email'
+                ),
+                'password': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Password'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         使用者登入的post
@@ -398,6 +438,9 @@ class LogoutAPIView(APIView):
     """
     用來登出的API
     """
+    @swagger_auto_schema(
+        operation_summary='登出',
+    )
     def get(self, request):
         """
         使用者打POST刪除COOKIES
@@ -415,6 +458,9 @@ class ForgetPasswordView(APIView):
     """
     處理使用者忘記密碼時的操作。
     """
+    @swagger_auto_schema(
+        operation_summary='獲得忘記密碼頁面',
+    )
     def get(self, request):
         """
         在登入時選擇忘記密碼所跳轉的頁面
@@ -427,6 +473,23 @@ class ForgetPasswordView(APIView):
         html = render(request, 'forget_password.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='忘記密碼',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='User Email'
+                ),
+                'valdation_num': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='驗證碼'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         驗證完成功後進入修改密碼
@@ -450,6 +513,19 @@ class ForgetPasswordValNumResendAPIView(APIView):
     """
     重新寄送使用者忘記密碼時註冊郵件
     """
+    @swagger_auto_schema(
+        operation_summary='忘記密碼需要信箱驗證',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='User Email'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         POST使後端重新寄送驗證信，需要帶有access token.
@@ -499,6 +575,23 @@ class ResetPasswordAPIView(APIView):
     """
     忘記密碼驗證完後方可修改。
     """
+    @swagger_auto_schema(
+        operation_summary='忘記密碼的重設密碼',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='User Email'
+                ),
+                'password': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Password'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         使用者輸入密碼後POST儲存
@@ -520,6 +613,9 @@ class PasswordResetViews(APIView):
     """
     使用者重設密碼的視圖
     """
+    @swagger_auto_schema(
+        operation_summary='重設密碼',
+    )
     def get(self, request):
         """
         使用者得到重設密碼的頁面。
@@ -532,7 +628,27 @@ class PasswordResetViews(APIView):
         html = render(request, 'reset_password.html', payload).content.decode('utf-8')
         response.content = html
         return response
-
+    @swagger_auto_schema(
+        operation_summary='重設密碼',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='User Email'
+                ),
+                'password_old': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Check User Password'
+                ),
+                'password_new': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='New User Password'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         使用者送出更新的密碼
@@ -562,6 +678,9 @@ class EmailValdationView(APIView):
     """
     可以拿到驗證信箱的畫面
     """
+    @swagger_auto_schema(
+        operation_summary='信箱驗證',
+    )
     def get(self, request):
         """
         可以得到驗證的頁面
@@ -574,6 +693,19 @@ class EmailValdationView(APIView):
         html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='驗證信箱',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'valdation_num': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User Email'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         用來送出驗證碼
@@ -622,11 +754,15 @@ class EmailValdationView(APIView):
 # ------------------------- email重新寄送 ------------------------------
 class EmailReSendView(APIView):
     """
-    重新寄送註冊顏見
+    重新寄送註冊郵件
     """
+    @swagger_auto_schema(
+        operation_summary='重寄驗證碼至信箱',
+    )
     def post(self, request):
         """
         POST使後端重新寄送驗證信，需要帶有access token.
+        不需要額外參數
         """
         print(request.data)
         token = request.COOKIES.get('access_token')
@@ -658,6 +794,9 @@ class DeleteUserIfmView(APIView):
     """
     root刪除使用者的視圖
     """
+    @swagger_auto_schema(
+        operation_summary='刪除使用者',
+    )
     @root_check
     def get(self, request):
         """
@@ -673,10 +812,24 @@ class DeleteUserIfmView(APIView):
         html = render(request, 'delete_account.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='root刪除使用者的功能',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'uesr_id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User ID'
+                ),
+            }
+        )
+    )
     @root_check
     def post(self, request):
         """
         刪除選定的使用者，需要有root權限。
+        透過按鈕可以刪除該使用者的帳號
         """
         print(request.data)
         for key in request.data:
@@ -688,7 +841,7 @@ class DeleteUserIfmView(APIView):
         response.data = {
             "msg" : f'已刪除 {user_id} 。'
         }
-        # print("刪除了", user_id)
+        # print("刪除了", user_id) 302
         return redirect('/reg/deleteaccount')
 # ------------------------- 刪除使用者 ---------------------------------
 # ------------------------- 主頁 ---------------------------------
@@ -696,6 +849,9 @@ class HomePageView(APIView):
     """
     使用者進入網站後的預設頁面
     """
+    @swagger_auto_schema(
+        operation_summary='主頁',
+    )
     def get(self, request):
         """
         獲得該頁面的資訊
@@ -711,6 +867,19 @@ class HomePageView(APIView):
             'title' : title_list,
         }
         return render(request, 'homepage.html', payload)
+    @swagger_auto_schema(
+        operation_summary='點選網站的內容',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'page_id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='page ID'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         可以跳轉到該跳轉的地方。
@@ -721,6 +890,7 @@ class HomePageView(APIView):
         print(redirect_path)
         return redirect(f'/{redirect_path}')
 # ------------------------- 主頁 ---------------------------------
+
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):
     """
