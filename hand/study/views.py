@@ -9,6 +9,8 @@ import mediapipe as mp
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from keras.models import load_model
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 from django.shortcuts import render, redirect
@@ -156,10 +158,10 @@ def predict(img, correct):
                 text = num2alphabet(index)
                 # return round(prediction.max(), 3), text
                 ans = {}
-                alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXY'
+                alphabets = 'ABCDEFGHIKLMNOPQRSTUVWXY'
                 count = 0
-                for a in alphabet:
-                    ans[a] = prediction[0][count]
+                for alphabet in alphabets:
+                    ans[alphabet] = prediction[0][count]
                     count = count + 1
                 response = {
                     'result': text,
@@ -221,10 +223,13 @@ class TestUploadImgView(APIView):
     """
     上傳圖片用的
     """
-
+    @swagger_auto_schema(
+        operation_summary="測試上傳圖片至模型"
+    )
+    @root_check
     def get(self, request):
         """
-        獲得修改的頁面
+        測試上傳圖片的views
         """
         form = UploadEnglishForm()
         context = {
@@ -234,7 +239,20 @@ class TestUploadImgView(APIView):
         html =  render(request, './test.html', context=context)
         response.content = html
         return response
-
+    @swagger_auto_schema(
+        operation_summary='測試上傳圖片至模型 ',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'img': openapi.Schema(
+                    type=openapi.TYPE_FILE,
+                    description='User Name'
+                ),
+            }
+        )
+    )
+    @root_check
     def post(self, request):
         """
         送出修改後的資料
@@ -262,11 +280,17 @@ class UpLoadImgView(APIView):
     """
     已棄用
     """
+    @swagger_auto_schema(
+        operation_summary='已棄用',
+    )
     def get(self, request):
         """
         開相機跟傳輸資料基本上只有前端再處理。
         """
         return render(request, 'kamera.html', {})
+    @swagger_auto_schema(
+        operation_summary='已棄用',
+    )
     def post(self, request):
         """
         後端接收照片並處理後
@@ -294,6 +318,9 @@ class UploadStudyFileView(APIView):
     """
     上傳圖片用的
     """
+    @swagger_auto_schema(
+        operation_summary='上傳教學圖片 root',
+    )
     @root_check
     def get(self, request):
         """
@@ -307,6 +334,23 @@ class UploadStudyFileView(APIView):
         html =  render(request, './uploadimage.html', context=context)
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='上傳教學圖片',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'img': openapi.Schema(
+                    type=openapi.TYPE_FILE,
+                    description='教學圖片'
+                ),
+                'des': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='該資源的描述'
+                ),
+            }
+        )
+    )
     @root_check
     def post(self, request):
         """
@@ -338,12 +382,15 @@ class UploadStudyFileView(APIView):
 # ----------------------------上傳教學類別--------------------------------
 class UploadTeachTypeView(APIView):
     """
-    上傳圖片用的
+    上傳教學類別
     """
+    @swagger_auto_schema(
+        operation_summary='上傳教學類別 root',
+    )
     @root_check
     def get(self, request):
         """
-        獲得修改的頁面
+        獲得上傳教學類別的頁面
         """
         form = UploadTeachTypeForm()
         context = {
@@ -353,10 +400,22 @@ class UploadTeachTypeView(APIView):
         html =  render(request, './upload.html', context=context)
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='上傳教學類別',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'type': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='該資源的描述'
+                ),
+            }
+        )
+    )
     @root_check
     def post(self, request):
         """
-        送出修改後的資料
+        送出教學類別
         """
         des = request.data.getlist('type')
         print(des)
@@ -378,6 +437,9 @@ class TeachingCenterView(APIView):
     """
     讓使用者獲取目前擁有的教學資源    
     """
+    @swagger_auto_schema(
+            operation_summary='獲得現有的教學資源'
+    )
     def get(self, request):
         """
         讓使用者得到可以選擇的學習資源
@@ -394,7 +456,18 @@ class TeachingCenterView(APIView):
         html = render(request, './home.html', context=context).content.decode('utf-8')
         response.content = html
         return response
-
+    @swagger_auto_schema(
+        operation_summary='上傳教學類別',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'redirect_path': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='所有擁有的資源'
+                ),
+            }
+        )
+    )
     def post(self, request):
         """
         使用者點選後自動跳轉
@@ -410,6 +483,9 @@ class TeachingCenterEnglishView(APIView):
     """
     讓使用者獲取目前擁有的詳細教學資源    
     """
+    @swagger_auto_schema(
+        operation_summary='獲得詳細的教學資源',
+    )
     def get(self, request):
         """
         讓使用者得到可以選擇的英文學習資源
@@ -422,6 +498,18 @@ class TeachingCenterEnglishView(APIView):
         html = render(request, './english.html', context=context).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='加入個人字卡',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'card_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='字卡的id'
+                ),
+            }
+        )
+    )
     @loging_check
     def post(self, request):
         """
@@ -520,6 +608,9 @@ class TestOneViews(APIView):
     """
     測驗1 英文26字母手勢辨識
     """
+    @swagger_auto_schema(
+        operation_summary='測驗1 字母手勢辨識',
+    )
     @loging_check_test
     def get(self, request, param1, param2):
         """
@@ -538,6 +629,26 @@ class TestOneViews(APIView):
         html = render(request, 'test_one.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='加入個人字卡',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'img': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='影像'
+                ),
+                'param1': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='測驗類別'
+                ),
+                'param2': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='題數'
+                ),
+            }
+        )
+    )
     def post(self, request, param1, param2):
         """
         使用者送出圖片。
