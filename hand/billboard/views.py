@@ -2,6 +2,8 @@
 引用的順序 原本的套件、django的套件、本地內的引用
 """
 import datetime
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -54,6 +56,9 @@ class BillboardSendView(APIView):
     """
     有root權限可以使用發布公告的功能。
     """
+    @swagger_auto_schema(
+        operation_summary="獲得root 發送公告頁面"
+    )
     @root_check
     def get(self, request):
         """
@@ -67,6 +72,22 @@ class BillboardSendView(APIView):
         html = render(request, 'billboardsend.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='root 發送公告',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'title' : openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='公告標題'
+                ),
+                'content' : openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='公告內容'
+                ),
+            }
+        )
+    )
     @root_check
     def post(self, request):
         """
@@ -82,8 +103,11 @@ class BillboardSendView(APIView):
 
 class BillboardView(APIView):
     """
-    有root權限可以使用發布公告的功能。
+    檢視所有公告內容
     """
+    @swagger_auto_schema(
+        operation_summary='所有公告內容',
+    )
     def get(self, request):
         """
         獲得發送的頁面。
@@ -101,6 +125,9 @@ class BillboardArticalView(APIView):
     """
     所有人都可以閱讀布告欄
     """
+    @swagger_auto_schema(
+        operation_summary='獲取詳細頁面',
+    )
     def get(self, request, artical_id):
         """
         獲得發送的頁面。

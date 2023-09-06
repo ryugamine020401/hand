@@ -1,9 +1,9 @@
-# import rest_framework.exceptions
-# from django.http.response import HttpResponse
 """
 用來處理送到前端的資料
 """
 from django.shortcuts import render, redirect
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 # from django.core.mail import EmailMessage
 # from django.conf import settings
 # from django.template.loader import render_to_string
@@ -68,6 +68,9 @@ class IfmView(APIView):
     """
     使用者查看、修改自己個人資訊
     """
+    @swagger_auto_schema(
+        operation_summary='檢視個人資訊',
+    )
     @loging_check
     def get(self, request):
         """
@@ -187,6 +190,9 @@ class ResetprofileView(APIView):
     """
     使用者的修改個人資訊頁面
     """
+    @swagger_auto_schema(
+        operation_summary='獲得修改個人資訊的頁面',
+    )
     @loging_check
     def get(self, request):
         """
@@ -205,7 +211,36 @@ class ResetprofileView(APIView):
         html =  render(request, './remeishi.html', context=context)
         response.content = html
         return response
-
+    @swagger_auto_schema(
+        operation_summary='修改個人資訊',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'headimg':openapi.Schema(
+                    type=openapi.TYPE_FILE,
+                    description='頭像'
+                ),
+                'describe':openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='狀態描述'
+                ),
+                'username':openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='暱稱'
+                ),
+                'email':openapi.Schema(
+                    type=openapi.FORMAT_EMAIL,
+                    description='電子郵件'
+                ),
+                'birthday':openapi.Schema(
+                    type=openapi.FORMAT_DATE,
+                    description='生日'
+                ),
+                 
+            }
+        )
+    )
+    @loging_check
     def post(self, request):
         """
         送出修改後的資料
@@ -252,6 +287,9 @@ class KadoView(APIView):
     """
     使用者個人字卡的頁面。
     """
+    @swagger_auto_schema(
+        operation_summary='獲取個人字卡',
+    )
     @loging_check
     def get(self, request):
         """
@@ -271,9 +309,21 @@ class KadoView(APIView):
         html = render(request, './userwordcard.html', context=context).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='刪除個人字卡',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'word':openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='字卡內容'
+                ),             
+            }
+        )
+    )
     def post(self, request):
         """
-        新增字卡
+        刪除字卡
         """
         token = request.COOKIES.get('access_token')
         if token:
@@ -284,10 +334,10 @@ class KadoView(APIView):
             key = str(word).rsplit('_', maxsplit=1)[-1]
         UseWordCard.objects.filter(user_id = user_id, word = key).delete()
         return redirect('./kado')
-    def delete(self, request):
-        """
-        刪除字卡
-        """
-        print(request.data)
-        return Response("delete")
+    # def delete(self, request):
+    #     """
+    #     刪除字卡
+    #     """
+    #     print(request.data)
+    #     return Response("delete")
 # --------------------------------字卡頁面--------------------------------

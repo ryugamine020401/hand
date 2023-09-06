@@ -2,6 +2,8 @@
 引用的順序 原本的套件、django的套件、本地內的引用
 """
 import datetime
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from django.shortcuts import render, redirect
 from rest_framework.views import APIView
@@ -92,6 +94,9 @@ class ForumSendView(APIView):
     """
     有登入帳號就可以使用發布文章的功能。
     """
+    @swagger_auto_schema(
+        operation_summary='發佈文章'
+    )
     @loging_check
     def get(self, request, artical_id=None): # pylint: disable=unused-argument
         """
@@ -105,6 +110,22 @@ class ForumSendView(APIView):
         html = render(request, 'forumsend.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='送出文章',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'title' : openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='文章標題'
+                ),
+                'content' : openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='文章內容'
+                )
+            }
+        )
+    )
     @loging_check
     def post(self, request, artical_id=None): # pylint: disable=unused-argument
         """
@@ -124,8 +145,11 @@ class ForumSendView(APIView):
 
 class ForumView(APIView):
     """
-    所有人都可以閱讀布告欄
+    所有人都可以閱讀討論區
     """
+    @swagger_auto_schema(
+        operation_summary='列出討論區所有內容',
+    )
     @loging_check
     def get(self, request, artical_id=None):    # pylint: disable=unused-argument
         """
@@ -144,6 +168,9 @@ class ForumArticalView(APIView):
     """
     有登入可以使用查看所有討論的功能。
     """
+    @swagger_auto_schema(
+        operation_summary='列出討論區詳細內容',
+    )
     @loging_check
     def get(self, request, artical_id):
         """
@@ -185,10 +212,22 @@ class ForumArticalView(APIView):
         html = render(request, 'forum_artical.html', payload).content.decode('utf-8')
         response.content = html
         return response
+    @swagger_auto_schema(
+        operation_summary='送出留言',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'response' : openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='回覆內容'
+                ),
+            }
+        )
+    )
     @loging_check
     def post(self, request, artical_id):
         """
-        使用者回覆留言a
+        使用者回覆留言
         """
         token = request.COOKIES.get('access_token')
         payload = decode_access_token(token=token)
