@@ -236,7 +236,6 @@ class ResetprofileView(APIView):
                     type=openapi.FORMAT_DATE,
                     description='生日'
                 ),
-                 
             }
         )
     )
@@ -317,7 +316,7 @@ class KadoView(APIView):
                 'word':openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description='字卡內容'
-                ),             
+                )
             }
         )
     )
