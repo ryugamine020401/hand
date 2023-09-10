@@ -95,7 +95,8 @@
                     }
                 }
             };
-            xhr.send('image=' + encodeURIComponent(imageDataURL));
+            const kotae = `ans={{mondai}}`
+            xhr.send('image=' + encodeURIComponent(imageDataURL) + '&' + kotae);
         });
     </script>
 </body>
