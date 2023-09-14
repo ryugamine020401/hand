@@ -2,6 +2,8 @@
 用來處理送到前端的資料
 """
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 # from django.core.mail import EmailMessage
@@ -63,6 +65,41 @@ def loging_check(func):
         return result
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
+# ------------------------------------------------------------------- -React Test -------------------------------------------
+class IfmViewTestReact(APIView):
+    """
+    使用者查看、修改自己個人資訊
+    """
+    def get(self, request):
+        """
+        前端打get需要查看個人資訊
+        """
+        
+        # auth = get_authorization_header(request).split()
+        # print(auth)
+
+        # if (len(auth) == 2 and auth):
+        #     token = auth[1].decode('utf-8')
+        #     payload = decode_access_token(token=token)
+        #     # user_email = payload['email']
+        #     user_id = payload['id']
+        # else:
+        #     # return Response({"msg":"no header."})
+        #     print("msg :", "no header.")
+        # token = request.COOKIES.get('access_token')
+        # payload = decode_access_token(token=token)
+        # user_id = payload['id']
+
+        payload = {
+            "email" : 'asdasd@asdsa.dasdasd',
+            "describe" : 'asdasda;sjmd;am;dsad;asmdas;djailkbdlaknbsdlkas',
+            "username" : 'UserIfm.objects.get(id=user_id).username',
+            "headimage" : UserDefIfm.objects.get(user_id=64316155).headimg.url,
+            # "form" : form,
+        }
+        return JsonResponse(payload)
+        
+# ------------------------------------------------------------------- -React Test -------------------------------------------
 # ------------------------------登入後的功能------------------------------
 class IfmView(APIView):
     """

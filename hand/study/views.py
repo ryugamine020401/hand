@@ -648,9 +648,14 @@ class TestOneViews(APIView):
         # image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
         cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
         result = hand_predict(img=image_array, correct=request.data['ans'])
-        if result['result_score'] == result['correct_score']:
-            print("手勢正確", result['result'])
-        print(result)
+        try:
+            if result['result_score'] == result['correct_score']:
+                print("手勢正確", result['result'])
+            else:
+                print(request.data['kotae'])
+            print(result)
+        except KeyError as error_msg:
+            print(error_msg, '沒有偵測到手會KeyError')
         payload = {
             'redirect_url' : f'../../{param1}/{param2+1}',
             'detected':result['hand_exist'],

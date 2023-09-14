@@ -9,7 +9,7 @@ import jwt
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -370,6 +370,7 @@ class LoginView(APIView):
         """
         # request.data是一個字典，裡面有所有傳入的東西。
         # 所以可以透過request.data.get('Email')來取得細部。
+        # print(request.data)
         email = request.data.get("email")
         password = request.data.get("password")
         # 一個實例
@@ -378,7 +379,11 @@ class LoginView(APIView):
             db_data = UserIfm.objects.get(email = email)
         except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
             print(error_msg)
-            return Response("Account does not exist.")
+            data = {
+                'message' : "帳號不存在"
+            }
+            response = JsonResponse(data, status=401)
+            return response
         if db_data :
             password += str(db_data.id)
             # print(password)
@@ -397,9 +402,9 @@ class LoginView(APIView):
                 }
                 #                   key=,            value=,
                 response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
-                response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+                response.set_cookie('refresh_token', refresh_token, httponly=True, max_age=604800)
                 html = render(request, 'login_successful.html', payload).content.decode('utf-8')
-                # print('access_token : ', access_token, '\nrefresh_token : ', refresh_token)
+                # print('access_token : ', access_token, 'refresh_token : ', refresh_token)
                 response.content = html
 
                 if (next_url and next_url != '/reg/login'):
@@ -409,27 +414,32 @@ class LoginView(APIView):
                     # 如果沒有 next 參數，重定向到默認頁面
                     # 即從一般的登入介面
                     print("沒有next參數。")
-                    response = Response()
-                    title_list = {
+                    data = {
                         'billboard':'佈告欄',
                         'forum':'討論區',
                         'study':'學習中心',
                         'onlinechat':'線上聊天室',
-                        'ifm':'個人資訊'
+                        'ifm':'個人資訊',
+                        'access_token' : access_token,
+                        'refresh_token' : refresh_token
                     }
-                    payload = {
-                        'title' : title_list,
-                    }
-                    #                   key=,            value=,
-                    response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
-                    response.set_cookie('refresh_token', refresh_token, httponly=True)
-                    html = render(request, 'homepage.html', payload).content.decode('utf-8')
-                    response.content = html
+                    response = JsonResponse(data, status=status.HTTP_200_OK)
+                    # response.set_cookie('access_token', access_token, max_age=3600, samesite=None)
+                    # response.set_cookie('refresh_token', refresh_token, max_age=3600, samesite=None)
                     return response   # 待修正
             else:
-                return Response("Password WRONG")
+                print("密碼錯誤")
+                data = {
+                    'message': '密碼錯誤',
+                    }
+                response = JsonResponse(data, status=401)
+                return response
         else:
-            return Response("NO ACCUNT")
+            data = {
+                    'message': '帳號不存在',
+                    }
+            response = JsonResponse(data, status=401)
+            return response
 # ----------------------------- 登入 ---------------------------------------------
 
 

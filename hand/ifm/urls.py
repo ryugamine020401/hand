@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 from ifm.views import IfmView
 from ifm.views import ResetprofileView
-from ifm.views import KadoView
+from ifm.views import KadoView, IfmViewTestReact
 # from reg.views import index
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('', IfmView.as_view(), name='Imformation'),
     path('reMeishi', ResetprofileView.as_view(), name='ReMeishi'),
     path('kado', KadoView.as_view(), name='Kado'),
+    path('api/ifm', IfmViewTestReact.as_view(), name='apiifm'),
     # path('delete', index, name="TEST")
 ]
 
