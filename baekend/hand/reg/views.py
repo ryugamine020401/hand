@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 
 
 from rest_framework.response import Response
-# from rest_framework.authentication import get_authorization_header
+from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 import rest_framework.exceptions
@@ -39,17 +39,14 @@ def loging_check(func):
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
     def wrapper(req, request):
+        print(request.META)
         token = request.COOKIES.get('access_token')
-
         if not token:
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
+            data = {
+                'message' : '登入時效已過期，請重新登入。',
+                'redriect' : '/login'
             }
-            response = Response(status=status.HTTP_202_ACCEPTED)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
+            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
             return response
         else:
             valdation = decode_access_token(token)['val']
@@ -72,6 +69,33 @@ def loging_check(func):
         return result
     return wrapper
 # ------------------------- 登入驗證裝飾器 ------------------------------
+
+# ------------------------- 登入驗證裝飾器(header) ------------------------------
+def loging_check2(func):
+    """
+    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+    """
+    def wrapper(req, request):
+        auth = get_authorization_header(request).split()
+        # print(auth, type(auth[1]))
+
+        if auth[1] == b'null':
+            # return Response({"msg":"no header."})
+            # print("msg :", "no token. @loging_check2")
+            request.custom_data = {
+                'token' : False,
+                'redirect' : '/login' 
+            }
+        else:
+            # print("有token")
+            request.custom_data = {
+                'token' : True,
+                'redirect' : '/uchi' 
+            }
+        result = func(req, request)
+        return result
+    return wrapper
+# ------------------------- 登入驗證裝飾器(header) ------------------------------
 
 # ------------------------- root驗證裝飾器 ------------------------------
 def root_check(func):
@@ -116,10 +140,11 @@ class RegisterView(APIView):
     POST 註冊
     """
     @swagger_auto_schema(
-        operation_summary='獲得註冊頁面',
+        operation_summary='獲得註冊頁面 已棄用。',
     )
     def get(self, request):
         """
+        已棄用。
         前端打GET過來想要進入網站
         """
         form = RegisterForm()
@@ -132,7 +157,7 @@ class RegisterView(APIView):
 
         # return Response(form.data)
     @swagger_auto_schema(
-        operation_summary='送出註冊的內容',
+        operation_summary='已棄用。 送出註冊的內容',
         # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -164,6 +189,7 @@ class RegisterView(APIView):
         """
         前端打POST過來輸入好準備註冊
         """
+        print(request.data)
         try:
             # 只有在網站內post才會有_mutable的屬性，用POSTMAN無效。
             # pylint: disable=protected-access
@@ -174,7 +200,10 @@ class RegisterView(APIView):
         req_email = request.data["email"]
         print(req_email)
         if UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`email`="{req_email}");'):
-            return Response("帳號已經存在。")
+            data = {
+                'message' : '帳號已經存在'
+            }
+            return JsonResponse(data, status=status.HTTP_409_CONFLICT)
         while True:   # 生成一個8位不重複的id
             # tmp = int(random.random()*10**8)
             tmp = int("".join(random.choices("0123456789", k=8)))   # 生成一個8位的數字
@@ -214,22 +243,17 @@ class RegisterView(APIView):
                 'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=7),
                 'iat' : datetime.datetime.utcnow(),
             }
-            token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-
-            # 獲取模板渲染後的HTML結果
-            success_msg = 'CREATE ACCUNT SUCCESSFUL, YOU NEED TO CHEACK THE EMAIL TO VALIDATION.'
-            payload = {
-                'msg': success_msg, 
-                'email' : req_email
+            validaton_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+            data = {
+                'validaton_token' : validaton_token,
+                'message' : '註冊成功，請進入信箱驗證。'
             }
-            html = render(request, 'register_successful.html', payload).content.decode('utf-8')
-
-            # 透過Response返回HTML結果和設定的Cookie
-            response = Response(status=status.HTTP_201_CREATED)
-            response.content = html
-            response.set_cookie(key="Validation_cookie", value=token, httponly=True, max_age=3600)
+            response = JsonResponse(data, status=status.HTTP_201_CREATED)
             return response
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = {
+            'message' : '輸入的格式不符合要求',
+        }
+        return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
 # ---------------------------- 註冊 ----------------------------------------------
 
@@ -334,19 +358,27 @@ class LoginView(APIView):
     @swagger_auto_schema(
         operation_summary='獲得登入頁面',
     )
+    @loging_check2
     def get(self, request):
         """
         前端打GET過來想要進入網站
         """
-        token = request.COOKIES.get('access_token')
-        if token:
-            return redirect('./uchi')
-        else:
-            form = LoginForm()
-            context = {
-                'form' : form,
+        print(request.custom_data)
+        if request.custom_data['token']:
+            # 已經登入了
+            data = {
+                'message' : 'success',
+                'redirect': request.custom_data['redirect']
             }
-        return render(request, './login.html', context=context)
+            return JsonResponse(data, status=status.HTTP_200_OK)
+        else:
+            # 未登入 或 登入過期
+            data = {
+                'message' : '未登入',
+                'redirect': request.custom_data['redirect']
+            }
+            return JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+
     @swagger_auto_schema(
         operation_summary='送出登入的內容',
         # operation_description='我是說明',
@@ -368,6 +400,7 @@ class LoginView(APIView):
         """
         使用者登入的post
         """
+        print(request.META)
         # request.data是一個字典，裡面有所有傳入的東西。
         # 所以可以透過request.data.get('Email')來取得細部。
         # print(request.data)
@@ -414,15 +447,19 @@ class LoginView(APIView):
                     # 如果沒有 next 參數，重定向到默認頁面
                     # 即從一般的登入介面
                     print("沒有next參數。")
+                    resource = [
+                        '佈告欄', 
+                        '討論區',
+                        '學習中心',
+                        '線上聊天室',
+                        '個人資訊',
+                        ]
                     data = {
-                        'billboard':'佈告欄',
-                        'forum':'討論區',
-                        'study':'學習中心',
-                        'onlinechat':'線上聊天室',
-                        'ifm':'個人資訊',
+                        'resource' : resource,
                         'access_token' : access_token,
                         'refresh_token' : refresh_token
                     }
+
                     response = JsonResponse(data, status=status.HTTP_200_OK)
                     return response   # 待修正
             else:

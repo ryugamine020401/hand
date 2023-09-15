@@ -78,10 +78,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
     config('FONTEND_ORIGIN'),  # 允許的前端源頭
+    config('FONTEND_ORIGIN2'),  # 允許的前端源頭
 ]
 
 CORS_ALLOW_METHODS = [
@@ -90,6 +92,18 @@ CORS_ALLOW_METHODS = [
     "PUT",
     "PATCH",
     "DELETE",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
 ROOT_URLCONF = 'hand.urls'
