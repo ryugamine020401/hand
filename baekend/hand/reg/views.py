@@ -424,8 +424,6 @@ class LoginView(APIView):
                         'refresh_token' : refresh_token
                     }
                     response = JsonResponse(data, status=status.HTTP_200_OK)
-                    # response.set_cookie('access_token', access_token, max_age=3600, samesite=None)
-                    # response.set_cookie('refresh_token', refresh_token, max_age=3600, samesite=None)
                     return response   # 待修正
             else:
                 print("密碼錯誤")

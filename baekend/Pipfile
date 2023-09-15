@@ -13,10 +13,10 @@ djangorestframework = "==3.14.0"
 mediapipe = "==0.9.3.0"
 channels = "==3.0.5"
 channels-redis = "*"
-cvzone = "*"
 keras = "*"
 tensorflow = "*"
 drf-yasg = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
