@@ -84,13 +84,13 @@ def loging_check2(func):
             # print("msg :", "no token. @loging_check2")
             request.custom_data = {
                 'token' : False,
-                'redirect' : '/login' 
+                'redirect' : './login' 
             }
         else:
             # print("有token")
             request.custom_data = {
                 'token' : True,
-                'redirect' : '/uchi' 
+                'redirect' : '../uchi' 
             }
         result = func(req, request)
         return result
@@ -269,17 +269,26 @@ class RegisterValidationView(APIView):
         """
         當用戶註冊完成後得到驗證的網址所打的GET
         """
-        respomse = Response(status.HTTP_200_OK)
-        token = request.COOKIES.get('Validation_cookie')
-        if not token:
-            return Response({"ERROR":"UNFIND COOKIE, REJECT."})
-        respomse.data = {
-            'msg' : "123",
-            'msg2' : "456",
-            'msg3' : "789",
-        }
-        print(jwt.decode(token, SECRET_KEY, algorithms="HS256"))
-        return render(request, 'check.html', context=respomse.data)
+        auth = get_authorization_header(request).split()
+
+        if auth[1] == b'null':
+            data = {
+                'message' : '沒有token。'
+            }
+            response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+            return response
+        else:
+            respomse = Response(status.HTTP_200_OK)
+            token = request.COOKIES.get('Validation_cookie')
+            if not token:
+                return Response({"ERROR":"UNFIND COOKIE, REJECT."})
+            respomse.data = {
+                'msg' : "123",
+                'msg2' : "456",
+                'msg3' : "789",
+            }
+            print(jwt.decode(token, SECRET_KEY, algorithms="HS256"))
+            return render(request, 'check.html', context=respomse.data)
     @swagger_auto_schema(
         operation_summary='驗證使用者信箱',
     )
@@ -288,15 +297,23 @@ class RegisterValidationView(APIView):
         當用戶註冊完成後使用得到驗證碼進行驗證所打的POST
         直接抓取cookie方便在註冊完成後直接點及連結進行驗證
         """
+        auth = get_authorization_header(request).split()
         try:
-            # pylint: disable=protected-access
-            request.data._mutable=True
-        except ValueError as error_msg:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token。'
+                }
+                response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+                return response
+        except IndexError as error_msg:
             print(error_msg)
-        token = request.COOKIES.get('Validation_cookie')
-
-        if not token:
-            return Response({"ERROR":"UNFIND COOKIE, REJECT."})
+            data = {
+                'message' : '沒有header。'
+            }
+            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+            return response
+        token = auth[1]
+        # print(token)
         try:
             payload_validation = jwt.decode(token, SECRET_KEY, algorithms="HS256")
         except jwt.ExpiredSignatureError:
@@ -321,20 +338,23 @@ class RegisterValidationView(APIView):
                     }
                     email = f'{payload_validation["email"]}' # 包在jwt中的email
                     serializer.update(UserIfm.objects.get(email = email), payload)
-                    response = Response()
-                    response.data = {
-                            "validation" : " Successful, delete the cookie."
-                    }
-                    response.delete_cookie('Validation_cookie')
                     user_id = UserIfm.objects.get(email=request.data['email']).id
                     # 驗證成功後會生成使用者的預設個人資料
                     seri_data = {
-                            'describe' : '還沒有留言。',
+                            'describe' : '預設值空白留言。',
                             'user_id' : user_id,    # 先把數字送進去，之後再序列器內調整
                             'score' : 100.0
                         }
                     serializer = UserDefIfmSerializer(data=seri_data)
                     if serializer.is_valid() :
+                        user_instance = UserIfm.objects.get(id=user_id)
+                        access_token = creat_access_token(user_instance)
+                        data = {
+                            'message' : '驗證成功',
+                            'redirect' : '../uchi',
+                            'access_token' : access_token,
+                        }
+                        response = JsonResponse(data, status=status.HTTP_201_CREATED)
                         serializer.save()
                     else:
                         print("驗證沒有過QQ", serializer.errors)
@@ -343,12 +363,25 @@ class RegisterValidationView(APIView):
                     return Response('error,  資料格式錯誤。')
             else:
                 if payload_validation['email'] == db_email:
-                    return Response("Validation Fail, cuz u maybe already valdition.")
+                    data = {
+                            'message' : '已經驗證過了。',
+                            'redirect' : '../uchi'
+                        }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
                 else:
-                    return Response("Email Fail")
+                    data = {
+                            'message' : 'Email 錯誤請回報BUG並附上您的Email。',
+                        }
+                    response = JsonResponse(data, status=status.HTTP_410_GONE)
+                    return response
         except IndexError as error_msg:
             print(error_msg)
-            return Response("NO ACCUNT")    # 已經驗證過或沒有這筆資料導致 index out of range
+            data = {
+                'message' : '帳號不存在',
+            }
+            response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+            return response # 已經驗證過或沒有這筆資料導致 index out of range
 # ---------------------------- 註冊驗證 ------------------------------------------
 # ----------------------------- 登入 ---------------------------------------------
 class LoginView(APIView):
@@ -366,6 +399,7 @@ class LoginView(APIView):
         print(request.custom_data)
         if request.custom_data['token']:
             # 已經登入了
+            print(request.custom_data)
             data = {
                 'message' : 'success',
                 'redirect': request.custom_data['redirect']
