@@ -1,5 +1,5 @@
 // import { useRouter } from "next/router";
-
+import LoginState from "../components/loginstate"
 
 export default function Home(){
     // const msg = useMsg(); // 直接使用 useMsg 函數獲取 msg 值
@@ -11,13 +11,19 @@ export default function Home(){
 
     console.log('Data >>', {resource})
     return(
-        <section>
-            <div><h1>Home</h1></div>
-            <div>
-                {resource.map((item, index) => (
-                    <button key={index}>{item}</button>
-                ))}
-            </div>
-        </section>
+        <div>
+            <LoginState>
+                
+            </LoginState>
+            <section className = "fullscreen">
+                <div><h1>Home</h1></div>
+                <div>
+                    {resource.map((item, index) => (
+                        <button key={index}>{item}</button>
+                    ))}
+                </div>
+            </section>
+        </div>
+        
     );
 }

@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'drf_yasg',
-    'corsheaders',
+    'corsheaders', # REACT CORS問題處理
 
     'reg.apps.RegConfig',
     'ifm.apps.IfmConfig',
@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     'billboard.apps.BillboardConfig',
     'bugreport.apps.BugreportConfig',
 ]
-
-
+# 用來訪問SERVER的位置
+DOMAIN_NAME = config('DOMAIN_NAME')
 ASGI_APPLICATION = 'hand.asgi.application'
 
 MIDDLEWARE = [

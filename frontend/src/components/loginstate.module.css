@@ -1,0 +1,94 @@
+.HeaderContainer {
+    display: flex;
+    justify-content: space-between; /* 將子元素均勻分佈在容器中，水平對齊 */
+    align-items: center; /* 垂直居中對齊子元素 */
+    /* width: 100%; /* 設置網頁的寬度為 100% */
+    /*height: 60px; 設置容器的高度為 100px，你可以調整這個值 */
+    background-color: rgba(60, 60, 60, 1);
+    padding-right: 5px;
+    /* min-width: 480px; /* 設置網頁的最大寬度為 1200 像素 */
+    /* min-heig: 1080px; /* 設置網頁的最大寬度為 1200 像素 */
+    margin: 0 auto; /* 水平居中對齊網頁內容 */
+}
+
+.HeaderContainer_1 {
+    padding: 1px;
+    margin-right: auto; /* 將 HeaderContainer_1 靠左，並且自動填充剩餘空間 */
+}
+
+.HeaderContainer_2 {
+    
+}
+
+.HeaderContainer_3 {
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 10px 0;
+}
+
+.HeaderContainer_4 {
+    padding-left : 5px;
+    padding-right : 5px;
+}
+
+.HeadImage {
+    max-width: 100%; /* 確保圖片不會超出容器的大小 */
+    height: auto; /* 讓圖片的高度自動調整以保持原始比例 */
+    object-fit: cover;
+}
+.HeadImage:hover{
+    cursor: pointer; /* 改變滑鼠游標 */
+}
+.LOGOcontainer {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding-left: 2%;
+}
+
+.LOGOcontainer2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 4px;
+    white-space: nowrap;
+}
+#loginbuttom {
+    border: 1px solid black;
+    margin: 0px 10px;   /* 上 下 */
+    padding: 4px 8px;   /* 上 下 */
+    border-radius: 10px;
+}
+
+#loginbuttom:hover { 
+    
+    background-color: rgb(117, 117, 117);
+    cursor: pointer; /* 改變滑鼠游標 */
+}
+
+
+.overlayContainer {
+    
+    position: absolute;
+    top: 55px; /* 選單出現在圖片的下方 */
+    right: 50px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+  }
+  
+.overlayBox {
+    width: 160px;
+    background-color: rgb(152, 38, 38);
+    border: 1px solid #be1818;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);*/ 
+    z-index: 999; /* 設定 z-index 以控制堆疊順序，數字越大越在最上層 */
+}
+
+.UL {
+    padding: 30px;
+}

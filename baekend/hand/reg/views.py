@@ -22,17 +22,20 @@ from rest_framework.views import APIView
 from rest_framework import status
 import rest_framework.exceptions
 
-from reg.forms import RegisterForm, LoginForm, ResetPasswordForm, EmailCheckForm, DeleteForm
+from reg.forms import RegisterForm, ResetPasswordForm, EmailCheckForm, DeleteForm
 from reg.forms import ForgetPasswordForm, ResetForgetPasswordForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
 
+from ifm.models import UserDefIfm
 from ifm.serializers import UserDefIfmSerializer
 
 
 from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY
 from hand.settings import ROOT_EMAIL
+
+from hand.settings import DOMAIN_NAME   # 用來生成訪問圖像的網址
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -78,22 +81,29 @@ def loging_check2(func):
     def wrapper(req, request):
         auth = get_authorization_header(request).split()
         # print(auth, type(auth[1]))
-
-        if auth[1] == b'null':
-            # return Response({"msg":"no header."})
-            # print("msg :", "no token. @loging_check2")
-            request.custom_data = {
-                'token' : False,
-                'redirect' : './login' 
+        try:
+            if auth[1] == b'null':
+                request.custom_data = {
+                    'token' : False,
+                    'redirect' : './login' 
+                }
+            else:
+                # print("有token")
+                token = decode_access_token(auth[1])
+                print(token)
+                request.custom_data = {
+                    'token' : True,
+                    'redirect' : '../uchi' 
+                }
+            result = func(req, request)
+            return result
+        except IndexError as error_msg:
+            print('裝飾器 @loging_check2 發生 ',error_msg)
+            data = {
+                'message' : '沒有Authorization'
             }
-        else:
-            # print("有token")
-            request.custom_data = {
-                'token' : True,
-                'redirect' : '../uchi' 
-            }
-        result = func(req, request)
-        return result
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
     return wrapper
 # ------------------------- 登入驗證裝飾器(header) ------------------------------
 
@@ -121,17 +131,59 @@ def root_check(func):
     return wrapper
 # ------------------------- root驗證裝飾器 ------------------------------
 
-# ------------------------- test ------------------------------
-@loging_check
-def index(request):
+# ---------------------------- 登入狀態確認 -------------------
+class LoginCheckAPIView(APIView):
     """
-    測試用的w
+    登入狀態的認證api 每一頁登入時會再狀態列顯示是否登入
     """
-    print(UserIfm.objects.get(id=6333890))
-    print(request)
-    return HttpResponse("My First Django APP Page")
-# ------------------------- test ------------------------------
-
+    def post(self, request):
+        """
+        會在用戶切換頁面時自動發送post到這個api
+        """
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] != b'null':
+                token_payload = decode_access_token(auth[1])
+                if UserIfm.objects.get(id=token_payload['id']):
+                    # 登入狀態正常
+                    instance = UserIfm.objects.get(id=token_payload['id'])
+                    img_url = DOMAIN_NAME+'/ifm'
+                    img_url += UserDefIfm.objects.get(user_id=token_payload['id']).headimg.url
+                    data = {
+                        'loginstatus' : True,
+                        'buttom_word' : f' {instance.username} 您好',   # 登入後單純傳文字
+                        'headimgurl' : img_url,
+                    }
+                    response =JsonResponse(data, status=status.HTTP_202_ACCEPTED)
+                    return response
+                else:
+                    # 沒有登入狀態
+                    data = {
+                        'loginstatus' : False,
+                        'buttom_word' : '登入',
+                        'message' : '找不到用戶註冊資源。',
+                    }
+                    response =JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+                    return response
+            else:
+                # header有Authorization但沒有內容物
+                data = {
+                    'loginstatus': False,
+                    'buttom_word' : '登入',      # buttom顯示的文字
+                    'message' :'找不到token。'
+                }
+                response =JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+                return response
+        except IndexError as error_msg:
+            data = {
+                    'loginstatus': False,
+                    'buttom_word' : '登入',      # buttom顯示的文字
+                    'message' : '缺少Authorization',
+            }
+            response =JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            print(error_msg)
+            return response
+# ---------------------------- 登入狀態確認 -------------------
 # ---------------------------- 註冊 ----------------------------------------------
 class RegisterView(APIView):
     """
@@ -495,7 +547,7 @@ class LoginView(APIView):
                     }
 
                     response = JsonResponse(data, status=status.HTTP_200_OK)
-                    return response   # 待修正
+                    return response
             else:
                 print("密碼錯誤")
                 data = {
@@ -1013,7 +1065,7 @@ def decode_access_token(token):
         return {'email' : payload['email'], 'id' : payload['id'], 'val' : payload['val']}
     except Exception as error_msg:
         print(error_msg)
-        text = "Forbidden, Signature has expired. TOKEN過期了。"
+        text = "Forbidden, Signature has expired. TOKEN過期或沒有。"
         raise rest_framework.exceptions.AuthenticationFailed(text)
 
 def decode_refresh_token(token):

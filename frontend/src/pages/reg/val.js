@@ -19,7 +19,7 @@ export default function CountdownTimer() {
         }
         }, 1000);
         
-        return () => {
+            return () => {
             clearInterval(countdownInterval); // 在組件卸載時停止計時器
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -27,39 +27,39 @@ export default function CountdownTimer() {
 
     const sendPostRequest = async () => {
         try {
-        // 執行POST請求到指定的網址
-        const validaton_token = localStorage.getItem('validaton_token');
-        const response = await fetch("http://127.0.0.1:8000/reg/val", {
-            
-            method: "POST",
-            headers:{
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${validaton_token}`,
-            },
-            // 添加需要的請求標頭和數據
-        });
+            // 執行POST請求到指定的網址
+            const validaton_token = localStorage.getItem('validaton_token');
+            const response = await fetch("http://127.0.0.1:8000/reg/val", {
+                
+                method: "POST",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${validaton_token}`,
+                },
+                // 添加需要的請求標頭和數據
+            });
 
-        if (response.status === 200) {
-            // POST請求成功，執行你的成功操作
-            setMessage("POST請求成功！");
-        } else if(response.status === 201) {
-            // 伺服器建立使用者鄉資訊並驗證完成
-            const responseData = await response.json()
-            setMessage(`驗證成功！${responseData.message}`);
-            localStorage.setItem('access_token', response.access_token)
-            localStorage.clear('access_token')
-            router.push(responseData.redirect)
-        } else if(response.status === 302) {
-            // 已經驗證過，請求跳轉。
-            const responseData = await response.json()
-            localStorage.clear('validaton_token')
-            router.push(responseData.redirect)
-        } else {
-            // POST請求失敗，處理錯誤情況
-            const responseData = await response.json()
-            setMessage(`POST請求失敗！${responseData.message}`);
-            // console.log(responseData.message)
-        }
+            if (response.status === 200) {
+                // POST請求成功，執行你的成功操作
+                setMessage("POST請求成功！");
+            } else if(response.status === 201) {
+                // 伺服器建立使用者鄉資訊並驗證完成
+                const responseData = await response.json()
+                setMessage(`驗證成功！${responseData.message}`);
+                localStorage.setItem('access_token', response.access_token)
+                localStorage.clear('access_token')
+                router.push(responseData.redirect)
+            } else if(response.status === 302) {
+                // 已經驗證過，請求跳轉。
+                const responseData = await response.json()
+                localStorage.clear('validaton_token')
+                router.push(responseData.redirect)
+            } else {
+                // POST請求失敗，處理錯誤情況
+                const responseData = await response.json()
+                setMessage(`POST請求失敗！${responseData.message}`);
+                // console.log(responseData.message)
+            }
         } catch (error) {
         // 處理錯誤情況
         console.error(error);

@@ -9,6 +9,7 @@ from reg.views import LoginView, PasswordResetViews, ResetPasswordAPIView
 from reg.views import DeleteUserIfmView, LogoutAPIView, HomePageView
 from reg.views import ForgetPasswordView, ForgetPasswordValNumResendAPIView
 from reg.views import EmailValdationView, EmailReSendView
+from reg.views import LoginCheckAPIView
 
 urlpatterns = [
     path('register', RegisterView.as_view(), name='Register'),
@@ -23,4 +24,5 @@ urlpatterns = [
     path('api/emailresend', EmailReSendView.as_view(), name='EmailReSend'),
     path('api/forgetpwdvalresend', ForgetPasswordValNumResendAPIView.as_view(), name = 'ForgetPasswordValNumResend'),
     path('api/resetpassword', ResetPasswordAPIView.as_view(), name = 'ResetPasswordAPI'),
+    path('api/logincheck', LoginCheckAPIView.as_view(), name='LoginCheckAPI')
 ]

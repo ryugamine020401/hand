@@ -1,0 +1,27 @@
+#buttonmncontainer {
+    
+    align-items: center;
+    justify-content: center;
+    padding-right: 4px;
+    white-space: nowrap;
+    
+
+}
+#button {
+    width: 75%;
+    height: 75%;
+    font-size: 40px;
+    border: 1px solid rgba(241, 233, 233, 0);
+    margin: 0px 25px;   /* 上 下 */
+    padding: 8px 16px;   /* 上 下 */
+    border-radius: 10px;
+    background-color: rgba(156, 32, 156, 0.429);
+}
+#button:hover{
+    background-color: rgb(117, 117, 117);
+    cursor: pointer; /* 改變滑鼠游標 */
+}
+
+.body {
+    height: 1000px;
+}

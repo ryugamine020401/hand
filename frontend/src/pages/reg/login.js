@@ -1,6 +1,7 @@
 import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
+import Link from "next/link";
 
 export default function Ifm({ data, done, access_token, refresh_token }) {
   const [email, setEmail] = useState("");
@@ -30,7 +31,10 @@ export default function Ifm({ data, done, access_token, refresh_token }) {
         } else {
           // 處理 GET 請求失敗的情況
           const responseData = await response.json();
-          
+          if(response.status === 403){
+            localStorage.clear('access_token');
+            localStorage.clear('refresh_token');
+          }
         }
       } catch (error) {
         // 處理 GET 請求時的錯誤
@@ -99,27 +103,29 @@ const handleSubmit = async (e) => {
     </Head>
     <h1>登入</h1>
     <form action="http://localhost:8000/reg/login" method="POST" onSubmit={handleSubmit}>
-    <label htmlFor="email">Email:</label>
-    <input
-    type="text"
-    id="email"
-    name="email"
-    required
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    />
-    <br />
-    <label htmlFor="password">Password:</label>
-    <input
-    type="password"
-    id="password"
-    name="password"
-    required
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    />
-    <br />
-    <button type="submit">點擊登入</button>
+      <label htmlFor="email">Email:</label>
+      <input
+      type="text"
+      id="email"
+      name="email"
+      required
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      />
+      <br />
+      <label htmlFor="password">Password:</label>
+      <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      />
+      <br />
+      <Link href={'./reg'}>沒有帳號?</Link><Link href={'./forgetpassword'}>忘記密碼?</Link>
+      <br />
+      <button type="submit">點擊登入</button>
     </form>
 
     {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}

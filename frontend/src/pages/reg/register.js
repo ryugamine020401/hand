@@ -142,7 +142,7 @@ export default function Register() {
           onChange={(e) => setBirthday(e.target.value)}
         />
         <br />
-        <button type="submit">點擊登入</button>
+        <button type="submit">點擊註冊</button>
       </form>
       
       {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
