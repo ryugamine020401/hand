@@ -7,7 +7,7 @@ export default function Register() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");   // 第一次密碼
     const [password_check, setPassword_Check] = useState("");   // 確認密碼
-    const [passwordsLegth, setpasswordsLegth] = useState(false); // 用於檢查密碼匹配
+    const [passwordsLegth, setpasswordsLegth] = useState(false); // 用於檢查密碼長度
     const [passwordsMatch, setPasswordsMatch] = useState(false); // 用於檢查密碼匹配
     const [errorMessage, setErrorMessage] = useState("");
     const [birthday, setBirthday] = useState(""); 
@@ -19,8 +19,11 @@ export default function Register() {
         const confirmPassword = e.target.value;
         setPassword(confirmPassword);
         setPasswordsMatch(false)
-        const isPasswordMatch = confirmPassword.length >= 6;
-        setpasswordsLegth(isPasswordMatch);
+        const isPasswordLegthEnought = confirmPassword.length >= 6;
+        setpasswordsLegth(isPasswordLegthEnought);
+		    const isPasswordMatch = confirmPassword === password_check && confirmPassword.length >= 6;
+        setPasswordsMatch(isPasswordMatch);
+        
     };
 
     // 在password和password_check改變時檢查密碼是否匹配

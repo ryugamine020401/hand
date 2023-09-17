@@ -148,7 +148,15 @@ class LoginCheckAPIView(APIView):
                     # 登入狀態正常
                     instance = UserIfm.objects.get(id=token_payload['id'])
                     img_url = DOMAIN_NAME+'/ifm'
-                    img_url += UserDefIfm.objects.get(user_id=token_payload['id']).headimg.url
+                    try:
+                        img_url += UserDefIfm.objects.get(user_id=token_payload['id']).headimg.url
+                    except UserDefIfm.DoesNotExist as error:    # pylint: disable=E1101
+                        print(error)
+                        data = {
+                            'message':'沒有驗證',
+                        }
+                        response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+                        return response
                     data = {
                         'loginstatus' : True,
                         'buttom_word' : f' {instance.username} 您好',   # 登入後單純傳文字
@@ -587,7 +595,7 @@ class LogoutAPIView(APIView):
 # ---------------------------- 忘記密碼 ------------------------------------------
 class ForgetPasswordView(APIView):
     """
-    處理使用者忘記密碼時的操作。
+    處理使用者忘記密碼時的操作。 已棄用
     """
     @swagger_auto_schema(
         operation_summary='獲得忘記密碼頁面',
@@ -623,7 +631,9 @@ class ForgetPasswordView(APIView):
     )
     def post(self, request):
         """
-        驗證完成功後進入修改密碼
+        忘記密碼頁面
+        送出驗證碼並成功後進入修改密碼頁面後
+        送出最後修改的密碼
         """
         email = request.data['email']
         form = ResetForgetPasswordForm(initial={"email":email})
@@ -639,10 +649,11 @@ class ForgetPasswordView(APIView):
         html = render(request, 'forget_password_reset.html', payload).content.decode('utf-8')
         response.content = html
         return response
-# --------------- email重新寄送api ---------------
+# --------------- 忘記密碼的email寄送api --------------- OK
 class ForgetPasswordValNumResendAPIView(APIView):
     """
-    重新寄送使用者忘記密碼時註冊郵件
+    重新寄送使用者忘記密碼時填寫的郵件
+    必須是已經註冊過的。
     """
     @swagger_auto_schema(
         operation_summary='忘記密碼需要信箱驗證',
@@ -659,14 +670,18 @@ class ForgetPasswordValNumResendAPIView(APIView):
     )
     def post(self, request):
         """
-        POST使後端重新寄送驗證信，需要帶有access token.
+        POST使後端重新寄送驗證信.
         """
         email = request.data['email']
         try:
             instance = UserIfm.objects.get(email=email)
         except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
             print("使用者不存在", error_msg)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            data = {
+                'message' : '使用者不存在'
+            }
+            response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+            return response
         instance.validation = False
         instance.validation_num = "".join(random.choices("0123456789", k=6))
         instance.save()
@@ -687,24 +702,67 @@ class ForgetPasswordValNumResendAPIView(APIView):
             email.send()
         except OSError as error_msg:
             print(error_msg)
-        # response = HttpResponseRedirect('../forgetpassword')
-        # return response
-        form = ForgetPasswordForm(initial={"email":request.data['email']})
-        payload = {
-            "form" : form,
-            "email" : email
+            data = {
+                'message' : '郵件發送失敗，請回報。'
+            }
+            response = JsonResponse(data, status= status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return response
+        data = {
+            'message' : '郵件發送成功。'
         }
-        response = Response(status=status.HTTP_200_OK)
-        access_token = creat_access_token(instance)
-        response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=3600)
-        html = render(request, 'forget_password.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
 # --------------- email重新寄送 ---------------
+# ------------ 忘記密碼的驗證API --------------
+class ValdataeAPIViwe(APIView):
+    """
+    到忘記密碼頁面獲得驗證碼後需要驗證是否正確
+    的API
+    """
+    def post(self, request):
+        """
+        只允許前端伺服器POST到後端伺服器。
+        """
+        print(request.data)
+        email = request.data['email']
+        try:
+            if email == "":
+                data = {
+                    'message': "請輸入電子郵件"
+                }
+                response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+                return response
+            instance = UserIfm.objects.get(email=email)
+        except UserIfm.DoesNotExist as error:    # pylint: disable=E1101
+            print(error, 'ValdataeAPIViwe')
+            data = {
+                'message' : '沒有這個使用者',
+            }
+            response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+            return response
+        if instance.validation_num == int(request.data['validationNum']):
+            data = {
+                'message' : '驗證成功，跳轉至修改密碼的頁面。',
+                'redirect' : './forgetpassword_reset',
+                'email' : email,
+            }
+            response = JsonResponse(data, status=status.HTTP_200_OK)
+            return response
+        else :
+            print(instance.validation_num, request.data['validationNum'])
+            print(type(instance.validation_num), type(request.data['validationNum']))
+            data = {
+                'message' : '驗證失敗，請輸入正確的驗證碼。',
+                'redirect' : './',
+            }
+            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+            return response
+# ------------ 忘記密碼的驗證API --------------
 # --------------- 修改密碼 --------------------
 class ResetPasswordAPIView(APIView):
     """
-    忘記密碼驗證完後方可修改。
+    忘記密碼時送出的驗證碼
+    接收該驗證碼並確認是否正確的API。
     """
     @swagger_auto_schema(
         operation_summary='忘記密碼的重設密碼',
@@ -728,13 +786,18 @@ class ResetPasswordAPIView(APIView):
         使用者輸入密碼後POST儲存
         """
         email = request.data['email']
-        password = request.data['password1']
+        password = request.data['password']
         instance = UserIfm.objects.get(email = email)
         password += str(instance.id)
         instance.password = sha512(password.encode('UTF-8')).hexdigest()
         instance.save()
         # print(password, instance)
-        return Response(status=status.HTTP_202_ACCEPTED)
+        data = {
+            'message':'密碼修改成功',
+            'redirect':'./login'
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
 # --------------- 修改密碼 --------------------
 # ---------------------------- 忘記密碼 ------------------------------------------
 

@@ -35,23 +35,29 @@ export default function LoginState({children}) {
                 console.log(responseData.headimgurl);
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
-                setHeadImgURL(responseData.headimgurl)
+                setHeadImgURL(responseData.headimgurl);
             } else {
                 // 驗證失敗，無登入狀態或過期。
                 const responseData = await response.json();
                 if ( response.status === 403){
                     console.log(responseData.detail);
                     setButtommsg("登入");
-                } else{
+                } else if (response.status === 401) {
+                    console.log(responseData.message, '帳號沒有驗證');
+                    localStorage.clear('access_token');
+                    localStorage.clear('refresh_token');
+                } else {
                     console.log(responseData.message)
                 }
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
-                setHeadImgURL('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png')
+                setHeadImgURL('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png');
             }
         } catch(error) {
-            console.log('有錯')
+            
+            console.log('有錯');
             console.log(error);
+            
         }
 
     };

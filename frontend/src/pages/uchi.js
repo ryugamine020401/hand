@@ -1,4 +1,5 @@
 // import { useRouter } from "next/router";
+import { useEffect } from "react";
 import LoginState from "../components/loginstate"
 
 export default function Home(){
@@ -7,7 +8,7 @@ export default function Home(){
     // resource是一個list
     // const resource = JSON.parse(router.query.resource || "{}"); // 解析數據
     const resource = ['佈告欄', '討論區', '學習中心', '線上聊天室', '個人資訊']
-
+    
 
     console.log('Data >>', {resource})
     return(
