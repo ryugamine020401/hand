@@ -101,6 +101,50 @@ class IfmViewTestReact(APIView):
         
 # ------------------------------------------------------------------- -React Test -------------------------------------------
 # ------------------------------登入後的功能------------------------------
+# --------------- 獲取個人資訊 ----------------
+class UserInformationAPIViwe(APIView):
+    """
+    獲得使用者資料的API
+    需要有jwt的驗證
+    """
+    def get(self, request):
+        """
+        前端進入個人資訊業面會自動打過來。
+        """
+        auth = get_authorization_header(request).split()
+        print(auth)
+        try:
+            if auth[1] == b'null':
+                
+                print("header內沒有token(但有Authorization)", 'UserInformationAPIViwe')
+                data = {
+                    'message' : 'header內沒有token(但有Authorization).'
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'UserInformationAPIViwe')
+            data = {
+                    'message' : '沒有Authorization.'
+                }
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        instance = UserDefIfm.objects.get(user_id = token_payload['id'])
+        headimageurl = f'http://127.0.0.1:8000/ifm{instance.headimg.url}'
+        data = {
+            'message': "成功獲得",
+            "username" : UserIfm.objects.get(id = token_payload['id']).username,
+            "headimageurl" : headimageurl,
+            "describe" : instance.describe,
+        }
+
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+# --------------- 獲取個人資訊 ----------------
+
 class IfmView(APIView):
     """
     使用者查看、修改自己個人資訊

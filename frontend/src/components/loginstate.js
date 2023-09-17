@@ -4,7 +4,7 @@ import Style from './loginstate.module.css';
 import { useRouter } from 'next/router';
 import OverlayBox from './overlay'
 
-export default function LoginState({children}) {
+export default function LoginState({children, profilePath, resetPasswordPath, logoutPath}) {
     const [logincheck, setLogincheck] = useState(false);
     const [headimgurl, setHeadImgURL] = useState(false)
     const [buttommsg, setButtommsg] = useState("")
@@ -44,8 +44,9 @@ export default function LoginState({children}) {
                     setButtommsg("登入");
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
-                    localStorage.clear('access_token');
-                    localStorage.clear('refresh_token');
+                    router.push('./reg/valemail');
+                    // localStorage.clear('access_token');
+                    // localStorage.clear('refresh_token');
                 } else {
                     console.log(responseData.message)
                 }
@@ -102,7 +103,12 @@ export default function LoginState({children}) {
                 
                 </header>
                 <h1>登入</h1>
-                {showOverlay && <OverlayBox></OverlayBox>}
+                {showOverlay && 
+                <OverlayBox
+                    profilePath={profilePath}
+                    resetPasswordPath={resetPasswordPath}
+                    logoutPath={logoutPath}
+                />}
             </>
 
             ):(

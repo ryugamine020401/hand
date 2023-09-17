@@ -123,7 +123,7 @@ const handleSubmit = async (e) => {
       onChange={(e) => setPassword(e.target.value)}
       />
       <br />
-      <Link href={'./reg'}>沒有帳號?</Link><Link href={'./forgetpassword'}>忘記密碼?</Link>
+      <Link href={'./register'}>沒有帳號?</Link><Link href={'./forgetpassword'}>忘記密碼?</Link>
       <br />
       <button type="submit">點擊登入</button>
     </form>

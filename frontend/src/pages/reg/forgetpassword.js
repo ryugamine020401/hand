@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ButtonStyle from "./button.module.css";
+import Head from "next/head";
 /*
 	未登入使用者忘記密碼，跳轉到此頁面可以輸入信箱寄出驗證碼驗證
 
 */
 export default function ForgetPassword() {
-    const [email, setEmail] = useState("liwebeasdn483@twasdugg.com");
+    const [email, setEmail] = useState("");
     const [validationNum, setValidationNum] = useState("");
     const [message, setMessage] = useState("");
 	const [ErrorMessage, setErrorMessage] = useState("");
     const [countdown, setCountdown] = useState(60);
     const [buttonEnabled, setButtonEnabled] = useState(true);
-	const [valSuccess, setValSuccess] = useState(true);
+	const [valSuccess, setValSuccess] = useState(false);
 
 	/* 已經驗證完後需要的 */
 	const [password, setPassword] = useState("");   // 第一次密碼
@@ -70,19 +71,19 @@ export default function ForgetPassword() {
 		let countdownInterval;
 
 		if (countdown > 0 && !buttonEnabled) {
-		countdownInterval = setInterval(() => {
-			setCountdown(countdown - 1);
-			setMessage(`您還有 ${countdown-1} 秒可以重新寄送郵件。`);
-		}, 1000);
+			countdownInterval = setInterval(() => {
+				setCountdown(countdown - 1);
+				setMessage(`您還有 ${countdown-1} 秒可以重新寄送郵件。`);
+			}, 1000);
 		} else {
-		clearInterval(countdownInterval);
-		setButtonEnabled(true);
-		setCountdown(60);
-		setMessage(`您還有 ${countdown} 秒可以重新寄送郵件。`);
+			clearInterval(countdownInterval);
+			setButtonEnabled(true);
+			setCountdown(60);
+			setMessage(`您還有 ${countdown} 秒可以重新寄送郵件。`);
 		}
 
 		return () => {
-		clearInterval(countdownInterval);
+			clearInterval(countdownInterval);
 		};
 	}, [countdown, buttonEnabled]);
 
@@ -154,6 +155,9 @@ export default function ForgetPassword() {
 
   return (
     <>
+	<Head>
+		<title>忘記密碼</title>
+	</Head>
 	  {!valSuccess && <div className="novaldate">
 		<h1>忘記密碼</h1>
 		<label htmlFor="email">Email:</label>

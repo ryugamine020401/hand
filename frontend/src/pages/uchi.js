@@ -1,6 +1,7 @@
 // import { useRouter } from "next/router";
 import { useEffect } from "react";
 import LoginState from "../components/loginstate"
+import Head from "next/head";
 
 export default function Home(){
     // const msg = useMsg(); // 直接使用 useMsg 函數獲取 msg 值
@@ -13,9 +14,14 @@ export default function Home(){
     console.log('Data >>', {resource})
     return(
         <div>
-            <LoginState>
-                
-            </LoginState>
+            <Head>
+                <title>首頁</title>
+            </Head>
+            <LoginState
+                profilePath="./ifm"
+                resetPasswordPath="./reg/resetpassword"
+                logoutPath="./uchi"
+            />
             <section className = "fullscreen">
                 <div><h1>Home</h1></div>
                 <div>

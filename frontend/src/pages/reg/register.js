@@ -55,7 +55,7 @@ export default function Register() {
             method: "POST",
             body: JSON.stringify({ username, email, password, password_check, birthday }),
             headers: {
-            "Content-Type": "application/json",
+            	"Content-Type": "application/json",
             },
         });
 
@@ -94,7 +94,7 @@ export default function Register() {
             <meta name="register" content="使用者註冊的頁面" />
         </Head>
       <form action="http://localhost:8000/reg/login" method="POST" onSubmit={handleSubmit}>
-        <h1>登入</h1>
+        <h1>註冊帳號</h1>
         <label htmlFor="username">使用者暱稱:</label>
         <input
           type="text"

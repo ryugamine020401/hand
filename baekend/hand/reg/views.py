@@ -9,7 +9,7 @@ import jwt
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -36,13 +36,13 @@ from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KE
 from hand.settings import ROOT_EMAIL
 
 from hand.settings import DOMAIN_NAME   # 用來生成訪問圖像的網址
-# ------------------------- 登入驗證裝飾器 ------------------------------
+# ------------------------- 登入驗證裝飾器 ------------------------------ 
 def loging_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
     def wrapper(req, request):
-        print(request.META)
+        # print(request.META)
         token = request.COOKIES.get('access_token')
         if not token:
             data = {
@@ -494,7 +494,7 @@ class LoginView(APIView):
         """
         使用者登入的post
         """
-        print(request.META)
+        # print(request.META)
         # request.data是一個字典，裡面有所有傳入的東西。
         # 所以可以透過request.data.get('Email')來取得細部。
         # print(request.data)
@@ -518,44 +518,22 @@ class LoginView(APIView):
                 # 如果帳號正確
                 access_token = creat_access_token(db_data)
                 refresh_token = creat_refresh_token(db_data)
-                response = Response()
-                next_url = request.GET.get('next')
-                response.data = {
-                    'Status' : "SUCCESSUFL LOGIN",    
+                print("沒有next參數。")
+                resource = [
+                    '佈告欄', 
+                    '討論區',
+                    '學習中心',
+                    '線上聊天室',
+                    '個人資訊',
+                    ]
+                data = {
+                    'resource' : resource,
+                    'access_token' : access_token,
+                    'refresh_token' : refresh_token
                 }
-                payload = {
-                    'accesstoken' : access_token,
-                    'next_url' : next_url
-                }
-                #                   key=,            value=,
-                response.set_cookie('access_token', access_token, httponly=True, max_age=3600)
-                response.set_cookie('refresh_token', refresh_token, httponly=True, max_age=604800)
-                html = render(request, 'login_successful.html', payload).content.decode('utf-8')
-                # print('access_token : ', access_token, 'refresh_token : ', refresh_token)
-                response.content = html
 
-                if (next_url and next_url != '/reg/login'):
-                    print('有next_url', next_url)
-                    return response
-                else:
-                    # 如果沒有 next 參數，重定向到默認頁面
-                    # 即從一般的登入介面
-                    print("沒有next參數。")
-                    resource = [
-                        '佈告欄', 
-                        '討論區',
-                        '學習中心',
-                        '線上聊天室',
-                        '個人資訊',
-                        ]
-                    data = {
-                        'resource' : resource,
-                        'access_token' : access_token,
-                        'refresh_token' : refresh_token
-                    }
-
-                    response = JsonResponse(data, status=status.HTTP_200_OK)
-                    return response
+                response = JsonResponse(data, status=status.HTTP_200_OK)
+                return response
             else:
                 print("密碼錯誤")
                 data = {
@@ -593,62 +571,6 @@ class LogoutAPIView(APIView):
 
 
 # ---------------------------- 忘記密碼 ------------------------------------------
-class ForgetPasswordView(APIView):
-    """
-    處理使用者忘記密碼時的操作。 已棄用
-    """
-    @swagger_auto_schema(
-        operation_summary='獲得忘記密碼頁面',
-    )
-    def get(self, request):
-        """
-        在登入時選擇忘記密碼所跳轉的頁面
-        """
-        form = ForgetPasswordForm()
-        payload = {
-            "form" : form,
-        }
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'forget_password.html', payload).content.decode('utf-8')
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='忘記密碼',
-        # operation_description='我是說明',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'email': openapi.Schema(
-                    type=openapi.FORMAT_EMAIL,
-                    description='User Email'
-                ),
-                'valdation_num': openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='驗證碼'
-                ),
-            }
-        )
-    )
-    def post(self, request):
-        """
-        忘記密碼頁面
-        送出驗證碼並成功後進入修改密碼頁面後
-        送出最後修改的密碼
-        """
-        email = request.data['email']
-        form = ResetForgetPasswordForm(initial={"email":email})
-        payload = {
-            "form" : form,
-            "email" : email
-        }
-        instance = UserIfm.objects.get(email=email)
-        instance.validation = True
-        instance.validation_num = -1
-        instance.save()
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'forget_password_reset.html', payload).content.decode('utf-8')
-        response.content = html
-        return response
 # --------------- 忘記密碼的email寄送api --------------- OK
 class ForgetPasswordValNumResendAPIView(APIView):
     """
@@ -724,7 +646,29 @@ class ValdataeAPIViwe(APIView):
         只允許前端伺服器POST到後端伺服器。
         """
         print(request.data)
-        email = request.data['email']
+        try:
+            email = request.data['email']
+        except KeyError as error_msg:
+            print(error_msg, ValdataeAPIViwe)
+            auth = get_authorization_header(request).split()
+            try:
+                token = auth[1]
+                if auth[1] == b'null':
+                    data ={
+                        'message' : '不正確的token.'
+                    }
+                    response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+                    return response
+                else:
+                    email = decode_access_token(token=token)['email']
+            except IndexError as error_msg2:
+                print(error_msg2, ValdataeAPIViwe)
+                data ={
+                    'message' : '沒有Header'
+                }
+                response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+                return response
+
         try:
             if email == "":
                 data = {
@@ -743,11 +687,34 @@ class ValdataeAPIViwe(APIView):
         if instance.validation_num == int(request.data['validationNum']):
             data = {
                 'message' : '驗證成功，跳轉至修改密碼的頁面。',
-                'redirect' : './forgetpassword_reset',
                 'email' : email,
             }
+            instance = UserIfm.objects.get(email=email)
+            instance.validation_num = -1
+            instance.validation = True
+            instance.save()
             response = JsonResponse(data, status=status.HTTP_200_OK)
-            return response
+            # 驗證成功後不會產生相對應的userdefifm表格，所以要在這邊產生
+            try:
+                # 帳號已經存在，不需要增加欄位
+                _ = UserDefIfm.objects.get(user_id=instance.id)    # 檢查是否存在實例
+                return response
+            except UserDefIfm.DoesNotExist as error: #pylint: disable=E1101
+                # 帳號不存在所以要新增欄位。
+                print(error, ValdataeAPIViwe)
+                user_id = instance.id
+                seri_data = {
+                        'describe' : '預設值空白留言。',
+                        'user_id' : user_id,    # 先把數字送進去，之後再序列器內調整
+                        'score' : 100.0
+                    }
+                serializer = UserDefIfmSerializer(data=seri_data)
+                if serializer.is_valid() :
+                    serializer.save()
+                else:
+                    print("驗證沒有過QQ", serializer.errors)
+                return response
+
         else :
             print(instance.validation_num, request.data['validationNum'])
             print(type(instance.validation_num), type(request.data['validationNum']))
@@ -805,7 +772,7 @@ class ResetPasswordAPIView(APIView):
 # ---------------------------- 重設密碼 ------------------------------------------
 class PasswordResetViews(APIView):
     """
-    使用者重設密碼的視圖
+    使用者重設密碼的視圖 已棄用。
     """
     @swagger_auto_schema(
         operation_summary='重設密碼',
@@ -868,80 +835,7 @@ class PasswordResetViews(APIView):
 # ---------------------------- 重設密碼 ------------------------------------------
 
 # ------------------------- email驗證 ------------------------------
-class EmailValdationView(APIView):
-    """
-    可以拿到驗證信箱的畫面
-    """
-    @swagger_auto_schema(
-        operation_summary='信箱驗證',
-    )
-    def get(self, request):
-        """
-        可以得到驗證的頁面
-        """
-        form = EmailCheckForm
-        payload = {
-            "form" : form
-        }
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='驗證信箱',
-        # operation_description='我是說明',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'valdation_num': openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='User Email'
-                ),
-            }
-        )
-    )
-    def post(self, request):
-        """
-        用來送出驗證碼
-        """
-        token = request.COOKIES.get('access_token')
-        # print(token)
-        if not token:
-            print(request.data['validation_num'])
-            return Response("沒有token。")
-        else:
-            payload = decode_access_token(token)
-        email = payload['email']
 
-        instance = UserIfm.objects.get(email = email)
-        print(type(instance.validation_num), type(request.data["validation_num"]))
-        if instance.validation_num == int(request.data["validation_num"]):
-            instance.validation_num = -1
-            instance.validation = True
-            instance.save()
-        else:
-            print("驗證碼錯誤")
-            return Response("驗證碼錯誤")
-        print(request.data)
-        token_access = creat_access_token(instance)
-        token_refresh = creat_refresh_token(instance)
-        response = Response()
-        response.delete_cookie('refresh_token')
-        response.delete_cookie('access_token')
-        response.set_cookie(key='refresh_token', value=token_refresh, httponly=True) # max_age
-        response.set_cookie(key='access_token', value=token_access, httponly=True, max_age=3600)
-        response.data = {"msg" : "驗證成功請重新登入。"}
-        seri_data = {
-                'describe' : '還沒有留言。',
-                'user_id' : instance.id,    # 先把數字送進去，之後再序列器內調整
-                'score' : 100.0
-            }
-        serializer = UserDefIfmSerializer(data=seri_data)
-        if serializer.is_valid() :
-            serializer.save()
-        else:
-            print("驗證沒有過QQ", serializer.errors)
-        return response
 # ------------------------- email驗證 ------------------------------
 
 
@@ -958,10 +852,35 @@ class EmailReSendView(APIView):
         POST使後端重新寄送驗證信，需要帶有access token.
         不需要額外參數
         """
-        print(request.data)
-        token = request.COOKIES.get('access_token')
-        user_id = decode_access_token(token=token)['id']
-        instance = UserIfm.objects.get(id=user_id)
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message':'沒有token',
+                    'redirect':'./login',
+                }
+                response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+                print('沒有token', 'EmailReSendView')
+                return response
+        except IndexError as error_msg:
+            print(error_msg)
+            data = {
+                'error' : error_msg,
+                'message' : '沒有Authorization.'
+            }
+            response  = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+        user_id = decode_access_token(token=auth[1])['id']
+        try:
+            instance = UserIfm.objects.get(id=user_id)
+        except UserIfm.DoesNotExist as error_msg:   # pylint: disable=E1101
+            print(error_msg, EmailReSendView)
+            data = {
+                'message' : '找無此使用者。'
+            }
+            response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+            return response
+
         email_template = render_to_string(
             './signup_success_email.html',
             {'username': instance.username,
@@ -979,7 +898,18 @@ class EmailReSendView(APIView):
             email.send()
         except OSError as error_msg:
             print(error_msg)
-        return redirect('../valemail')
+            data = {
+                'error' : error_msg,
+                'message' : '請回報BUG'
+            }
+            response = JsonResponse(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return response
+        data = {
+            'message' : '成功重新寄送郵件',
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        print('message', '成功重新寄送郵件。', 'EmailReSendView')
+        return response
 # ------------------------- email重新寄送 ------------------------------
 
 
@@ -1038,53 +968,6 @@ class DeleteUserIfmView(APIView):
         # print("刪除了", user_id) 302
         return redirect('/reg/deleteaccount')
 # ------------------------- 刪除使用者 ---------------------------------
-# ------------------------- 主頁 ---------------------------------
-class HomePageView(APIView):
-    """
-    使用者進入網站後的預設頁面
-    """
-    @swagger_auto_schema(
-        operation_summary='主頁',
-    )
-    def get(self, request):
-        """
-        獲得該頁面的資訊
-        """
-        title_list = {
-            'billboard':'佈告欄',
-            'forum':'討論區',
-            'study':'學習中心',
-            'onlinechat':'線上聊天室',
-            'ifm':'個人資訊'
-        }
-        payload = {
-            'title' : title_list,
-        }
-        return render(request, 'homepage.html', payload)
-    @swagger_auto_schema(
-        operation_summary='點選網站的內容',
-        # operation_description='我是說明',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'page_id': openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='page ID'
-                ),
-            }
-        )
-    )
-    def post(self, request):
-        """
-        可以跳轉到該跳轉的地方。
-        """
-        # print(request.data)
-        keys_list = list(request.data.keys())
-        redirect_path = keys_list[-1]
-        print(redirect_path)
-        return redirect(f'/{redirect_path}')
-# ------------------------- 主頁 ---------------------------------
-
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):
     """
