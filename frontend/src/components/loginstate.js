@@ -28,7 +28,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                     "Authorization": `Beaer ${access_token}`,
                 },
             });
-            if (response.status === 202){
+            if (response.status === 200){
                 // 驗證成功，具有登入狀態。
                 const responseData = await response.json();
                 console.log(responseData.loginstatus);
@@ -42,6 +42,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 if ( response.status === 403){
                     console.log(responseData.detail);
                     setButtommsg("登入");
+                    router.push('http://127.0.0.1:3000/uchi');
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
                     router.push('http://127.0.0.1:3000/reg/valemail');
@@ -53,6 +54,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
                 setHeadImgURL('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png');
+                router.push('http://127.0.0.1:3000/uchi');
             }
         } catch(error) {
             

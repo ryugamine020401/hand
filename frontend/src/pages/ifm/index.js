@@ -3,6 +3,7 @@ import Image from "next/image";
 import LoginState from "../../components/loginstate"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Ifm () {
     const router = useRouter();
@@ -71,9 +72,9 @@ export default function Ifm () {
             <button>
                 修改個人資料
             </button>
-            <button>
+            <Link href={'./ifm/card'}>
                 個人字卡
-            </button>
+            </Link>
             <button>
                 學習狀況評估
             </button>

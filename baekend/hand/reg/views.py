@@ -22,7 +22,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 import rest_framework.exceptions
 
-from reg.forms import RegisterForm, EmailCheckForm, DeleteForm
+from reg.forms import DeleteForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
@@ -35,45 +35,9 @@ from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KE
 from hand.settings import ROOT_EMAIL
 
 from hand.settings import DOMAIN_NAME   # 用來生成訪問圖像的網址
-# ------------------------- 登入驗證裝飾器 ------------------------------
-def loging_check(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request):
-        # print(request.META)
-        token = request.COOKIES.get('access_token')
-        if not token:
-            data = {
-                'message' : '登入時效已過期，請重新登入。',
-                'redriect' : '/login'
-            }
-            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
-            return response
-        else:
-            valdation = decode_access_token(token)['val']
-            if valdation:
-                # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.")
-            else:
-                # 驗證失敗，代表使用信箱沒有驗證
-                print()
-                form = EmailCheckForm()
-                payload = {
-                    "form" : form,
-                }
-                response = Response(status=status.HTTP_200_OK)
-                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-                response.content = html
-                return response
-
-            result = func(req, request)
-        return result
-    return wrapper
-# ------------------------- 登入驗證裝飾器 ------------------------------
 
 # ------------------------- 登入驗證裝飾器(header) ------------------------------
-def loging_check2(func):
+def loging_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
     """
@@ -97,7 +61,7 @@ def loging_check2(func):
             result = func(req, request)
             return result
         except IndexError as error_msg:
-            print('裝飾器 @loging_check2 發生 ',error_msg)
+            print('裝飾器 @ 發生 ',error_msg)
             data = {
                 'message' : '沒有Authorization'
             }
@@ -161,7 +125,7 @@ class LoginCheckAPIView(APIView):
                         'buttom_word' : f' {instance.username} 您好',   # 登入後單純傳文字
                         'headimgurl' : img_url,
                     }
-                    response =JsonResponse(data, status=status.HTTP_202_ACCEPTED)
+                    response =JsonResponse(data, status=status.HTTP_200_OK)
                     return response
                 else:
                     # 沒有登入狀態
@@ -179,7 +143,7 @@ class LoginCheckAPIView(APIView):
                     'buttom_word' : '登入',      # buttom顯示的文字
                     'message' :'找不到token。'
                 }
-                response =JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+                response =JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
                 return response
         except IndexError as error_msg:
             data = {
@@ -199,24 +163,7 @@ class RegisterView(APIView):
     POST 註冊
     """
     @swagger_auto_schema(
-        operation_summary='獲得註冊頁面 已棄用。',
-    )
-    def get(self, request):
-        """
-        已棄用。
-        前端打GET過來想要進入網站
-        """
-        form = RegisterForm()
-        context = {
-            'form' : form,
-        }
-        return render(request, './register.html', context=context)
-        # self.template_name = './register.html'
-        # form = UserRegisterSerializer(data=request.data)
-
-        # return Response(form.data)
-    @swagger_auto_schema(
-        operation_summary='已棄用。 送出註冊的內容',
+        operation_summary='送出註冊的內容',
         # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -264,7 +211,6 @@ class RegisterView(APIView):
             }
             return JsonResponse(data, status=status.HTTP_409_CONFLICT)
         while True:   # 生成一個8位不重複的id
-            # tmp = int(random.random()*10**8)
             tmp = int("".join(random.choices("0123456789", k=8)))   # 生成一個8位的數字
             if UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{tmp}");'):
                 continue
@@ -324,33 +270,6 @@ class RegisterValidationView(APIView):
     @swagger_auto_schema(
         operation_summary='驗證使用者信箱',
     )
-    def get(self, request):
-        """
-        當用戶註冊完成後得到驗證的網址所打的GET
-        """
-        auth = get_authorization_header(request).split()
-
-        if auth[1] == b'null':
-            data = {
-                'message' : '沒有token。'
-            }
-            response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
-            return response
-        else:
-            respomse = Response(status.HTTP_200_OK)
-            token = request.COOKIES.get('Validation_cookie')
-            if not token:
-                return Response({"ERROR":"UNFIND COOKIE, REJECT."})
-            respomse.data = {
-                'msg' : "123",
-                'msg2' : "456",
-                'msg3' : "789",
-            }
-            print(jwt.decode(token, SECRET_KEY, algorithms="HS256"))
-            return render(request, 'check.html', context=respomse.data)
-    @swagger_auto_schema(
-        operation_summary='驗證使用者信箱',
-    )
     def post(self, request):
         """
         當用戶註冊完成後使用得到驗證碼進行驗證所打的POST
@@ -372,7 +291,6 @@ class RegisterValidationView(APIView):
             response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
             return response
         token = auth[1]
-        # print(token)
         try:
             payload_validation = jwt.decode(token, SECRET_KEY, algorithms="HS256")
         except jwt.ExpiredSignatureError:
@@ -450,7 +368,7 @@ class LoginView(APIView):
     @swagger_auto_schema(
         operation_summary='獲得登入頁面',
     )
-    @loging_check2
+    @loging_check
     def get(self, request):
         """
         前端打GET過來想要進入網站
@@ -547,8 +465,6 @@ class LoginView(APIView):
             response = JsonResponse(data, status=401)
             return response
 # ----------------------------- 登入 ---------------------------------------------
-
-
 # ----------------------------- 登出 ---------------------------------------------
 class LogoutAPIView(APIView):
     """
@@ -732,7 +648,6 @@ class ResetPasswordAPIView(APIView):
     """
     @swagger_auto_schema(
         operation_summary='忘記密碼的重設密碼',
-        # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -757,7 +672,6 @@ class ResetPasswordAPIView(APIView):
         password += str(instance.id)
         instance.password = sha512(password.encode('UTF-8')).hexdigest()
         instance.save()
-        # print(password, instance)
         data = {
             'message':'密碼修改成功',
             'redirect':'./login'
@@ -775,7 +689,6 @@ class PasswordResetViews(APIView):
     """
     @swagger_auto_schema(
         operation_summary='重設密碼',
-        # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -798,8 +711,6 @@ class PasswordResetViews(APIView):
         """
         使用者送出更新的密碼
         """
-        # print(request.META)
-        # print(request.data)
         auth = get_authorization_header(request).split()
         try:
             if auth[1] == b'null':
@@ -938,7 +849,6 @@ class DeleteUserIfmView(APIView):
         return response
     @swagger_auto_schema(
         operation_summary='root刪除使用者的功能',
-        # operation_description='我是說明',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -957,7 +867,6 @@ class DeleteUserIfmView(APIView):
         """
         print(request.data)
         for key in request.data:
-            # print(str(key).rsplit('_', 1)) ['instance_info', '52545386']
             req_list = str(key).rsplit('_', 1)
         user_id = req_list[1]
         UserIfm.objects.get(id = user_id).delete()
@@ -965,7 +874,6 @@ class DeleteUserIfmView(APIView):
         response.data = {
             "msg" : f'已刪除 {user_id} 。'
         }
-        # print("刪除了", user_id) 302
         return redirect('/reg/deleteaccount')
 # ------------------------- 刪除使用者 ---------------------------------
 #------------------------- TOKEN create、decode func. ----------------------------
