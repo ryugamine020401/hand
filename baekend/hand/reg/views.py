@@ -22,8 +22,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 import rest_framework.exceptions
 
-from reg.forms import RegisterForm, ResetPasswordForm, EmailCheckForm, DeleteForm
-from reg.forms import ForgetPasswordForm, ResetForgetPasswordForm
+from reg.forms import RegisterForm, EmailCheckForm, DeleteForm
 from reg.serializers import RegisterSerializer
 from reg.serializers import RegisterValidationSerializer
 from reg.models import UserIfm
@@ -36,7 +35,7 @@ from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KE
 from hand.settings import ROOT_EMAIL
 
 from hand.settings import DOMAIN_NAME   # 用來生成訪問圖像的網址
-# ------------------------- 登入驗證裝飾器 ------------------------------ 
+# ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
@@ -772,23 +771,8 @@ class ResetPasswordAPIView(APIView):
 # ---------------------------- 重設密碼 ------------------------------------------
 class PasswordResetViews(APIView):
     """
-    使用者重設密碼的視圖 已棄用。
+    使用者已經登入後重設密碼的視圖
     """
-    @swagger_auto_schema(
-        operation_summary='重設密碼',
-    )
-    def get(self, request):
-        """
-        使用者得到重設密碼的頁面。
-        """
-        form = ResetPasswordForm()
-        payload = {
-            "form" : form
-        }
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'reset_password.html', payload).content.decode('utf-8')
-        response.content = html
-        return response
     @swagger_auto_schema(
         operation_summary='重設密碼',
         # operation_description='我是說明',
@@ -814,11 +798,27 @@ class PasswordResetViews(APIView):
         """
         使用者送出更新的密碼
         """
+        # print(request.META)
         # print(request.data)
-        email = request.data['email']
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : "沒有token.",
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'PasswordResetViews')
+            data = {
+                    'message' : "Header格式錯誤",
+                }
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(auth[1])
+        email = token_payload['email']
         password_old = request.data['password_old']
         password_new = request.data['password_new']
-        # print(password_old, password_new, email)
         userifm_instance = UserIfm.objects.get(email = email)
         password_old += str(userifm_instance.id)
         if userifm_instance.password == sha512(password_old.encode('UTF-8')).hexdigest():
@@ -826,18 +826,18 @@ class PasswordResetViews(APIView):
             password_new += str(userifm_instance.id)
             userifm_instance.password = sha512(password_new.encode('UTF-8')).hexdigest()
             userifm_instance.save()
-            # print("儲存")
+            data = {
+                    'message' : "修改成功",
+                }
+            response = JsonResponse(data, status=status.HTTP_200_OK)
+            return response
         else:
-            print("使用者密碼錯誤。")
-            return Response("密碼錯誤")
-        response = Response(status=status.HTTP_200_OK)
-        return response
+            data = {
+                    'message' : "密碼錯誤",
+                }
+            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+            return response
 # ---------------------------- 重設密碼 ------------------------------------------
-
-# ------------------------- email驗證 ------------------------------
-
-# ------------------------- email驗證 ------------------------------
-
 
 # ------------------------- email重新寄送 ------------------------------
 class EmailReSendView(APIView):

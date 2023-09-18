@@ -63,7 +63,7 @@ const handleSubmit = async (e) => {
 
   // 如果格式驗證通過，執行表單提交操作
   try {
-    const response = await fetch("http://localhost:8000/reg/login", {
+    const response = await fetch("http://localhost:8000/reg/api/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {

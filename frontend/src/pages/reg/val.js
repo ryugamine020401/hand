@@ -29,7 +29,7 @@ export default function CountdownTimer() {
         try {
             // 執行POST請求到指定的網址
             const validaton_token = localStorage.getItem('validaton_token');
-            const response = await fetch("http://127.0.0.1:8000/reg/val", {
+            const response = await fetch("http://127.0.0.1:8000/reg/api/val", {
                 
                 method: "POST",
                 headers:{

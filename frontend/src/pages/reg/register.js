@@ -15,7 +15,7 @@ export default function Register() {
 
 
      // 在password和password_check改變時檢查密碼是否匹配
-     const handlePasswordLegthCheckChange = (e) => {
+    const handlePasswordLegthCheckChange = (e) => {
         const confirmPassword = e.target.value;
         setPassword(confirmPassword);
         setPasswordsMatch(false)
@@ -51,7 +51,7 @@ export default function Register() {
         setErrorMessage("");
         // 如果格式驗證通過，執行表單提交操作
         try {
-        const response = await fetch("http://localhost:8000/reg/register", {
+        const response = await fetch("http://localhost:8000/reg/api/register", {
             method: "POST",
             body: JSON.stringify({ username, email, password, password_check, birthday }),
             headers: {
@@ -134,7 +134,7 @@ export default function Register() {
           onChange={handlePasswordCheckChange}
         />
         {passwordsMatch && <span style={{ color: "green" }}> &#10003; </span>}
-        {!(passwordsMatch) && <span style={{ color: "red" }}> 與密碼不相符 </span>}
+        {!(passwordsMatch) && <span style={{ color: "red" }}> 兩次輸入的密碼不相符 </span>}
         <br />
         <label htmlFor="birthday">生日:</label>
         <input

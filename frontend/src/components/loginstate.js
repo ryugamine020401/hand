@@ -11,7 +11,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
     const [showOverlay, setShowOverlay] = useState(false)
     const router = useRouter()
     function logindDirect (){
-        router.push('./reg/login')
+        router.push('http://127.0.0.1:3000/reg/login');
     }
     const jumpMenu = () => {
         console.log(showOverlay)
@@ -44,7 +44,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                     setButtommsg("登入");
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
-                    router.push('./reg/valemail');
+                    router.push('http://127.0.0.1:3000/reg/valemail');
                     // localStorage.clear('access_token');
                     // localStorage.clear('refresh_token');
                 } else {
