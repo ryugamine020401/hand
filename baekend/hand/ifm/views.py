@@ -1,6 +1,10 @@
 """
 用來處理送到前端的資料
 """
+import re
+import base64
+from io import BytesIO
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
@@ -9,7 +13,8 @@ from drf_yasg import openapi
 # from django.core.mail import EmailMessage
 # from django.conf import settings
 # from django.template.loader import render_to_string
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
 
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
@@ -26,6 +31,7 @@ from ifm.models import UserDefIfm, UseWordCard
 from ifm.forms import ReProfileForm
 
 from hand.settings import DOMAIN_NAME
+from hand.settings import MEDIA_ROOT, MEDIA_URL
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -74,7 +80,7 @@ class IfmViewTestReact(APIView):
         """
         前端打get需要查看個人資訊
         """
-        
+        print(request)
         # auth = get_authorization_header(request).split()
         # print(auth)
 
@@ -151,16 +157,16 @@ class ResetprofileView(APIView):
     @swagger_auto_schema(
         operation_summary='獲得修改個人資訊的頁面',
     )
-    @loging_check
+    
     def get(self, request):
         """
         獲得修改的頁面
         """
-        token = request.COOKIES.get('access_token')
-        if token:
-            decode_access_token(token=token)
-        else :
-            return Response("NO TOKEN")
+        # token = request.COOKIES.get('access_token')
+        # if token:
+        #     decode_access_token(token=token)
+        # else :
+        #     return Response("NO TOKEN")
         form = ReProfileForm()
         context = {
             'form' : form,
@@ -197,26 +203,77 @@ class ResetprofileView(APIView):
             }
         )
     )
-    @loging_check
+
     def post(self, request):
         """
         送出修改後的資料
         """
-        token = request.COOKIES.get('access_token')
-        if token:
-            payload = decode_access_token(token=token)
-            user_id = payload['id']
-        else:
-            return Response("NO TOKEN")
+        print(MEDIA_ROOT, MEDIA_URL)
+        # print(request.data['headimage'])
+        print(request.data.keys())
+        image_name = request.data['imageName']
+        # image_extension_name = request.data['imageNameExtension']
+        print(image_name)
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有Token',
+                }
+                response = JsonResponse(data, status = status.HTTP_401_UNAUTHORIZED)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'ResetprofileView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status = status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(auth[1])
+        user_id = token_payload['id']
+        # 前端先用 Base64 傳過來
+        encoded_image = request.data['headimage']
+        headimage_binary = base64.b64decode(encoded_image.split(',')[1])
+        # file_path = os.path.join('/home/ymzk/桌面/HAND/baekend', 'saved_gif.gif')
+        # with open(file_path, 'wb') as headimage_file:
+        #     headimage_file.write(headimage_binary)
+
+        # 使用 ContentFile 創建一個 BytesIO 對象
+        bytes_io = BytesIO(headimage_binary)
+
+
+        # 正則表達式 匹配到
+        # \. 一個點
+        # [^.]+ 非點的所有字元多個
+        # $ 代表結束 
+        regex = r'\.[^.]+$'
+        # findall 會抓出所有 但只會匹配到一個 所以在list[0]
+        # 出來後會是str .png 之類的，所以把點去掉 [1:]                
+        image_neme_extension = re.findall(regex, 'dsaasdlh.png')[0][1:]
+        # print(image_name+image_extension_name)
+        # 創建 InMemoryUploadedFile 對象，模擬上傳的文件
+        print(r'')
+        image_file = InMemoryUploadedFile(
+            file=bytes_io,
+            field_name=None,
+            name=image_name,  # 替換為實際的文件名
+            content_type= f'image/{image_neme_extension}',  # 替換為實際的 MIME 類型
+            size=len(headimage_binary),
+            charset=None,
+        )
+        print(image_file, type(image_file))
+        data = {
+            'message' : '成功修改',
+        }
         ser1 = {
-            "headimg" : request.data["headimg"],
+            "headimg" : image_file,
             "describe" : request.data["describe"],
             "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
             "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
         }
         ser2 = {
             "username" : request.data['username'],
-            "email" : request.data['email'],
+            "email" : token_payload['email'],
             "birthday" : request.data['birthday'],
             "password" : "nochange",
             "validation_num" : 0,
@@ -232,11 +289,14 @@ class ResetprofileView(APIView):
             change_userdefifm.is_valid()
             change_userifm.is_valid()
             print(change_userdefifm.errors,'\n', change_userifm.errors)
-        # response = Response()
-        # html = render(request, './getinformation', context={"msg" : "update successful."})
-        return redirect('./Meishi')
+        data = {
+                    'message' : '成功修改',
+                }
+        response = JsonResponse(data, status = status.HTTP_200_OK)
+        return response
 
 # --------------------------------修改頁面--------------------------------
+
 # -------------------------- 獲得使用者個人字卡API -----------------------
 class UserWordCardAPIView(APIView):
     """
@@ -314,8 +374,7 @@ class UserWordCardAPIView(APIView):
             return response
         token_payload = decode_access_token(auth[1])
         user_id = token_payload['id']
-        # 選擇出符合使用者選項 與 該使用者的字卡刪除      body只有要刪除的單字
-        
+        # 選擇出符合使用者選項 與 該使用者的字卡刪除      body只有要刪除的單字    
         UseWordCard.objects.filter(user_id=user_id, word=request.data).delete()
         data = {
             'message' : '成功刪除',

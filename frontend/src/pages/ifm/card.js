@@ -2,7 +2,6 @@ import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import ImageList from "./components/Imagelist";
 import Image from "next/image";
 
 
@@ -129,17 +128,18 @@ function UserWordCard(){
                 )}
             </div> */}
 
-            {Object.keys(userWordcardURL2).map((key) => (
-                <div key={key} style={{'border':'3px solid red',margin:"5px"}}>
+            {Object.keys(userWordcardURL2).map((key, index) => (
+                <div key={`UserWordCardContainer_${index}`} style={{'border':'3px solid red',margin:"5px"}}>
                     <Image
                           priority
                           height={50}
                           width={50}
                           alt="字卡"
                           src={userWordcardURL2[key]}
+                          key={`UserWordCardImage_${index}`}
                         />
-                    <p>字母手勢{key}</p>
-                    <button key={key} onClick={() => DeleteUserWordCardButtonCheck(key)}>刪除字卡</button>
+                    <p key={`UserWordCardDescribe_${index}`}>字母手勢{key}</p>
+                    <button key={`DeleteWordCardbutton_${index}`} onClick={() => DeleteUserWordCardButtonCheck(key)}>刪除字卡</button>
                     {/* <p>{key}: {userWordcardURL2[key]}</p> */}
                     
                 </div>

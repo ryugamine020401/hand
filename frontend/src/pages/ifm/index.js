@@ -4,12 +4,20 @@ import LoginState from "../../components/loginstate"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import "./css/index.module.css"
 
 export default function Ifm () {
     const router = useRouter();
     const [headiImageURL, setHeadiImageURL] = useState("");
     const [describe, setDescribe] = useState("");
     const [username, setUsername] = useState("");
+    const resourceObject = {
+        './ifm/remeishi': '修改個人資料',
+        './ifm/card' : '個人字卡',
+        './' : '學習狀況評估',
+    }
+
+
     const getUserInformation = async() => {
         const access_token = localStorage.getItem('access_token');
         try {
@@ -68,16 +76,24 @@ export default function Ifm () {
                 
             </div>
             <h1>個人資料</h1>
-            <div></div>
-            <button>
+            
+            {/* <button>
                 修改個人資料
             </button>
-            <Link href={'./ifm/card'}>
+            <Link className={Style.userworcard} href={'./ifm/card'}>
                 個人字卡
             </Link>
             <button>
                 學習狀況評估
-            </button>
+            </button> */}
+            <div>
+                {Object.keys(resourceObject).map((key, index)=>(
+                    
+                    <Link key={`ifmlink_${index}`} href={key} className={`link_${index}`}>{resourceObject[key]}</Link>
+                    
+                ))}
+            </div>
+            
         </>
     );
 

@@ -1,0 +1,8 @@
+.linkclass_0, .linkclass_1, .linkclass_2 {
+    margin: 20px;
+}
+
+.linkclass_0:hover, .linkclass_1:hover, .linkclass_2:hover {
+    text-decoration: underline;
+    margin: 20px;
+}

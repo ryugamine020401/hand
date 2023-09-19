@@ -39,7 +39,7 @@ export default function Home(){
                 <div>
                     {Object.keys(resourceObjext).map((key, index) =>(
                         <>
-                            <Link href={key} className={`link_${index}`}>{resourceObjext[key]}</Link>
+                            <Link href={key} className={`link_${index}`} key={`uchi_resourcelink_${index}`}>{resourceObjext[key]}</Link>
                         </>
                     ))}
                 </div>
