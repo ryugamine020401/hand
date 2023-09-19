@@ -127,7 +127,7 @@ export default function ForgetPassword() {
 		setErrorMessage("請輸入有效的電子郵件地址！");
 		return;
 	}
-
+	setErrorMessage("");
     setButtonEnabled(false);
     setCountdown(60);
     try{

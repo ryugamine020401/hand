@@ -222,8 +222,6 @@ class ResetprofileView(APIView):
             "validation_num" : 0,
             "id" : user_id,
         }
-        # print(ser1)
-        # print(ser2)
         change_userdefifm = UserDefIfmSerializer(data=ser1)
         change_userifm = RegisterSerializer(data=ser2)
 

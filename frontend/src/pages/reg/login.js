@@ -15,7 +15,7 @@ export default function Ifm({ data, done, access_token, refresh_token }) {
       try {
         const access_token = localStorage.getItem('access_token');
         // const refresh_token = localStorage.getItem('refresh_token');
-        const response = await fetch("http://localhost:8000/reg/login", {
+        const response = await fetch("http://localhost:8000/reg/api/login", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${access_token}`,
@@ -30,7 +30,7 @@ export default function Ifm({ data, done, access_token, refresh_token }) {
           })
         } else {
           // 處理 GET 請求失敗的情況
-          const responseData = await response.json();
+          // const responseData = await response.json();
           if(response.status === 403){
             localStorage.clear('access_token');
             localStorage.clear('refresh_token');

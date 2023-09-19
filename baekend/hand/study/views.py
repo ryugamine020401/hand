@@ -494,17 +494,18 @@ class TeachingCenterEnglishView(APIView):
             }
         )
     )
-    @loging_check
+    
+
     def post(self, request):
         """
         加入使用者個人字卡
         """
 
-        token = request.COOKIES.get('access_token')
-        if token:
-            user_id = decode_access_token(token)['id']
-        else:
-            return Response("NO TOKEN")
+        # token = request.COOKIES.get('access_token')
+        # if token:
+        #     user_id = decode_access_token(token)['id']
+        # else:
+        #     return Response("NO TOKEN")
         now_time = datetime.datetime.now()
         for key in request.data:
             # print(str(key).rsplit('_', maxsplit=1)[-1])
@@ -513,7 +514,7 @@ class TeachingCenterEnglishView(APIView):
             # print(TeachWordCard.objects.get(id = int(card_id)).img)
         try:
             word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
-            check_multiple = UseWordCard.objects.get(user_id = user_id, word = word)
+            check_multiple = UseWordCard.objects.get(user_id = 80928899, word = word)
             if check_multiple:
                 msg = 'UseWordCardExist'
                 return redirect(f'./english?msg={msg}')
@@ -531,7 +532,7 @@ class TeachingCenterEnglishView(APIView):
             return redirect('./english')
 
         ser = {
-            "user_id" : user_id,
+            "user_id" : 80928899,
             "img" : TeachWordCard.objects.get(id = int(card_id)).img,
             "word" : word,    
             "upload_date" : now_time.strftime("%Y-%m-%d"),

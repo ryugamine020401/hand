@@ -38,7 +38,7 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!passwordsMatch) {
-            setErrorMessage("密碼不匹配！");
+            setErrorMessage("密碼不符合要求！");
             return;
           }
         // 驗證電子郵件地址格式
