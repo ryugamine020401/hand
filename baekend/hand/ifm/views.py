@@ -7,14 +7,14 @@ from io import BytesIO
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 # from django.core.mail import EmailMessage
 # from django.conf import settings
 # from django.template.loader import render_to_string
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.core.files.base import ContentFile
+
 
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
@@ -32,81 +32,6 @@ from ifm.forms import ReProfileForm
 
 from hand.settings import DOMAIN_NAME
 from hand.settings import MEDIA_ROOT, MEDIA_URL
-# ------------------------- 登入驗證裝飾器 ------------------------------
-def loging_check(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request):
-        token = request.COOKIES.get('access_token')
-        if not token:
-            print("沒有token")
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
-            }
-            response = Response(status=status.HTTP_200_OK)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
-            return response
-        else:
-            valdation = decode_access_token(token)['val']
-            if valdation:
-                # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.已驗證信箱的使用者操作。")
-            else:
-                # 驗證失敗，代表使用信箱沒有驗證
-                print()
-                form = EmailCheckForm()
-                payload = {
-                    "form" : form,
-                }
-                response = Response(status=status.HTTP_200_OK)
-                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-                response.content = html
-                return response
-
-            result = func(req, request)
-        return result
-    return wrapper
-# ------------------------- 登入驗證裝飾器 ------------------------------
-# ------------------------------------------------------------------- -React Test -------------------------------------------
-class IfmViewTestReact(APIView):
-    """
-    使用者查看、修改自己個人資訊
-    """
-    def get(self, request):
-        """
-        前端打get需要查看個人資訊
-        """
-        print(request)
-        # auth = get_authorization_header(request).split()
-        # print(auth)
-
-        # if (len(auth) == 2 and auth):
-        #     token = auth[1].decode('utf-8')
-        #     payload = decode_access_token(token=token)
-        #     # user_email = payload['email']
-        #     user_id = payload['id']
-        # else:
-        #     # return Response({"msg":"no header."})
-        #     print("msg :", "no header.")
-        # token = request.COOKIES.get('access_token')
-        # payload = decode_access_token(token=token)
-        # user_id = payload['id']
-
-        payload = {
-            "email" : 'asdasd@asdsa.dasdasd',
-            "describe" : 'asdasda;sjmd;am;dsad;asmdas;djailkbdlaknbsdlkas',
-            "username" : 'UserIfm.objects.get(id=user_id).username',
-            "headimage" : UserDefIfm.objects.get(user_id=64316155).headimg.url,
-            # "form" : form,
-        }
-        return JsonResponse(payload)
-        
-# ------------------------------------------------------------------- -React Test -------------------------------------------
-# ------------------------------登入後的功能------------------------------
 # --------------- 獲取個人資訊 ----------------
 class UserInformationAPIViwe(APIView):
     """
@@ -138,7 +63,7 @@ class UserInformationAPIViwe(APIView):
         token = auth[1]
         token_payload = decode_access_token(token)
         instance = UserDefIfm.objects.get(user_id = token_payload['id'])
-        headimageurl = f'http://127.0.0.1:8000/ifm{instance.headimg.url}'
+        headimageurl = f'{DOMAIN_NAME}/ifm{instance.headimg.url}'
         data = {
             'message': "成功獲得",
             "username" : UserIfm.objects.get(id = token_payload['id']).username,
@@ -154,27 +79,7 @@ class ResetprofileView(APIView):
     """
     使用者的修改個人資訊頁面
     """
-    @swagger_auto_schema(
-        operation_summary='獲得修改個人資訊的頁面',
-    )
-    
-    def get(self, request):
-        """
-        獲得修改的頁面
-        """
-        # token = request.COOKIES.get('access_token')
-        # if token:
-        #     decode_access_token(token=token)
-        # else :
-        #     return Response("NO TOKEN")
-        form = ReProfileForm()
-        context = {
-            'form' : form,
-        }
-        response  = Response(status=status.HTTP_202_ACCEPTED)
-        html =  render(request, './remeishi.html', context=context)
-        response.content = html
-        return response
+
     @swagger_auto_schema(
         operation_summary='修改個人資訊',
         request_body=openapi.Schema(
@@ -249,22 +154,20 @@ class ResetprofileView(APIView):
         regex = r'\.[^.]+$'
         # findall 會抓出所有 但只會匹配到一個 所以在list[0]
         # 出來後會是str .png 之類的，所以把點去掉 [1:]                
-        image_neme_extension = re.findall(regex, 'dsaasdlh.png')[0][1:]
+        image_neme_extension = re.findall(regex, 'dsaasdlh.png')[0]
         # print(image_name+image_extension_name)
         # 創建 InMemoryUploadedFile 對象，模擬上傳的文件
         print(r'')
         image_file = InMemoryUploadedFile(
             file=bytes_io,
             field_name=None,
-            name=image_name,  # 替換為實際的文件名
-            content_type= f'image/{image_neme_extension}',  # 替換為實際的 MIME 類型
+            name=f'userHeadimage_{user_id}_{image_neme_extension}',  # 替換為實際的文件名
+            content_type= f'image/{image_neme_extension[1:]}',  # 替換為實際的 MIME 類型
             size=len(headimage_binary),
             charset=None,
         )
         print(image_file, type(image_file))
-        data = {
-            'message' : '成功修改',
-        }
+        
         ser1 = {
             "headimg" : image_file,
             "describe" : request.data["describe"],
@@ -281,7 +184,7 @@ class ResetprofileView(APIView):
         }
         change_userdefifm = UserDefIfmSerializer(data=ser1)
         change_userifm = RegisterSerializer(data=ser2)
-
+        
         if (change_userdefifm.is_valid() and change_userifm.is_valid()):
             change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
             change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)

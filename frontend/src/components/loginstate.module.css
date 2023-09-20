@@ -72,8 +72,8 @@
 .overlayContainer {
     
     position: absolute;
-    top: 55px; /* 選單出現在圖片的下方 */
-    right: 50px;
+    top: 70px; /* 選單出現在圖片的下方 */
+    right: 100px;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
