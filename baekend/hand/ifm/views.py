@@ -136,14 +136,13 @@ class ResetprofileView(APIView):
         try:
             image_name = request.data['imageName']
         except KeyError as error:
-            print(error, '使用者上傳裁剪後的頭像');
+            print(error, '使用者上傳裁剪後的頭像')
             image_name = 'crop.png'
-        
         # image_extension_name = request.data['imageNameExtension']
         print(image_name)
         # 前端先用 Base64 傳過來
         encoded_image = request.data['headimage']
-        print("這裡",encoded_image)
+        # print("這裡",encoded_image)
         headimage_binary = base64.b64decode(encoded_image.split(',')[1])
         directory_path = f'{MEDIA_ROOT}/headimage'
         file_name_without_extension = f'avater_{user_id}'
@@ -151,7 +150,10 @@ class ResetprofileView(APIView):
         if file_name_without_extension in [os.path.splitext(filename)[0] for filename in files_in_directory]:
             file_to_delete = os.path.join(directory_path, file_name_without_extension)
             print("頭像存在", file_to_delete)
-            os.remove(f'{file_to_delete}.png')
+            try:
+                os.remove(f'{file_to_delete}.png')
+            except FileNotFoundError as error_msg:
+                print(error_msg, 'ResetprofileView 不刪除')
             # 權衡之下的結果 物件本身副檔名無所謂 但不固定檔名會導致錯誤
         else:
             print("頭像不存在")
@@ -187,7 +189,7 @@ class ResetprofileView(APIView):
             instance = UserDefIfm.objects.get(user_id=user_id)
             instance_userifm = UserIfm.objects.get(id=user_id)
             ser1 = {
-                "headimg" : instance.headimg,
+                "headimg" : image_file,
                 "describe" : instance.describe,
                 "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
                 "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
@@ -218,6 +220,7 @@ class ResetprofileView(APIView):
         change_userdefifm = UserDefIfmSerializer(data=ser1)
         change_userifm = RegisterSerializer(data=ser2)
         if (change_userdefifm.is_valid() and change_userifm.is_valid()):
+            print("和法")
             change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
             change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
         else:

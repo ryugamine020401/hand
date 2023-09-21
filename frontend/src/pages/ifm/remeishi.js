@@ -104,7 +104,10 @@ export default function ReMeishi(){
                 logoutPath="../uchi"
             />
             <label>頭像</label>
-            {/* <CropPage/> */}
+            <CropPage>
+
+                0
+            </CropPage>
             <label>暱稱</label>
             <input
                 type="text"
@@ -139,12 +142,6 @@ export default function ReMeishi(){
                 value={birthday}
                 onChange={(e)=>setBirthday(e.target.value)}
             />
-            
-            
-            
-            
-                
-            
 
             <button
                 onClick={uploadButtonClick}

@@ -9,8 +9,8 @@ export default function CropPage() {
   // const imageRef = useRef(null);
 
   const [croppedImageDatasrc, setcroppedImageDatasrc] = useState('');
-//   const [originImageWidth, setOriginImageWidth] = useState(0);
-//   const [originImageHeigth, setOriginImageHeigth] = useState(0);
+  const [originImageWidth, setOriginImageWidth] = useState(0);
+  const [originImageHeigth, setOriginImageHeigth] = useState(0);
   const [cropenable, setCropEnable] = useState(false);
   
 
@@ -48,13 +48,20 @@ export default function CropPage() {
     
   };
 
-  const handleCrop = async () => {
-    const croppedImageData = await cropperRef.current.cropper.getCroppedCanvas().toDataURL();
-    const access_token = await localStorage.getItem('access_token');
+  const handleCrop = () => {
+    const croppedImageData = cropperRef.current.cropper.getCroppedCanvas().toDataURL();
+    
+    setcroppedImageDatasrc(croppedImageData);
     setHeadimage(croppedImageData);
-    // console.log(cropperRef.current.cropper.getCroppedCanvas().toDataURL());
-    console.log(headimage);
+    setCropEnable(false);
+    // console.log(croppedImageData);
+    
+  };
+  const uploadImage = async () =>{
+    const access_token = localStorage.getItem('access_token');
     try {
+        // setHeadimage(croppedImageDatasrc);
+        console.log(croppedImageDatasrc);
         const response = await fetch("http://127.0.0.1:8000/ifm/reMeishi", {
             method:'POST',
             body:JSON.stringify({headimage}),
@@ -74,13 +81,10 @@ export default function CropPage() {
     } catch (error) {
         console.error(error);
     }
-    // console.log(croppedImageData);
-    setcroppedImageDatasrc(croppedImageData);
-    setCropEnable(false);
-  };
+  }
 
   return (
-    <div>
+    <>
       <input
         type="file"
         id="fileInput"
@@ -91,7 +95,8 @@ export default function CropPage() {
       <button onClick={handleUpload}>上傳圖像</button>
       {!croppedImageDatasrc && <Cropper
         ref={cropperRef}
-        style={{ height: 400, width: '100%' }}
+        className={Style.test}
+        style={{height:100, width:'50%'}}
         // height={originImageHeigth}
         // width={originImageWidth}
         aspectRatio={1}
@@ -101,15 +106,19 @@ export default function CropPage() {
       {cropenable && <button onClick={handleCrop}>裁剪</button>}
        
       {croppedImageDatasrc && 
-        <div className={Style.imagecontainer}>
-            <img 
-                alt='裁圖'
-                src={croppedImageDatasrc}
-                className={Style.image}
-            />
-        </div>
+        <>
+            <div className={Style.imagecontainer}>
+                <img 
+                    alt='裁圖'
+                    src={croppedImageDatasrc}
+                    className={Style.image}
+                />
+                
+            </div> 
+            <button onClick={uploadImage}>確定修改大頭貼</button>
+        </>
                  }
-    </div>
+    </>
     
   );
 };
