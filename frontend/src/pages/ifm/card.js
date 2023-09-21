@@ -94,7 +94,7 @@ function UserWordCard(){
         //     isMounted = false;
         //     // 在元件卸載時取消非同步操作
         // };
-        }, [userWordcardURL2])
+        }, [])
 
     return(
         <>

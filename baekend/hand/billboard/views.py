@@ -5,6 +5,7 @@ import datetime
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -59,7 +60,7 @@ class BillboardSendView(APIView):
     @swagger_auto_schema(
         operation_summary="獲得root 發送公告頁面"
     )
-    @root_check
+    # @root_check
     def get(self, request):
         """
         獲得發送的頁面。
@@ -88,7 +89,7 @@ class BillboardSendView(APIView):
             }
         )
     )
-    @root_check
+    # @root_check
     def post(self, request):
         """
         送出輸入的文字
@@ -113,13 +114,18 @@ class BillboardView(APIView):
         獲得發送的頁面。
         """
         instance = Billboard.objects.all()
-        payload = {
-            "instance" : instance,
+        diec = {}
+        for i in instance:
+            diec[i.id] = i.title
+        data = {
+            'title' : diec,
         }
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'billboard.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
+        # response = Response(status=status.HTTP_200_OK)
+        # html = render(request, 'billboard.html', payload).content.decode('utf-8')
+        # response.content = html
+        # return response
 
 class BillboardArticalView(APIView):
     """
@@ -132,11 +138,13 @@ class BillboardArticalView(APIView):
         """
         獲得發送的頁面。
         """
+        print(artical_id)
         instance = Billboard.objects.get(id=artical_id)
-        payload = {
-            "instance" : instance,
+        data = {
+            "message" : '成功獲取',
+            "title" : instance.title,
+            "content" : instance.content,
+            "date" : instance.upload_date,
         }
-        response = Response(status=status.HTTP_200_OK)
-        html = render(request, 'bilboard_artical.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response

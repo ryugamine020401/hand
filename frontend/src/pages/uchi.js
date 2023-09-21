@@ -12,7 +12,7 @@ export default function Home(){
     // const resource = JSON.parse(router.query.resource || "{}"); // 解析數據
     const resource = ['佈告欄', '討論區', '學習中心', '線上聊天室', '個人資訊']
     const resourceObjext = {
-        './billnoard':'佈告欄', 
+        './billboard':'佈告欄', 
         './discuss':'討論區', 
         './study':'學習中心', 
         './onlinechat':'線上聊天室', 
@@ -38,9 +38,9 @@ export default function Home(){
                 </div> */}
                 <div>
                     {Object.keys(resourceObjext).map((key, index) =>(
-                        <>
+                        <div key={`uchi_resource_${index}`}>
                             <Link href={key} className={`link_${index}`} key={`uchi_resourcelink_${index}`}>{resourceObjext[key]}</Link>
-                        </>
+                        </div>
                     ))}
                 </div>
             </section>

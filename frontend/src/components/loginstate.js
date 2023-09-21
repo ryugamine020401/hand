@@ -6,7 +6,7 @@ import OverlayBox from './overlay'
 
 export default function LoginState({children, profilePath, resetPasswordPath, logoutPath}) {
     const [logincheck, setLogincheck] = useState(false);
-    const [headimgurl, setHeadImgURL] = useState(false)
+    const [headimgurl, setHeadImgURL] = useState('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png')
     const [buttommsg, setButtommsg] = useState("")
     const [showOverlay, setShowOverlay] = useState(false)
     const router = useRouter()
@@ -42,7 +42,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 if ( response.status === 403){
                     console.log(responseData.detail);
                     setButtommsg("登入");
-                    router.push('http://127.0.0.1:3000/uchi');
+                    // router.push('http://127.0.0.1:3000/uchi');
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
                     router.push('http://127.0.0.1:3000/reg/valemail');
@@ -54,7 +54,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
                 setHeadImgURL('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png');
-                router.push('http://127.0.0.1:3000/uchi');
+                
             }
         } catch(error) {
             
