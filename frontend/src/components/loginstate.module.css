@@ -35,7 +35,7 @@
 
 .HeadImage {
     max-width: 100%; /* 確保圖片不會超出容器的大小 */
-    height: auto; /* 讓圖片的高度自動調整以保持原始比例 */
+    /* height: auto; /* 讓圖片的高度自動調整以保持原始比例 */
     object-fit: cover;
 }
 .HeadImage:hover{

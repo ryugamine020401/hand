@@ -1,6 +1,7 @@
 """
 用來處理送到前端的資料
 """
+import os
 import re
 import base64
 from io import BytesIO
@@ -25,10 +26,8 @@ from reg.views import decode_access_token
 # from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.models import UserIfm
-from reg.forms import EmailCheckForm, LoginForm
 from ifm.serializers import UserDefIfmSerializer
 from ifm.models import UserDefIfm, UseWordCard
-from ifm.forms import ReProfileForm
 
 from hand.settings import DOMAIN_NAME
 from hand.settings import MEDIA_ROOT, MEDIA_URL
@@ -116,9 +115,7 @@ class ResetprofileView(APIView):
         print(MEDIA_ROOT, MEDIA_URL)
         # print(request.data['headimage'])
         print(request.data.keys())
-        image_name = request.data['imageName']
-        # image_extension_name = request.data['imageNameExtension']
-        print(image_name)
+
         auth = get_authorization_header(request).split()
         try:
             if auth[1] == b'null':
@@ -136,12 +133,31 @@ class ResetprofileView(APIView):
             return response
         token_payload = decode_access_token(auth[1])
         user_id = token_payload['id']
+        try:
+            image_name = request.data['imageName']
+        except KeyError as error:
+            print(error, '使用者上傳裁剪後的頭像');
+            image_name = 'crop.png'
+        
+        # image_extension_name = request.data['imageNameExtension']
+        print(image_name)
         # 前端先用 Base64 傳過來
         encoded_image = request.data['headimage']
+        print("這裡",encoded_image)
         headimage_binary = base64.b64decode(encoded_image.split(',')[1])
-        # file_path = os.path.join('/home/ymzk/桌面/HAND/baekend', 'saved_gif.gif')
-        # with open(file_path, 'wb') as headimage_file:
-        #     headimage_file.write(headimage_binary)
+        directory_path = f'{MEDIA_ROOT}/headimage'
+        file_name_without_extension = f'avater_{user_id}'
+        files_in_directory = os.listdir(directory_path)
+        if file_name_without_extension in [os.path.splitext(filename)[0] for filename in files_in_directory]:
+            file_to_delete = os.path.join(directory_path, file_name_without_extension)
+            print("頭像存在", file_to_delete)
+            os.remove(f'{file_to_delete}.png')
+            # 權衡之下的結果 物件本身副檔名無所謂 但不固定檔名會導致錯誤
+        else:
+            print("頭像不存在")
+        file_path = os.path.join('/home/ymzk/桌面/HAND/baekend', 'saved_gif.gif')
+        with open(file_path, 'wb') as headimage_file:
+            headimage_file.write(headimage_binary)
 
         # 使用 ContentFile 創建一個 BytesIO 對象
         bytes_io = BytesIO(headimage_binary)
@@ -154,37 +170,53 @@ class ResetprofileView(APIView):
         regex = r'\.[^.]+$'
         # findall 會抓出所有 但只會匹配到一個 所以在list[0]
         # 出來後會是str .png 之類的，所以把點去掉 [1:]                
-        image_neme_extension = re.findall(regex, 'dsaasdlh.png')[0]
+        image_neme_extension = re.findall(regex, image_name)[0]
         # print(image_name+image_extension_name)
         # 創建 InMemoryUploadedFile 對象，模擬上傳的文件
         print(r'')
         image_file = InMemoryUploadedFile(
             file=bytes_io,
             field_name=None,
-            name=f'userHeadimage_{user_id}_{image_neme_extension}',  # 替換為實際的文件名
+            name=f'avater_{user_id}.png',  # 替換為實際的文件名
             content_type= f'image/{image_neme_extension[1:]}',  # 替換為實際的 MIME 類型
             size=len(headimage_binary),
             charset=None,
         )
         print(image_file, type(image_file))
-        
-        ser1 = {
-            "headimg" : image_file,
-            "describe" : request.data["describe"],
-            "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
-            "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
-        }
-        ser2 = {
-            "username" : request.data['username'],
-            "email" : token_payload['email'],
-            "birthday" : request.data['birthday'],
-            "password" : "nochange",
-            "validation_num" : 0,
-            "id" : user_id,
-        }
+        if image_name == 'crop.png':
+            instance = UserDefIfm.objects.get(user_id=user_id)
+            instance_userifm = UserIfm.objects.get(id=user_id)
+            ser1 = {
+                "headimg" : instance.headimg,
+                "describe" : instance.describe,
+                "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
+                "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
+            }
+            ser2 = {
+                "username" :instance_userifm.username,
+                "email" : token_payload['email'],
+                "birthday" : instance_userifm.birthday,
+                "password" : "nochange",
+                "validation_num" : 0,
+                "id" : user_id,
+            }
+        else:
+            ser1 = {
+                "headimg" : image_file,
+                "describe" : request.data["describe"],
+                "user_id" : user_id,      # 為了讓序列器is_valid所做的調整，不會更新db的資料
+                "score" : 100.0,    # 為了讓序列器is_valid所做的調整，不會更新db的資料
+            }
+            ser2 = {
+                "username" : request.data['username'],
+                "email" : token_payload['email'],
+                "birthday" : request.data['birthday'],
+                "password" : "nochange",
+                "validation_num" : 0,
+                "id" : user_id,
+            }
         change_userdefifm = UserDefIfmSerializer(data=ser1)
         change_userifm = RegisterSerializer(data=ser2)
-        
         if (change_userdefifm.is_valid() and change_userifm.is_valid()):
             change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
             change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
@@ -286,13 +318,14 @@ class UserWordCardAPIView(APIView):
 
 
 # -------------------------- 獲得使用者個人字卡API -----------------------
+
 # --------------------------------字卡頁面--------------------------------
 class KadoView(APIView):
     """
-    使用者個人字卡的頁面。
+    使用者個人字卡的頁面。 已經棄用
     """
     @swagger_auto_schema(
-        operation_summary='獲取個人字卡',
+        operation_summary='獲取個人字卡 已經棄用',
     )
 
     def get(self, request):

@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-
+import React, { useCallback } from 'react';
 
 
 function UserWordCard(){
@@ -39,12 +39,12 @@ function UserWordCard(){
 
     }
 
-    const checkAcccesstoken = () => {
+    const checkAcccesstoken = useCallback(() => {
         const acccess_token = localStorage.getItem('access_token');
         if (acccess_token === null){
-            router.push('../');
+            // router.push('../');
         }
-    }
+    }, [])
 
 
 
@@ -75,26 +75,26 @@ function UserWordCard(){
         }
     }
     useEffect(()=>{
-        checkAcccesstoken();
-        
-        let isMounted = true;
+        // checkAcccesstoken();
+        getWordcardInitial();
+        // let isMounted = true;
 
-        const fetchData = async () => {
-            // 非同步操作
-            if (isMounted) {
-                // 確保元件仍然掛載
-                await getWordcardInitial();
-                await console.log(userWordcardURL2);
-            }
-        };
+        // const fetchData = async () => {
+        //     // 非同步操作
+        //     if (isMounted) {
+        //         // 確保元件仍然掛載
+        //         await getWordcardInitial();
+        //         await console.log(userWordcardURL2);
+        //     }
+        // };
 
-        fetchData();
+        // fetchData();
 
-        return () => {
-            isMounted = false;
-            // 在元件卸載時取消非同步操作
-        };
-        }, [])
+        // return () => {
+        //     isMounted = false;
+        //     // 在元件卸載時取消非同步操作
+        // };
+        }, [userWordcardURL2])
 
     return(
         <>

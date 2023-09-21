@@ -1,0 +1,13 @@
+.imagecontainer{
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 10px 0;
+}
+
+.image {
+    max-width: 100%; /* 確保圖片不會超出容器的大小 */
+    height: auto; /* 讓圖片的高度自動調整以保持原始比例 */
+    object-fit: cover;
+}

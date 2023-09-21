@@ -1,6 +1,7 @@
 import LoginState from "@/components/loginstate";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import CropPage from "./components/crop"
 
 
 export default function ReMeishi(){
@@ -96,11 +97,14 @@ export default function ReMeishi(){
 
     return(
         <>  {/* 在這裡 ./ 就會是{base}/app/ 所以這裡是 {base}/ifm*/}
+            
             <LoginState
                 profilePath="./"
                 resetPasswordPath="../reg/resetpassword"
                 logoutPath="../uchi"
             />
+            <label>頭像</label>
+            {/* <CropPage/> */}
             <label>暱稱</label>
             <input
                 type="text"
@@ -135,6 +139,12 @@ export default function ReMeishi(){
                 value={birthday}
                 onChange={(e)=>setBirthday(e.target.value)}
             />
+            
+            
+            
+            
+                
+            
 
             <button
                 onClick={uploadButtonClick}
