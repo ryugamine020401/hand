@@ -39,12 +39,12 @@ function UserWordCard(){
 
     }
 
-    const checkAcccesstoken = useCallback(() => {
+    const checkAcccesstoken = () => {
         const acccess_token = localStorage.getItem('access_token');
         if (acccess_token === null){
-            // router.push('../');
+            router.push('../reg/login');
         }
-    }, [])
+    }
 
 
 
@@ -75,7 +75,7 @@ function UserWordCard(){
         }
     }
     useEffect(()=>{
-        // checkAcccesstoken();
+        checkAcccesstoken();
         getWordcardInitial();
         // let isMounted = true;
 

@@ -3,7 +3,13 @@ import { useState, useEffect } from 'react';
 import Style from './loginstate.module.css';
 import { useRouter } from 'next/router';
 import OverlayBox from './overlay'
-
+/* 
+<LoginState
+    profilePath="../../ifm"
+    resetPasswordPath="./"
+    logoutPath=""
+/> 
+*/
 export default function LoginState({children, profilePath, resetPasswordPath, logoutPath}) {
     const [logincheck, setLogincheck] = useState(false);
     const [headimgurl, setHeadImgURL] = useState('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png')
@@ -65,6 +71,10 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
 
     };
 
+    const goHomeFunvrion = () =>{
+        router.push('http://127.0.0.1:3000/uchi');
+    }
+
     useEffect(()=>{
         sendPostRequest();
     }, [])
@@ -77,7 +87,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
             <>
                 
                 <header className={Style.HeaderContainer}>
-                <div className = {Style.LOGOcontainer}>
+                <div className = {Style.LOGOcontainer} onClick={goHomeFunvrion}>
                     <Image
                         priority
                         src='/images/LOGO.png' 
@@ -117,7 +127,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
 
             <>
                 <header className={Style.HeaderContainer}>
-                <div className = {Style.LOGOcontainer}>
+                <div className = {Style.LOGOcontainer} onClick={goHomeFunvrion}>
                     <Image
                         priority
                         src='/images/LOGO.png' 

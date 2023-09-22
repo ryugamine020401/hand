@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authentication import get_authorization_header
 from rest_framework import status
 
 from reg.models import UserIfm
@@ -52,27 +53,48 @@ def root_check(func):
     return wrapper
 # ------------------------- root驗證裝飾器 ------------------------------
 
+class RootCheckAPIView(APIView):
+    """
+    驗證使用者的權限
+    """
+    def post(self, request):
+        auth = get_authorization_header(request).split()
 
-class BillboardSendView(APIView):
+        try:
+            token = auth[1]
+            if token == b'null':
+                data = {
+                    'message' : '找不到token'
+                }
+                response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+                return response
+        except IndexError as error_msg:
+            print('RootCheckAPIView', error_msg)
+            data = {
+                'message' : '沒有Authorization'
+            }
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(token)
+        if (ROOT_EMAIL == token_payload['email']):
+            print("權限足夠")
+            data = {
+                'message' : '權限足夠',
+            }
+            response = JsonResponse(data, status=status.HTTP_200_OK)
+            return response
+        else:
+            data = {
+                'message' : '權限不足',
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response
+
+class BillboardSendAPIView(APIView):
     """
     有root權限可以使用發布公告的功能。
     """
-    @swagger_auto_schema(
-        operation_summary="獲得root 發送公告頁面"
-    )
-    # @root_check
-    def get(self, request):
-        """
-        獲得發送的頁面。
-        """
-        form = BillboardForm()
-        payload = {
-            "form" : form,
-        }
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        html = render(request, 'billboardsend.html', payload).content.decode('utf-8')
-        response.content = html
-        return response
+    
     @swagger_auto_schema(
         operation_summary='root 發送公告',
         request_body=openapi.Schema(
@@ -94,12 +116,32 @@ class BillboardSendView(APIView):
         """
         送出輸入的文字
         """
+        print(request)
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message':'沒有token',
+                }
+                response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'BillboardSendAPIView')
+            data = {
+                'message':'沒有Authorization',
+            }
+            response = JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+            return response
+
         instance = Billboard()
         instance.title = request.data['title']
         instance.content = request.data['content']
         instance.upload_date = str(datetime.date.today())
         instance.save()
-
+        data = {
+            'message':'發佈成功',
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return Response("發佈成功")
 
 class BillboardView(APIView):
@@ -122,10 +164,6 @@ class BillboardView(APIView):
         }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
-        # response = Response(status=status.HTTP_200_OK)
-        # html = render(request, 'billboard.html', payload).content.decode('utf-8')
-        # response.content = html
-        # return response
 
 class BillboardArticalView(APIView):
     """

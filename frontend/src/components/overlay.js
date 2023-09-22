@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 /* 
 <LoginState
-                profilePath="../../ifm"
-                resetPasswordPath="./"
-                logoutPath=""
-            /> 
+    profilePath="../../ifm"
+    resetPasswordPath="./"
+    logoutPath=""
+/> 
 */
 export default function OverlayBox ({ profilePath, resetPasswordPath, logoutPath }) {
     const router = useRouter();
