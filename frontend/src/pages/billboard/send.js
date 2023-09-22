@@ -1,4 +1,5 @@
 import LoginState from "@/components/loginstate";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -50,6 +51,7 @@ export default function SendBillboard() {
             if (response.status === 200) {
                 const responseData = await response.json();
                 console.log(responseData);
+                router.push('./');
                 
             } else {
                 const responseData = await response.json();
@@ -68,6 +70,7 @@ export default function SendBillboard() {
     return(
     
     <>
+    <Head><title>發送公告</title></Head>
         <LoginState
             profilePath="../ifm"
             resetPasswordPath="../reg/resetassword"

@@ -2,6 +2,7 @@ import LoginState from "@/components/loginstate";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import CropPage from "./components/crop"
+import Head from "next/head";
 
 
 export default function ReMeishi(){
@@ -97,7 +98,7 @@ export default function ReMeishi(){
 
     return(
         <>  {/* 在這裡 ./ 就會是{base}/app/ 所以這裡是 {base}/ifm*/}
-            
+            <Head><title>修改個人資料</title></Head>
             <LoginState
                 profilePath="./"
                 resetPasswordPath="../reg/resetpassword"

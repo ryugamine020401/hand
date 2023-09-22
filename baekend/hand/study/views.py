@@ -16,7 +16,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 from rest_framework.response import Response
-# from rest_framework.authentication import get_authorization_header
+from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 
@@ -28,7 +28,7 @@ from ifm.models import UseWordCard
 from study.models import TeachWordCard, TeachType
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
-from hand.settings import ROOT_EMAIL
+from hand.settings import ROOT_EMAIL, DOMAIN_NAME
 # from .hand.prediction import num2alphabet, predict
 def root_check(func):
     """
@@ -428,17 +428,27 @@ class TeachingCenterView(APIView):
         """
         讓使用者得到可以選擇的學習資源
         """
-        response = Response(status=status.HTTP_200_OK)
-        tecahtype = {
-            'english': '英文字母',
-            'test/1/0' : '測驗1',
-            'test/2/0' : '測驗2'
+        auth = get_authorization_header(request).split()
+
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+
+        data = {
+            'message':'請求成功'
         }
-        context = {
-            "resourcetype" : tecahtype,
-        }
-        html = render(request, './home.html', context=context).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
     @swagger_auto_schema(
         operation_summary='上傳教學類別',
@@ -475,12 +485,16 @@ class TeachingCenterEnglishView(APIView):
         讓使用者得到可以選擇的英文學習資源
         """
         english_alphabet = TeachWordCard.objects.all()
-        response = Response(status=status.HTTP_200_OK)
-        context = {
-            "english_alphabet" : english_alphabet,
+        wordcard = {}
+        for instance in english_alphabet:
+            wordcard[instance.id] = f'{DOMAIN_NAME}/study'+instance.img.url
+        data = {
+            'wordcard' : wordcard,
+            'message' : "成功獲取資源."
         }
-        html = render(request, './english.html', context=context).content.decode('utf-8')
-        response.content = html
+
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+
         return response
     @swagger_auto_schema(
         operation_summary='加入個人字卡',
@@ -494,31 +508,40 @@ class TeachingCenterEnglishView(APIView):
             }
         )
     )
-    
 
     def post(self, request):
         """
         加入使用者個人字卡
         """
+        auth = get_authorization_header(request).split()
 
-        # token = request.COOKIES.get('access_token')
-        # if token:
-        #     user_id = decode_access_token(token)['id']
-        # else:
-        #     return Response("NO TOKEN")
-        now_time = datetime.datetime.now()
-        for key in request.data:
-            # print(str(key).rsplit('_', maxsplit=1)[-1])
-            card_id = str(key).rsplit('_', maxsplit=1)[-1]
-            # print(card_id, type(card_id), type(now_time.strftime("%Y-%m-%d")))
-            # print(TeachWordCard.objects.get(id = int(card_id)).img)
         try:
-            word = chr(int(card_id)+ 96)    # ASCII a是97 card_id是從1~26
-            check_multiple = UseWordCard.objects.get(user_id = 80928899, word = word)
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        now_time = datetime.datetime.now()
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        try:
+            word = chr(int(request.data)+ 96)    # ASCII a是97 card_id是從1~26
+            check_multiple = UseWordCard.objects.get(user_id = token_payload['id'], word = word)
             if check_multiple:
-                msg = 'UseWordCardExist'
-                return redirect(f'./english?msg={msg}')
-            print(check_multiple)
+                data = {
+                'message':'UseWordCardExist'
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response
 
         # 查無此資料可以儲存，但會例外所以expect
         except UseWordCard.DoesNotExist as error: # pylint: disable=E1101
@@ -528,12 +551,15 @@ class TeachingCenterEnglishView(APIView):
         except UseWordCard.MultipleObjectsReturned as error:    # pylint: disable=E1101
             print("不存", error)
             # 超過兩個以上的情況。
-            msg = 'UseWordCardExist'
-            return redirect('./english')
+            data = {
+                'message':'UseWordCardExist'
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response
 
         ser = {
-            "user_id" : 80928899,
-            "img" : TeachWordCard.objects.get(id = int(card_id)).img,
+            "user_id" : token_payload['id'],        # a是1 z是26... request data就是id
+            "img" : TeachWordCard.objects.get(id = int(request.data)).img,
             "word" : word,    
             "upload_date" : now_time.strftime("%Y-%m-%d"),
         }
@@ -544,8 +570,13 @@ class TeachingCenterEnglishView(APIView):
             serializer.save()
         else:
             print(serializer.errors)
-        # response = Response(status=status.HTTP_202_ACCEPTED)
-        return redirect('../ifm/kado')
+        
+        data = {
+                'message':'成功加入字卡'
+            }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+        
 # ------------------------學習中心_英文------------------------------------
 
 

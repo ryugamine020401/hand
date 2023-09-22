@@ -1,6 +1,8 @@
 // pages/[id].js
 
 import LoginState from '@/components/loginstate';
+import { Tillana } from 'next/font/google';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -41,6 +43,7 @@ function DynamicPage() {
   	return (
 
     	<div>
+			<Head><title>{title}</title></Head>
 			<LoginState
 				profilePath="../ifm"
 				resetPasswordPath="../reg/resetpassword"
