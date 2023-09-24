@@ -627,7 +627,6 @@ class TestOneViews(APIView):
     @swagger_auto_schema(
         operation_summary='測驗1 字母手勢辨識',
     )
-    @loging_check_test
     def get(self, request, param1, param2):
         """
         獲得頁面。
@@ -635,17 +634,17 @@ class TestOneViews(APIView):
         random_int = random.randint(1, 26)
         alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
         # print((TeachWordCard.objects.get(id=random_int).id+96))
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        payload = {
+        # response = Response(status=status.HTTP_200_OK)
+        data = {
             "para1": param1,
             "para2": param2,
-            "msg :" : 'test',
+            "message :" : 'test',
             "num" : param2+1,
             "mondai" : alphabet
         }
-        html = render(request, 'test_one.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
+    
     @swagger_auto_schema(
         operation_summary='加入個人字卡',
         request_body=openapi.Schema(
@@ -670,8 +669,28 @@ class TestOneViews(APIView):
         """
         使用者送出圖片。
         """
-        # print()
-        encoded_image = request.data['image']
+        auth = get_authorization_header(request).split()
+
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        encoded_image = request.data['imageBase64']
+        print(request.data.keys(),' 這')
+        print(encoded_image.split(',')[0],' 這')
         # 從 Base64 編碼的字符串中解碼圖片數據
         decoded_image = base64.b64decode(encoded_image.split(',')[1])
         # 將二進制圖片數據轉換為 NumPy 數組
@@ -679,17 +698,23 @@ class TestOneViews(APIView):
         image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
         # image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
         cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
+        print(request.data['ans'])
         result = hand_predict(img=image_array, correct=request.data['ans'])
         try:
             if result['result_score'] == result['correct_score']:
                 print("手勢正確", result['result'])
             else:
-                print(request.data['kotae'])
+                print(request.data['ans'])
             print(result)
         except KeyError as error_msg:
             print(error_msg, '沒有偵測到手會KeyError')
+            data = {
+                'message':'沒有偵測到手',
+            }
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
         payload = {
-            'redirect_url' : f'../../{param1}/{param2+1}',
+            'redirect_url' : f'./{param1}/q{param2+1}',
             'detected':result['hand_exist'],
         }
         return JsonResponse(payload)

@@ -37,8 +37,8 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
             if (response.status === 200){
                 // 驗證成功，具有登入狀態。
                 const responseData = await response.json();
-                console.log(responseData.loginstatus);
-                console.log(responseData.headimgurl);
+                //console.log(responseData.loginstatus);
+                //console.log(responseData.headimgurl);
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
                 setHeadImgURL(responseData.headimgurl);
@@ -77,7 +77,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
 
     useEffect(()=>{
         sendPostRequest();
-    }, [])
+    }, [logincheck])
     
     return(
 
