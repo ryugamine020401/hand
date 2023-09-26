@@ -6,8 +6,8 @@ import { useEffect } from "react";
 export default function Studyindex() {
     const resource = {
         'english' : '英文字母',
-        'testtype/1/q1' : '測試1',
-        'testtype/2/q2' : '測試2',        
+        'testtype/1/q0' : '測試1',
+        'testtype/2/q0' : '測試2',        
     };
     const initialChecking = async () => {
         const acccess_token = localStorage.getItem('access_token');

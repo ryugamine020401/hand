@@ -435,7 +435,7 @@ class LoginView(APIView):
                 # 如果帳號正確
                 access_token = creat_access_token(db_data)
                 refresh_token = creat_refresh_token(db_data)
-                print("沒有next參數。")
+                # print("沒有next參數。")
                 resource = [
                     '佈告欄', 
                     '討論區',

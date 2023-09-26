@@ -4,6 +4,7 @@
 import datetime
 import base64
 import random
+import jwt
 import numpy as np
 import mediapipe as mp
 import cv2
@@ -19,15 +20,17 @@ from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
+import rest_framework.exceptions
 
 
 from reg.views import decode_access_token
 from reg.models import UserIfm
 from reg.forms import LoginForm, EmailCheckForm
 from ifm.models import UseWordCard
-from study.models import TeachWordCard, TeachType
+from study.models import TeachWordCard, TeachType, Test1Ans
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
+from hand.settings import JWT_ACCRSS_TOKEN_KEY
 from hand.settings import ROOT_EMAIL, DOMAIN_NAME
 # from .hand.prediction import num2alphabet, predict
 def root_check(func):
@@ -570,13 +573,13 @@ class TeachingCenterEnglishView(APIView):
             serializer.save()
         else:
             print(serializer.errors)
-        
+
         data = {
                 'message':'成功加入字卡'
             }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
-        
+
 # ------------------------學習中心_英文------------------------------------
 
 
@@ -631,20 +634,117 @@ class TestOneViews(APIView):
         """
         獲得頁面。
         """
+        auth = get_authorization_header(request).split()
+
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        if param2 == 0:
+            try:
+                test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                print(test_instance)
+                if test_instance.kotae_go == '':
+                    test_instance.delete()
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
+
+                    instance = Test1Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    print(instance)
+                    instance.save()
+                    response = JsonResponse(data, status = status.HTTP_200_OK)
+                    return response
+                else:
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
+
+                    instance = Test1Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    print(instance)
+                    instance.save()
+                    response = JsonResponse(data, status = status.HTTP_200_OK)
+                    return response
+            except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
+                print(error_msg)
+                data = {
+                    'message' : '準備開始測驗...。'
+                }
+    
+                instance = Test1Ans()
+                instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                print(instance)
+                instance.save()
+                response = JsonResponse(data, status = status.HTTP_200_OK)
+                return response
+        # creat_test_token(UserIfm.objects.get(id=token_payload['id']))
+
+
         random_int = random.randint(1, 26)
         alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
-        # print((TeachWordCard.objects.get(id=random_int).id+96))
-        # response = Response(status=status.HTTP_200_OK)
+        while 1:
+            if (alphabet == 'z' or alphabet == 'j'):
+                random_int = random.randint(1, 26)
+                alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
+            else:
+                break
+        try:
+            test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+        except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
+            print(error_msg)
+            data = {
+                'message' : '不正確的管道連入網站',
+                'push' : '/study/testtype/1/q0'
+            }
+            response = JsonResponse(data, status=status.HTTP_302_FOUND)
+            return response
+
+        instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+        if param2 > 1:
+            if getattr(test_instance, instance_list[param2-1]) == '':
+                print('沒有，跳回普通頁面.')
+                Test1Ans.objects.filter(user_id=token_payload['id']).latest('id').delete()
+
+                data = {
+                    'message' : '不正確的管道連入網站',
+                    'push' : '/study/testtype/1/q0'
+                }
+                response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                return response
+        if param2 > 5:
+            print('第五題')
+            data = {
+                "message :" : '已完成測驗，跳轉至測驗結束畫面。',
+                'push' : '/study/test/result'
+            }
+            response = JsonResponse(data, status=status.HTTP_302_FOUND)
+            return response
         data = {
             "para1": param1,
             "para2": param2,
             "message :" : 'test',
             "num" : param2+1,
-            "mondai" : alphabet
+            "mondai" : alphabet,
+            # "nextPage" : ,
         }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
-    
+
     @swagger_auto_schema(
         operation_summary='加入個人字卡',
         request_body=openapi.Schema(
@@ -706,6 +806,12 @@ class TestOneViews(APIView):
             else:
                 print(request.data['ans'])
             print(result)
+            instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+            instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            # getattr(instance, instance_list[param2]) = result['result']
+            setattr(instance, instance_list[param2], result['result'])
+            instance.save()
+            
         except KeyError as error_msg:
             print(error_msg, '沒有偵測到手會KeyError')
             data = {
@@ -719,3 +825,31 @@ class TestOneViews(APIView):
         }
         return JsonResponse(payload)
 # ------------------------測驗_1------------------------------------
+
+#------------------------- TOKEN create、decode func. ----------------------------
+def creat_test_token(user, param2):
+    """
+    建立access token
+    """
+    payload_access = {
+        'email' : user.email,
+        'id' : user.id,
+        'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        'iat' : datetime.datetime.utcnow(),
+        'iss' : 'YMZK',
+        'param2' : param2,
+    }
+    test_token = jwt.encode(payload_access, JWT_ACCRSS_TOKEN_KEY, algorithm="HS256")
+    return test_token
+
+def decode_test_token(token):
+    """
+    拆解access_token
+    """
+    try:
+        payload = jwt.decode(token, JWT_ACCRSS_TOKEN_KEY, algorithms=['HS256'])
+        return {'email' : payload['email'], 'id' : payload['id'], 'param2':payload['param2']}
+    except Exception as error_msg:
+        print(error_msg)
+        text = "Forbidden, Signature has expired. TOKEN過期或沒有。"
+        raise rest_framework.exceptions.AuthenticationFailed(text)

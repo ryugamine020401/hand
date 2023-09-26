@@ -17,6 +17,8 @@ function TestPage() {
 	const [errormsg, setErrorMsg] = useState('');
 	const [ans, setAns] = useState("");
 	const [questionNum, setQuestionNum] = useState("");
+	const [checkquestion, setCheckQuestion] = useState(false);
+	
 
 	const captureImage = () => {
 		if (webcamRef.current) {
@@ -54,14 +56,36 @@ function TestPage() {
 			} else {
 				const responseData = await response.json();
 				console.log(responseData);
-				setErrorMsg(responseData.message);
-				
+				setErrorMsg(responseData.message);	
 			}
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
+	const StartTestButtonClick = async() => {
+		router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`)
+		const access_token = localStorage.getItem('access_token');
+		try {
+			const response = await fetch(`http://127.0.0.1:8000/study/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
+				method:'GET',
+				headers:{
+					'Authorization':`Bearer ${access_token}`,
+					'Content-Type' :'application/json'
+				}
+			});
+			if (response.status === 200){
+				const responseData = await response.json();
+				console.log(responseData);
+				setCheckQuestion(true);
+			} else {
+				const responseData = await response.json();
+				console.log(responseData);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
 	const loginstatetest = () => {
 		const access_token = localStorage.getItem('access_token');
@@ -72,6 +96,7 @@ function TestPage() {
   	}
 
 	const getQueation = async () => {
+		// const access_token = localStorage.getItem('access_token');
 		const access_token = localStorage.getItem('access_token');
 		const response = await fetch(`http://127.0.0.1:8000/study/test/${n}/${parseInt(m.replace("q", ""), 10)}/`, {
 			method:'GET',
@@ -88,6 +113,13 @@ function TestPage() {
 		} else {
 			const responseData = await response.json();
 			console.log(responseData);
+			if (response.status === 302) {
+				console.log(responseData.message);
+				router.push(responseData.push)
+			} else {
+				
+			}
+			
 		}
 	} 
 
@@ -117,19 +149,28 @@ function TestPage() {
   
   return (
     <div>
-      	<Head><title>測驗{n}</title></Head>
+      	<Head><title>測驗</title></Head>
       	<LoginState
 			profilePath="../../../ifm"
 			resetPasswordPath="../../../reg/resetpassword"
 			logoutPath="../../../"
 		/>
-		<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
-		{/* <p>This is question {m} for test type {n}.</p> */}
+		{!checkquestion&&
+			<div>
+				<h1>{ans}</h1>
+				<button onClick={()=>StartTestButtonClick()}>點擊開始考試</button>
+			</div>
+		}
 		
-		<div className={Style.videoContainer}>
-			<Webcam audio={false} ref={webcamRef} mirrored={false} className={Style.camera}/>			
-      	</div>
-		<button onClick={()=>captureImage()}>Capture Image</button>
+		{checkquestion && <div>
+			<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
+			
+			
+			<div className={Style.videoContainer}>
+				<Webcam audio={false} ref={webcamRef} mirrored={false} className={Style.camera}/>			
+			</div>
+			<button onClick={()=>captureImage()}>Capture Image</button>
+		</div>}
 		{imageBase64 && (
 			<div>
 			<h2>Captured Image</h2>
