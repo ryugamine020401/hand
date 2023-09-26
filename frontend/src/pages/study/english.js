@@ -10,7 +10,7 @@ export default function Studyindex() {
         const acccess_token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/study/english",{
+            const response = await fetch("http://127.0.0.1:8000/study/api/english",{
                 method:'GET',
                 headers:{
                     'Authorization':`Bearer ${acccess_token}`,
@@ -36,7 +36,7 @@ export default function Studyindex() {
         console.log(key);
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch("http://127.0.0.1:8000/study/english", {
+            const response = await fetch("http://127.0.0.1:8000/study/api/english", {
                 method:'POST',
                 body:JSON.stringify(key),
                 headers:{
