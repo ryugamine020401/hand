@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,7 +18,7 @@ from ifm.models import UserDefIfm
 from forum.forms import ForumForm, ResponseForm
 from forum.models import Discuss, DiscussResponse
 
-from hand.settings import ROOT_EMAIL
+from hand.settings import ROOT_EMAIL, DOMAIN_NAME
 
 # Create your views here.
 # ------------------------- root驗證裝飾器 ------------------------------
@@ -97,7 +98,7 @@ class ForumSendView(APIView):
     @swagger_auto_schema(
         operation_summary='發佈文章'
     )
-    @loging_check
+
     def get(self, request, artical_id=None): # pylint: disable=unused-argument
         """
         獲得發送的頁面。
@@ -126,7 +127,7 @@ class ForumSendView(APIView):
             }
         )
     )
-    @loging_check
+
     def post(self, request, artical_id=None): # pylint: disable=unused-argument
         """
         送出輸入的文字
@@ -143,39 +144,88 @@ class ForumSendView(APIView):
 
         return redirect('./main')
 
-class ForumView(APIView):
+class ForumAPIView(APIView):
     """
     所有人都可以閱讀討論區
     """
     @swagger_auto_schema(
         operation_summary='列出討論區所有內容',
     )
-    @loging_check
+
     def get(self, request, artical_id=None):    # pylint: disable=unused-argument
         """
         獲得發送的頁面。
         """
+        # instance = Discuss.objects.all()
+        # payload = {
+        #     "instance" : instance,
+        # }
+        # response = Response(status=status.HTTP_202_ACCEPTED)
+        # html = render(request, 'forum.html', payload).content.decode('utf-8')
+        # response.content = html
+        # return response
         instance = Discuss.objects.all()
-        payload = {
-            "instance" : instance,
+        diec = {}
+        for i in instance:
+            diec[i.id] = i.title
+        data = {
+            'title' : diec,
         }
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        html = render(request, 'forum.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
 
-class ForumArticalView(APIView):
+class ForumArticalAPIView(APIView):
     """
     有登入可以使用查看所有討論的功能。
     """
     @swagger_auto_schema(
         operation_summary='列出討論區詳細內容',
     )
-    @loging_check
+
     def get(self, request, artical_id):
         """
         獲得發送的頁面。
         """
+        instance = Discuss.objects.get(id=artical_id)
+        author = instance.user.id   # 獲得該文章使用者的 userid
+        user_instance = UserDefIfm.objects.get(user_id = author)
+        author_headimage_url = f'{DOMAIN_NAME}/ifm{user_instance.headimg.url}'  # 獲得文章作者的頭像
+        response = DiscussResponse.objects.filter(dis_id=artical_id)    # 獲得該頁面所有回復
+
+        response_list_name = ['id', 'response', 'upload_date']
+        response_diec = {}
+        response_person = {}
+        for i in response:
+
+            for name in response_list_name:
+                response_person[name] = getattr(i, name)
+
+            try:
+                userdef_instance = UserDefIfm.objects.get(user_id = i.user_id.id)
+                response_person['headimagUrl'] = f'{DOMAIN_NAME}/ifm{userdef_instance.headimg.url}'
+                response_person['username'] = i.user_id.username
+            except AttributeError as error_msg:
+                print(error_msg, 'ForumArticalAPIView')
+                userdef_instance = UserDefIfm.objects.get(user_id = 80928899)   # 預設頭貼
+                response_person['headimagUrl'] = f'{DOMAIN_NAME}/ifm{userdef_instance.headimg.url}'
+                response_person['username'] = '帳戶已刪除'
+            
+            response_diec[i.id] = response_person
+            response_person = {}
+            
+        print(response_diec)    # 該頁面所有使用者個回復
+
+        data = {
+            'message' : '請求成功',
+            'articalTitle' : instance.title,
+            'authorImageUrl' : author_headimage_url,
+            'articalContent' : instance.content,
+            'uploadDate' : instance.upload_date,
+            'response' : response_diec
+        }
+        print(data)
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
         instance = Discuss.objects.get(id=artical_id)
         author_headimg = UserDefIfm.objects.get(user_id = instance.user.id).headimg
         response = DiscussResponse.objects.filter(dis_id=artical_id)
@@ -212,6 +262,56 @@ class ForumArticalView(APIView):
         html = render(request, 'forum_artical.html', payload).content.decode('utf-8')
         response.content = html
         return response
+        # instance = Discuss.objects.get(id=artical_id)
+        # author = instance.user.id   # 獲得該文章使用者的 userid
+        # user_instance = UserDefIfm.objects.get(user_id = author)
+        # author_headimage_url = f'{DOMAIN_NAME}/ifm{user_instance.headimg.url}'  # 獲得文章作者的頭像
+        # response = DiscussResponse.objects.filter(dis_id=artical_id)    # 獲得該頁面所有回復
+
+        # artical_diec = {}
+        # artical_list_name = ['id', 'response', 'upload_date', 'dis_id', 'user_id']
+        # response_diec = {}
+        # response_person = {}
+        # for i in response:
+        #     for name in artical_list_name:
+        #         response_person[name] = i.response_person
+        #     response_diec[i.id] = response_person
+        #     response_person = {}
+
+        # response_instance = []
+        # for res in response:
+        #     # print(res.user_id)
+        #     try:
+        #         headimg = UserDefIfm.objects.get(user_id = res.user_id).headimg.url
+        #         username = res.user_id.username
+        #     except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
+        #         print(error_msg)
+        #         headimg = UserDefIfm.objects.get(user_id = 80928899).headimg.url
+        #         username = "已刪除帳號"
+        #     response_detial = {                     # 因為這邊的user_id也是FK 所以直接丟instance也沒關係
+        #         'headimg' : headimg,
+        #         'response' : res.response,
+        #         'username' : username
+        #     }
+        #     response_instance.append(response_detial)
+        #     # print(response_instance)
+        # # response_ifm = {
+        # #     "headimg" : ,
+        # #     "username" : ,
+        # # }
+        # payload = {
+        #     "instance" : instance,
+        #     "announcer" : instance.user.username,
+        #     "headimg" : str(author_headimg.url),
+        #     "response" : response_instance,
+        #     "forms" : forms
+        # }
+        # response = Response(status=status.HTTP_200_OK)
+        # html = render(request, 'forum_artical.html', payload).content.decode('utf-8')
+        # response.content = html
+        # return response
+
+
     @swagger_auto_schema(
         operation_summary='送出留言',
         request_body=openapi.Schema(
@@ -224,7 +324,7 @@ class ForumArticalView(APIView):
             }
         )
     )
-    @loging_check
+
     def post(self, request, artical_id):
         """
         使用者回覆留言
