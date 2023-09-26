@@ -114,8 +114,9 @@ function TestPage() {
 			const responseData = await response.json();
 			console.log(responseData);
 			if (response.status === 302) {
+				setCheckQuestion(false);
 				console.log(responseData.message);
-				router.push(responseData.push)
+				router.push(responseData.push);
 			} else {
 				
 			}
@@ -153,7 +154,7 @@ function TestPage() {
       	<LoginState
 			profilePath="../../../ifm"
 			resetPasswordPath="../../../reg/resetpassword"
-			logoutPath="../../../"
+			logoutPath="../../../uchi"
 		/>
 		{!checkquestion&&
 			<div>

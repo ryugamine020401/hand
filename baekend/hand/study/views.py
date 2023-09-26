@@ -662,24 +662,16 @@ class TestOneViews(APIView):
                     data = {
                         'message' : '準備開始測驗...。'
                     }
-
-                    instance = Test1Ans()
-                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
-                    print(instance)
-                    instance.save()
-                    response = JsonResponse(data, status = status.HTTP_200_OK)
-                    return response
                 else:
                     data = {
                         'message' : '準備開始測驗...。'
                     }
-
-                    instance = Test1Ans()
-                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
-                    print(instance)
-                    instance.save()
-                    response = JsonResponse(data, status = status.HTTP_200_OK)
-                    return response
+                instance = Test1Ans()
+                instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                print(instance)
+                instance.save()
+                response = JsonResponse(data, status = status.HTTP_200_OK)
+                return response
             except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
                 print(error_msg)
                 data = {
@@ -692,8 +684,6 @@ class TestOneViews(APIView):
                 instance.save()
                 response = JsonResponse(data, status = status.HTTP_200_OK)
                 return response
-        # creat_test_token(UserIfm.objects.get(id=token_payload['id']))
-
 
         random_int = random.randint(1, 26)
         alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
@@ -716,7 +706,7 @@ class TestOneViews(APIView):
 
         instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
         if param2 > 1:
-            if getattr(test_instance, instance_list[param2-1]) == '':
+            if len(getattr(test_instance, instance_list[param2-1])) == 1:
                 print('沒有，跳回普通頁面.')
                 Test1Ans.objects.filter(user_id=token_payload['id']).latest('id').delete()
 
@@ -742,6 +732,9 @@ class TestOneViews(APIView):
             "mondai" : alphabet,
             # "nextPage" : ,
         }
+        instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+        setattr(instance, instance_list[param2], alphabet)
+        instance.save()
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
 
@@ -789,8 +782,8 @@ class TestOneViews(APIView):
         token = auth[1]
         token_payload = decode_access_token(token)
         encoded_image = request.data['imageBase64']
-        print(request.data.keys(),' 這')
-        print(encoded_image.split(',')[0],' 這')
+        # print(request.data.keys(),' 這')
+        # print(encoded_image.split(',')[0],' 這')
         # 從 Base64 編碼的字符串中解碼圖片數據
         decoded_image = base64.b64decode(encoded_image.split(',')[1])
         # 將二進制圖片數據轉換為 NumPy 數組
@@ -806,12 +799,17 @@ class TestOneViews(APIView):
             else:
                 print(request.data['ans'])
             print(result)
+            # 檢索當前的 ichi 值
+            
             instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
             instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            current_value = getattr(instance, instance_list[param2], '')  # 使用getattr，並提供默認值
+            # 串聯 'a' 到當前值
+            new_value = current_value + result['result']
             # getattr(instance, instance_list[param2]) = result['result']
-            setattr(instance, instance_list[param2], result['result'])
+            setattr(instance, instance_list[param2], new_value)
             instance.save()
-            
+    
         except KeyError as error_msg:
             print(error_msg, '沒有偵測到手會KeyError')
             data = {
@@ -825,31 +823,3 @@ class TestOneViews(APIView):
         }
         return JsonResponse(payload)
 # ------------------------測驗_1------------------------------------
-
-#------------------------- TOKEN create、decode func. ----------------------------
-def creat_test_token(user, param2):
-    """
-    建立access token
-    """
-    payload_access = {
-        'email' : user.email,
-        'id' : user.id,
-        'exp' : datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-        'iat' : datetime.datetime.utcnow(),
-        'iss' : 'YMZK',
-        'param2' : param2,
-    }
-    test_token = jwt.encode(payload_access, JWT_ACCRSS_TOKEN_KEY, algorithm="HS256")
-    return test_token
-
-def decode_test_token(token):
-    """
-    拆解access_token
-    """
-    try:
-        payload = jwt.decode(token, JWT_ACCRSS_TOKEN_KEY, algorithms=['HS256'])
-        return {'email' : payload['email'], 'id' : payload['id'], 'param2':payload['param2']}
-    except Exception as error_msg:
-        print(error_msg)
-        text = "Forbidden, Signature has expired. TOKEN過期或沒有。"
-        raise rest_framework.exceptions.AuthenticationFailed(text)
