@@ -16,7 +16,7 @@ function DynamicPage() {
 
 	const GetBillboardcontent = async () => {
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/billboard/${id}/`, {
+			const response = await fetch(`http://127.0.0.1:8000/billboard/api/${id}/`, {
 				method:'GET',
             });
 			if (response.status === 200){

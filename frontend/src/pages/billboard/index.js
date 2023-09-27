@@ -10,7 +10,7 @@ export default function Billboard(){
 
     const initialSetPage = async () =>{
         try {
-            const response = await fetch("http://127.0.0.1:8000/billboard/",{
+            const response = await fetch("http://127.0.0.1:8000/billboard/api/gettitle/",{
                 method:'GET',
             });
 
