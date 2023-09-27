@@ -4,7 +4,6 @@
 import datetime
 import base64
 import random
-import jwt
 import numpy as np
 import mediapipe as mp
 import cv2
@@ -20,8 +19,6 @@ from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
-import rest_framework.exceptions
-
 
 from reg.views import decode_access_token
 from reg.models import UserIfm
@@ -30,7 +27,6 @@ from ifm.models import UseWordCard
 from study.models import TeachWordCard, TeachType, Test1Ans
 from study.forms import UploadEnglishForm, UploadTeachTypeForm
 from study.serializers import UseWordCardSerializer
-from hand.settings import JWT_ACCRSS_TOKEN_KEY
 from hand.settings import ROOT_EMAIL, DOMAIN_NAME
 # from .hand.prediction import num2alphabet, predict
 def root_check(func):
@@ -188,118 +184,6 @@ def hand_predict(img, correct):
         return payload
 
 # ------------------------- 辨識 ------------------------------
-# ------------------------- test ------------------------------
-def aaa(img):
-    """
-    老鐘寫的，可以用來辨識是否有手。
-    """
-    mp_hands = mp.solutions.hands                    # mediapipe 偵測手掌方法
-    # img = cv2.imread('D:/work/aaa.jpg')
-    with mp_hands.Hands(
-        model_complexity=1,     # 複雜度越高越準確，但會增加延遲
-        max_num_hands=1,
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5) as hands:
-        results = hands.process(img)  # 偵測手掌
-        if results.multi_hand_landmarks:
-            return True
-        else:
-            return False
-
-class TestUploadImgView(APIView):
-    """
-    上傳圖片用的
-    """
-    @swagger_auto_schema(
-        operation_summary="測試上傳圖片至模型"
-    )
-    @root_check
-    def get(self, request):
-        """
-        測試上傳圖片的views
-        """
-        form = UploadEnglishForm()
-        context = {
-            'form' : form,
-        }
-        response  = Response(status=status.HTTP_202_ACCEPTED)
-        html =  render(request, './test.html', context=context)
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='測試上傳圖片至模型 ',
-        # operation_description='我是說明',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'img': openapi.Schema(
-                    type=openapi.TYPE_FILE,
-                    description='User Name'
-                ),
-            }
-        )
-    )
-    @root_check
-    def post(self, request):
-        """
-        送出修改後的資料
-        """
-        img = request.FILES['img']
-        print(request.data)
-        # print(img.read()) #獲得二進制資料
-        # 將二進位資料轉換成NumPy陣列
-        np_image = np.frombuffer(img.read(), np.uint8)
-        image_array = cv2.imdecode(np_image, cv2.IMREAD_COLOR) # pylint: disable=E1101
-        # image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
-        print(image_array.size)
-        result = aaa(img=image_array)
-        print("結果一", result)
-        result = hand_predict(img=image_array, correct='C')
-        print("結果二", result)
-        # print(np_image)
-        # # 使用OpenCV讀取圖片
-        # img = cv2.imdecode(np_image, cv2.IMREAD_COLOR)  # pylint: disable=E1101
-        # print(img)
-        # print(aaa(img=img))
-        return Response({"successful"})
-
-class UpLoadImgView(APIView):
-    """
-    已棄用
-    """
-    @swagger_auto_schema(
-        operation_summary='已棄用',
-    )
-    def get(self, request):
-        """
-        開相機跟傳輸資料基本上只有前端再處理。
-        """
-        return render(request, 'kamera.html', {})
-    @swagger_auto_schema(
-        operation_summary='已棄用',
-    )
-    def post(self, request):
-        """
-        後端接收照片並處理後
-        """
-        encoded_image = request.data['image']
-        # 從 Base64 編碼的字符串中解碼圖片數據
-        decoded_image = base64.b64decode(encoded_image.split(',')[1])
-        # 將二進制圖片數據轉換為 NumPy 數組
-        image_array = np.frombuffer(decoded_image, dtype=np.uint8)
-        image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
-        image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
-        print(image_array.size)
-        result = aaa(img=image_array)
-        print("結果一", result)
-        result = hand_predict(img=image_array, correct='c')
-        print("結果二", result)
-        # path = '/home/ymzk/桌面/HAND/hand/study/TEST/img.png'
-        # cv2.imwrite(path, image_array) # pylint: disable=E1101
-        return JsonResponse({'message': 'Photo uploaded successfully'})
-# ------------------------- test ------------------------------
-
-
 # --------------------------------上傳教學圖片--------------------------------
 class UploadStudyFileView(APIView):
     """
@@ -677,7 +561,7 @@ class TestOneViews(APIView):
                 data = {
                     'message' : '準備開始測驗...。'
                 }
-    
+
                 instance = Test1Ans()
                 instance.user_id = UserIfm.objects.get(id=token_payload['id'])
                 print(instance)
@@ -800,7 +684,7 @@ class TestOneViews(APIView):
                 print(request.data['ans'])
             print(result)
             # 檢索當前的 ichi 值
-            
+
             instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
             instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
             current_value = getattr(instance, instance_list[param2], '')  # 使用getattr，並提供默認值
@@ -809,7 +693,7 @@ class TestOneViews(APIView):
             # getattr(instance, instance_list[param2]) = result['result']
             setattr(instance, instance_list[param2], new_value)
             instance.save()
-    
+
         except KeyError as error_msg:
             print(error_msg, '沒有偵測到手會KeyError')
             data = {

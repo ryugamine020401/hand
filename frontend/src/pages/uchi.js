@@ -13,7 +13,7 @@ export default function Home(){
     const resource = ['佈告欄', '討論區', '學習中心', '線上聊天室', '個人資訊']
     const resourceObjext = {
         './billboard':'佈告欄', 
-        './discuss':'討論區', 
+        './forum':'討論區', 
         './study':'學習中心', 
         './onlinechat':'線上聊天室', 
         './ifm':'個人資訊'}

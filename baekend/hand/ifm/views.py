@@ -140,8 +140,9 @@ class ResetprofileView(APIView):
             image_name = 'crop.png'
         # image_extension_name = request.data['imageNameExtension']
         print(image_name)
-        # 前端先用 Base64 傳過來
+        
         encoded_image = request.data['headimage']
+
         # print("這裡",encoded_image)
         headimage_binary = base64.b64decode(encoded_image.split(',')[1])
         directory_path = f'{MEDIA_ROOT}/headimage'
@@ -321,66 +322,3 @@ class UserWordCardAPIView(APIView):
 
 
 # -------------------------- 獲得使用者個人字卡API -----------------------
-
-# --------------------------------字卡頁面--------------------------------
-class KadoView(APIView):
-    """
-    使用者個人字卡的頁面。 已經棄用
-    """
-    @swagger_auto_schema(
-        operation_summary='獲取個人字卡 已經棄用',
-    )
-
-    def get(self, request):
-        """
-        獲取使用者個人字卡
-        """
-
-            # get預期是會拿回一個instance 但filter可以拿回多個
-        # wordcard_db = UseWordCard.objects.get(user_id=user_id)
-        wordcard_db = UseWordCard.objects.filter(user_id=80928899)
-        card_img_list = []
-        for instance in wordcard_db:
-            print(instance.img.url)
-            card_img_list.append(instance.img.url)
-            print(card_img_list)
-        context = {
-            "allwordcard" : wordcard_db
-        }
-        print(card_img_list)
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        html = render(request, './userwordcard.html', context=context).content.decode('utf-8')
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='刪除個人字卡',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'word':openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='字卡內容'
-                )
-            }
-        )
-    )
-    def post(self, request):
-        """
-        刪除字卡
-        """
-        token = request.COOKIES.get('access_token')
-        if token:
-            user_id = decode_access_token(token)['id']
-        print(request.data)
-        for word in request.data:
-            # print(str(word).rsplit('_', maxsplit=1)[-1])
-            key = str(word).rsplit('_', maxsplit=1)[-1]
-        UseWordCard.objects.filter(user_id = user_id, word = key).delete()
-        return redirect('./kado')
-    # def delete(self, request):
-    #     """
-    #     刪除字卡
-    #     """
-    #     print(request.data)
-    #     return Response("delete")
-# --------------------------------字卡頁面--------------------------------

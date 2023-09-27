@@ -12,6 +12,7 @@ function DynamicPage() {
   	const { id } = router.query;
 	const [title, setTitle] = useState();
 	const [content, setContent] = useState();
+	const [userResponse, setuUserResponse] = useState();
 	const [date, setDate] = useState();
 	const [articalheadimage, setArticalHeadimage] = useState();
 	const [response, setResponse] = useState();
@@ -39,7 +40,30 @@ function DynamicPage() {
 			console.error(error);
 		}
 	}
+	const sendUserResponsebuttonClick = async () => {
+		try {
+			const access_token = localStorage.getItem('access_token');
+			const response = await fetch(`http://127.0.0.1:8000/forum/api/${id}/`,{
+				method:'POST',
+				body:JSON.stringify({userResponse}),
+				headers:{
+					'Authorization': `$Bearer ${access_token}`,
+					'Content-Type':'Application/json',
+				}
+			});
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData);
+				router.reload();
+			} else {
+				const responseData = await response.json();
+				console.log(responseData);
+			}
 
+		} catch (error) {
+			console.error(error)
+		}
+	}
 
     useEffect(()=>{
 		GetArticalcontent();
@@ -76,26 +100,30 @@ function DynamicPage() {
 								height = {30}
 								src = {response[id].headimagUrl}
 							/>
-							<span key={`response_date_${index}`}>{response[id].username}  </span>
+							<span key={`response_name_${index}`}>{response[id].username}  </span>
 							<span key={`response_date_${index}`}>{response[id].upload_date}</span>
 							<div key={`response_content_${index}`}>{response[id].response}</div>
 
-							{/* {index} */}
 						</div>
-						// <div key={`response_${id}`}>
-
-						// Object.keys(response[id]).map((key, index)=>(
-						// 	<div key={`response_content__${key}`}>
-						// 		{/* <div key={`responsecontent_${response[index][key]}`}>{key}</div> */}
-						// 		{response[id][key]}
-						// 	</div>
-
-						// ))
-
-						// // </div>
+						
 					))}
 
 				</div>}
+
+				<div className='usersendResponsecomtainer'>
+						<textarea 
+							id="content"
+							name="content"
+							required
+							
+							onChange={(e)=>setuUserResponse(e.target.value)}
+						/>
+						<button
+							onClick={sendUserResponsebuttonClick}
+						>
+							送出回復
+						</button>
+				</div>
     	</div>
 	)
 }
