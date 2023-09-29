@@ -14,6 +14,7 @@ export default function ForgetPassword() {
     const [countdown, setCountdown] = useState(60);
     const [buttonEnabled, setButtonEnabled] = useState(true);
 	const [valSuccess, setValSuccess] = useState(false);
+	const [valEnabled, setValEnabled] = useState(false);
 
 	/* 已經驗證完後需要的 */
 	const [password, setPassword] = useState("");   // 第一次密碼
@@ -129,6 +130,7 @@ export default function ForgetPassword() {
 	}
 	setErrorMessage("");
     setButtonEnabled(false);
+	setValEnabled(true);
     setCountdown(60);
     try{
 		const response = await fetch("http://127.0.0.1:8000/reg/api/forgetpwdvalresend", {
@@ -160,48 +162,55 @@ export default function ForgetPassword() {
 	</Head>
 	  {!valSuccess && <div className="novaldate">
 		<h1>忘記密碼</h1>
-		<label htmlFor="email">Email:</label>
-		<input
-			type="text"
-			id="email"
-			name="email"
-			required
-			value={email}
-			onChange={(e) => setEmail(e.target.value)}
-		/>
-		<br />
-		<label htmlFor="validationNum">驗證碼:</label>
-		<input
-			type="number"
-			id="validationNum"
-			name="validation_num"
-			required
-			value={validationNum}
-			onChange={(e) => setValidationNum(e.target.value)}
-		/>
-		<br />
-		{ErrorMessage && <p style={{color:"red"}}>{ErrorMessage}</p>}
-		<div id={ButtonStyle.buttoncontainer}>
-			<button
-			className="sendEmail"
-			id={ButtonStyle.button}
-			onClick={handleSendEmailClick}
-			disabled={!buttonEnabled}
-			>
-			發送郵件
-			</button>
-			{!buttonEnabled && <span style={{ color: "red" }}>{message}</span>}
-		</div>
-
-		<div id={ButtonStyle.buttoncontainer}>
-			<button 
-				className="sendValdationnum" 
+		<div className="email_container">
+			<label htmlFor="email">電子郵件:</label>
+			<input
+				type="text"
+				id="email"
+				name="email"
+				required
+				value={email}
+				onChange={(e) => setEmail(e.target.value)}
+			/>
+			<br />
+			{ErrorMessage && <p style={{color:"red"}}>{ErrorMessage}</p>}
+			<div id={ButtonStyle.buttoncontainer}>
+				<button
+				className="sendEmail"
 				id={ButtonStyle.button}
-				onClick={hadsendValnumClick}
-			>
-			驗證
-			</button>
+				onClick={handleSendEmailClick}
+				disabled={!buttonEnabled}
+				>
+				發送郵件
+				</button>
+				{!buttonEnabled && <span style={{ color: "red" }}>{message}</span>}
+			</div>
 		</div>
+		<br />
+
+		{valEnabled && <div className="validation_container">
+			<label htmlFor="validationNum">驗證碼:</label>
+			<input
+				type="number"
+				id="validationNum"
+				name="validation_num"
+				required
+				value={validationNum}
+				onChange={(e) => setValidationNum(e.target.value)}
+			/>
+			
+
+			<div id={ButtonStyle.buttoncontainer}>
+				<button 
+					className="sendValdationnum" 
+					id={ButtonStyle.button}
+					onClick={hadsendValnumClick}
+				>
+				驗證
+				</button>
+			</div>
+		</div>}
+
       </div> }
 
 		{valSuccess && 

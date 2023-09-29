@@ -12,10 +12,12 @@ function DynamicPage() {
   	const { id } = router.query;
 	const [title, setTitle] = useState();
 	const [content, setContent] = useState();
+	const [responsehint, setResponsehint] = useState('');
 	const [userResponse, setuUserResponse] = useState();
 	const [date, setDate] = useState();
 	const [articalheadimage, setArticalHeadimage] = useState();
 	const [response, setResponse] = useState();
+	const [logincheck, setLogincheck] = useState();
 	// console.log(1);
 
 	const GetArticalcontent = async () => {
@@ -64,8 +66,18 @@ function DynamicPage() {
 			console.error(error)
 		}
 	}
-
+	const checklogin = () => {
+		const access_token = localStorage.getItem('access_token');
+		if (access_token === null){
+			setResponsehint('登入後方可留言。');
+			setLogincheck(false);
+ 		} else {
+			setResponsehint('');
+			setLogincheck(true);
+		}
+	}
     useEffect(()=>{
+		checklogin();
 		GetArticalcontent();
 		// console.log(2);
     },[])
@@ -115,11 +127,13 @@ function DynamicPage() {
 							id="content"
 							name="content"
 							required
-							
+							defaultValue={responsehint}
 							onChange={(e)=>setuUserResponse(e.target.value)}
+							disabled={!logincheck}
 						/>
 						<button
 							onClick={sendUserResponsebuttonClick}
+							disabled={!logincheck}
 						>
 							送出回復
 						</button>

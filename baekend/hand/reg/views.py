@@ -221,10 +221,24 @@ class RegisterView(APIView):
         request.data['password'] = sha512(passward.encode('utf-8')).hexdigest()
         request.data['validation_num'] = "".join(random.choices("0123456789", k=6))
         if serializer.is_valid():
+            serializer.save()
+            # 拉出要比對的實例
+            user = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{tmp}");')[0]
+            payload = {
+                'email' : user.email,
+                'val1' : user.validation_num,   # 驗證6碼
+                'val2' : user.validation,       # 狀態
+                'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=7),
+                'iat' : datetime.datetime.utcnow(),
+            }
+            validaton_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
             email_template = render_to_string(
                 './signup_success_email.html',
-                {'username': request.data['username'],
-                 'validation_num' : request.data['validation_num']}
+                {
+                    'username': request.data['username'],
+                    'validation_num' : request.data['validation_num'],
+                    'validaton_token': validaton_token,
+                }
             )
             email = EmailMessage(
                 '註冊成功通知信',  # 電子郵件標題
@@ -238,19 +252,10 @@ class RegisterView(APIView):
                 email.send()
             except OSError as error_msg:
                 print(error_msg)
-            serializer.save()
-            # 拉出要比對的實例
-            user = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{tmp}");')[0]
-            payload = {
-                'email' : user.email,
-                'val1' : user.validation_num,   # 驗證6碼
-                'val2' : user.validation,       # 狀態
-                'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=7),
-                'iat' : datetime.datetime.utcnow(),
-            }
-            validaton_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+            access_token = creat_access_token(UserIfm.objects.get(email = user.email))
             data = {
                 'validaton_token' : validaton_token,
+                'access_token' : access_token,
                 'message' : '註冊成功，請進入信箱驗證。'
             }
             response = JsonResponse(data, status=status.HTTP_201_CREATED)
@@ -261,7 +266,6 @@ class RegisterView(APIView):
         return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
 
 # ---------------------------- 註冊 ----------------------------------------------
-
 # ---------------------------- 註冊驗證 ------------------------------------------
 class RegisterValidationView(APIView):
     """
@@ -275,6 +279,7 @@ class RegisterValidationView(APIView):
         當用戶註冊完成後使用得到驗證碼進行驗證所打的POST
         直接抓取cookie方便在註冊完成後直接點及連結進行驗證
         """
+        print(request)
         auth = get_authorization_header(request).split()
         try:
             if auth[1] == b'null':

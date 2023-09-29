@@ -6,24 +6,17 @@ import re
 import base64
 from io import BytesIO
 
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-# from django.core.mail import EmailMessage
-# from django.conf import settings
-# from django.template.loader import render_to_string
 
-
-from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 
 from reg.views import decode_access_token
-# from reg.form import RegisterForm, LoginForm
 from reg.serializers import RegisterSerializer
 from reg.models import UserIfm
 from ifm.serializers import UserDefIfmSerializer
@@ -140,7 +133,7 @@ class ResetprofileView(APIView):
             image_name = 'crop.png'
         # image_extension_name = request.data['imageNameExtension']
         print(image_name)
-        
+
         encoded_image = request.data['headimage']
 
         # print("這裡",encoded_image)
@@ -169,10 +162,10 @@ class ResetprofileView(APIView):
         # 正則表達式 匹配到
         # \. 一個點
         # [^.]+ 非點的所有字元多個
-        # $ 代表結束 
+        # $ 代表結束
         regex = r'\.[^.]+$'
         # findall 會抓出所有 但只會匹配到一個 所以在list[0]
-        # 出來後會是str .png 之類的，所以把點去掉 [1:]                
+        # 出來後會是str .png 之類的，所以把點去掉 [1:]
         image_neme_extension = re.findall(regex, image_name)[0]
         # print(image_name+image_extension_name)
         # 創建 InMemoryUploadedFile 對象，模擬上傳的文件
@@ -313,7 +306,7 @@ class UserWordCardAPIView(APIView):
             return response
         token_payload = decode_access_token(auth[1])
         user_id = token_payload['id']
-        # 選擇出符合使用者選項 與 該使用者的字卡刪除      body只有要刪除的單字    
+        # 選擇出符合使用者選項 與 該使用者的字卡刪除      body只有要刪除的單字
         UseWordCard.objects.filter(user_id=user_id, word=request.data).delete()
         data = {
             'message' : '成功刪除',

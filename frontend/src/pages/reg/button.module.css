@@ -8,14 +8,14 @@
 
 }
 #button {
-    width: 75%;
-    height: 75%;
+    width: 50%;
+    height: 60%;
     font-size: 40px;
     border: 1px solid rgba(241, 233, 233, 0);
-    margin: 0px 25px;   /* 上 下 */
+    margin: 20px 25px;   /* 上 下 */
     padding: 8px 16px;   /* 上 下 */
     border-radius: 10px;
-    background-color: rgba(156, 32, 156, 0.429);
+    background-color: rgba(101, 90, 229, 0.429);
 }
 #button:hover{
     background-color: rgb(117, 117, 117);

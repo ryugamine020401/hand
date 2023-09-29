@@ -12,89 +12,49 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-from django.shortcuts import render, redirect
+# from django.shortcuts import render
 from django.http import JsonResponse
 
-from rest_framework.response import Response
+# from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 
 from reg.views import decode_access_token
 from reg.models import UserIfm
-from reg.forms import LoginForm, EmailCheckForm
+# from reg.forms import LoginForm, EmailCheckForm
 from ifm.models import UseWordCard
-from study.models import TeachWordCard, TeachType, Test1Ans
-from study.forms import UploadEnglishForm, UploadTeachTypeForm
+from study.models import TeachWordCard, Test1Ans
 from study.serializers import UseWordCardSerializer
-from hand.settings import ROOT_EMAIL, DOMAIN_NAME
+from hand.settings import DOMAIN_NAME
 # from .hand.prediction import num2alphabet, predict
-def root_check(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request):
-        print("\n",request, req)
-        token = request.COOKIES.get('access_token')
+# def root_check(func):
+#     """
+#     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
+#     """
+#     def wrapper(req, request):
+#         print("\n",request, req)
+#         token = request.COOKIES.get('access_token')
 
-        if not token:
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
-            }
-            response = Response(status=status.HTTP_202_ACCEPTED)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
-            return response
-        user = decode_access_token(token)['id']
-        instance = UserIfm.objects.get(email=ROOT_EMAIL)
-        root_id = instance.id
-        if user == root_id:
-            result = func(req, request)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
-        return result
-    return wrapper
-
-# ------------------------- 登入驗證裝飾器 ------------------------------
-def loging_check(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request):
-        token = request.COOKIES.get('access_token')
-        if not token:
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
-            }
-            response = Response(status=status.HTTP_200_OK)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
-            return response
-        else:
-            valdation = decode_access_token(token)['val']
-            if valdation:
-                # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.")
-            else:
-                # 驗證失敗，代表使用信箱沒有驗證
-                print()
-                form = EmailCheckForm()
-                payload = {
-                    "form" : form,
-                }
-                response = Response(status=status.HTTP_200_OK)
-                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-                response.content = html
-                return response
-
-            result = func(req, request)
-        return result
-    return wrapper
-# ------------------------- 登入驗證裝飾器 ------------------------------
+#         if not token:
+#             form = LoginForm()
+#             payload = {
+#                 "form" : form,
+#                 "msg" : "請先登入後再執行該操作。"
+#             }
+#             response = Response(status=status.HTTP_202_ACCEPTED)
+#             html = render(request, 'login.html', payload).content.decode('utf-8')
+#             response.content = html
+#             return response
+#         user = decode_access_token(token)['id']
+#         instance = UserIfm.objects.get(email=ROOT_EMAIL)
+#         root_id = instance.id
+#         if user == root_id:
+#             result = func(req, request)
+#         else:
+#             return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
+#         return result
+#     return wrapper
 # ------------------------- 辨識 ------------------------------
 
 model = load_model("study/signDot_with_z.h5")
@@ -184,122 +144,121 @@ def hand_predict(img, correct):
         return payload
 
 # ------------------------- 辨識 ------------------------------
-# --------------------------------上傳教學圖片--------------------------------
-class UploadStudyFileView(APIView):
-    """
-    上傳圖片用的
-    """
-    @swagger_auto_schema(
-        operation_summary='上傳教學圖片 root',
-    )
-    @root_check
-    def get(self, request):
-        """
-        獲得修改的頁面
-        """
-        form = UploadEnglishForm()
-        context = {
-            'form' : form,
-        }
-        response  = Response(status=status.HTTP_202_ACCEPTED)
-        html =  render(request, './uploadimage.html', context=context)
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='上傳教學圖片',
-        # operation_description='我是說明',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'img': openapi.Schema(
-                    type=openapi.TYPE_FILE,
-                    description='教學圖片'
-                ),
-                'des': openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='該資源的描述'
-                ),
-            }
-        )
-    )
-    @root_check
-    def post(self, request):
-        """
-        送出修改後的資料
-        """
-        des = request.data.getlist('describe')
-        img = request.data.getlist('img')
-        print(des)
-        print(img)
-        # for i in range(len(des)):
-        #     print(type(i))
-        #     database = TeachWordCard()
-        #     database.img = img[i]
-        #     database.describe = des[i]
-        #     database.upload_date = '2023-08-11'
-        #     database.save()
-        #     print(database)
-        for i, item in enumerate(img):
-            database = TeachWordCard()
-            database.img = img[i]
-            database.describe = des[i]
-            database.upload_date = '2023-08-11'
-            database.save()
-            print(database, f'已經儲存到第{i+1}筆資料。{item}')
-        return Response({"successful"})
-
+# --------------------------------上傳教學圖片------暫時棄用----------------------
+# class UploadStudyFileView(APIView):
+#     """
+#     上傳圖片用的
+#     """
+#     @swagger_auto_schema(
+#         operation_summary='上傳教學圖片 root',
+#     )
+#     @root_check
+#     def get(self, request):
+#         """
+#         獲得修改的頁面
+#         """
+#         form = UploadEnglishForm()
+#         context = {
+#             'form' : form,
+#         }
+#         response  = Response(status=status.HTTP_202_ACCEPTED)
+#         html =  render(request, './uploadimage.html', context=context)
+#         response.content = html
+#         return response
+#     @swagger_auto_schema(
+#         operation_summary='上傳教學圖片',
+#         # operation_description='我是說明',
+#         request_body=openapi.Schema(
+#             type=openapi.TYPE_OBJECT,
+#             properties={
+#                 'img': openapi.Schema(
+#                     type=openapi.TYPE_FILE,
+#                     description='教學圖片'
+#                 ),
+#                 'des': openapi.Schema(
+#                     type=openapi.TYPE_STRING,
+#                     description='該資源的描述'
+#                 ),
+#             }
+#         )
+#     )
+#     @root_check
+#     def post(self, request):
+#         """
+#         送出修改後的資料
+#         """
+#         des = request.data.getlist('describe')
+#         img = request.data.getlist('img')
+#         print(des)
+#         print(img)
+#         # for i in range(len(des)):
+#         #     print(type(i))
+#         #     database = TeachWordCard()
+#         #     database.img = img[i]
+#         #     database.describe = des[i]
+#         #     database.upload_date = '2023-08-11'
+#         #     database.save()
+#         #     print(database)
+#         for i, item in enumerate(img):
+#             database = TeachWordCard()
+#             database.img = img[i]
+#             database.describe = des[i]
+#             database.upload_date = '2023-08-11'
+#             database.save()
+#             print(database, f'已經儲存到第{i+1}筆資料。{item}')
+#         return Response({"successful"})
 # ----------------------------上傳教學圖片--------------------------------
 
-# ----------------------------上傳教學類別--------------------------------
-class UploadTeachTypeView(APIView):
-    """
-    上傳教學類別
-    """
-    @swagger_auto_schema(
-        operation_summary='上傳教學類別 root',
-    )
-    @root_check
-    def get(self, request):
-        """
-        獲得上傳教學類別的頁面
-        """
-        form = UploadTeachTypeForm()
-        context = {
-            'form' : form,
-        }
-        response  = Response(status=status.HTTP_202_ACCEPTED)
-        html =  render(request, './upload.html', context=context)
-        response.content = html
-        return response
-    @swagger_auto_schema(
-        operation_summary='上傳教學類別',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'type': openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description='該資源的描述'
-                ),
-            }
-        )
-    )
-    @root_check
-    def post(self, request):
-        """
-        送出教學類別
-        """
-        des = request.data.getlist('type')
-        print(des)
-        # for i in range(len(des)):
-        #     print(type(i))
-        #     database = TeachType()
-        #     database.type = des[i]
-        for num, item in enumerate(des):
-            database = TeachType()
-            print(num)
-            database.type = item
-            database.save()
-        return Response({"successful"})
+# ----------------------------上傳教學類別--------------暫時棄用-------------
+# class UploadTeachTypeView(APIView):
+#     """
+#     上傳教學類別
+#     """
+#     @swagger_auto_schema(
+#         operation_summary='上傳教學類別 root',
+#     )
+#     @root_check
+#     def get(self, request):
+#         """
+#         獲得上傳教學類別的頁面
+#         """
+#         form = UploadTeachTypeForm()
+#         context = {
+#             'form' : form,
+#         }
+#         response  = Response(status=status.HTTP_202_ACCEPTED)
+#         html =  render(request, './upload.html', context=context)
+#         response.content = html
+#         return response
+#     @swagger_auto_schema(
+#         operation_summary='上傳教學類別',
+#         request_body=openapi.Schema(
+#             type=openapi.TYPE_OBJECT,
+#             properties={
+#                 'type': openapi.Schema(
+#                     type=openapi.TYPE_STRING,
+#                     description='該資源的描述'
+#                 ),
+#             }
+#         )
+#     )
+#     @root_check
+#     def post(self, request):
+#         """
+#         送出教學類別
+#         """
+#         des = request.data.getlist('type')
+#         print(des)
+#         # for i in range(len(des)):
+#         #     print(type(i))
+#         #     database = TeachType()
+#         #     database.type = des[i]
+#         for num, item in enumerate(des):
+#             database = TeachType()
+#             print(num)
+#             database.type = item
+#             database.save()
+#         return Response({"successful"})
 
 # ----------------------------上傳教學類別--------------------------------
 
@@ -337,26 +296,6 @@ class TeachingCenterView(APIView):
         }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
-    @swagger_auto_schema(
-        operation_summary='上傳教學類別',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'redirect_path': openapi.Schema(
-                    type=openapi.TYPE_INTEGER,
-                    description='所有擁有的資源'
-                ),
-            }
-        )
-    )
-    def post(self, request):
-        """
-        使用者點選後自動跳轉
-        """
-        keys_list = list(request.data.keys())
-        redirect_path = keys_list[-1]
-        # print(redirect_path)
-        return redirect(f'./{redirect_path}')
 
 # ----------------------------學習中心------------------------------------
 # ------------------------學習中心_英文------------------------------------
@@ -468,45 +407,6 @@ class TeachingCenterEnglishView(APIView):
 
 
 # ------------------------測驗_1-------------------------------------------
-# ------------------- 登入驗證裝飾器 ---------------------
-def loging_check_test(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request, param1, param2):
-        token = request.COOKIES.get('access_token')
-        if not token:
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
-            }
-            response = Response(status=status.HTTP_200_OK)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
-            return response
-        else:
-            valdation = decode_access_token(token)['val']
-            if valdation:
-                # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.")
-            else:
-                # 驗證失敗，代表使用信箱沒有驗證
-                form = EmailCheckForm()
-                payload = {
-                    "form" : form,
-                }
-                response = Response(status=status.HTTP_200_OK)
-                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-                response.content = html
-                return response
-
-            result = func(req, request, param1, param2)
-        return result
-    return wrapper
-# ------------------- 登入驗證裝飾器 ---------------------
-
-# ------------------------測驗_1------------------------------------
 class TestOneViews(APIView):
     """
     測驗1 英文26字母手勢辨識

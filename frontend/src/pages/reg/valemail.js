@@ -3,6 +3,7 @@
   若沒有驗證過的帳號登入會自動跳出此頁面。
 
 */
+import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
@@ -39,9 +40,9 @@ export default function Valemail({email}){
             if( response.status === 200){
                 const responseData = await response.json();
                 console.log(responseData.message);
-                router.push('./login');
-                localStorage.clear('access_token');
-                localStorage.clear('refresh_token');
+                router.push('../uchi');
+                // localStorage.clear('access_token');
+                // localStorage.clear('refresh_token');
             } else {
                 const responseData = await response.json();
                 console.log(responseData.message);
@@ -49,7 +50,7 @@ export default function Valemail({email}){
                 if (response.status === 403){
                     localStorage.clear('access_token');
                     localStorage.clear('refresh_token');
-                    router.push('./login')
+                    router.push('./login');
                 }
             }
         } catch (error) {
@@ -124,6 +125,11 @@ export default function Valemail({email}){
             <Head>
                 <title>驗證信箱</title>
             </Head>
+            <LoginState
+                 profilePath="../../ifm"
+                 resetPasswordPath="./"
+                 logoutPath=""
+            />
             <h1>驗證頁面</h1>
             <label>驗證碼</label>
             <input

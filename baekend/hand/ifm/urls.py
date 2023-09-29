@@ -10,9 +10,7 @@ from ifm.views import UserWordCardAPIView
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
-    # path('', IfmView.as_view(), name='Imformation'),
     path('api/reMeishi', ResetprofileView.as_view(), name='ReMeishi'),
-    # path('kado', KadoView.as_view(), name='Kado'),
     path('api/card', UserWordCardAPIView.as_view(), name="UserWordCardAPI"),
     path('api/userinformation', UserInformationAPIViwe.as_view(), name="UserInformationAPI"),
 ]

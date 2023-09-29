@@ -28,13 +28,19 @@ export default function CountdownTimer() {
     const sendPostRequest = async () => {
         try {
             // 執行POST請求到指定的網址
-            const validaton_token = localStorage.getItem('validaton_token');
+            let validation_token = localStorage.getItem('validation_token');
+            if (validation_token === null){
+                console.log('沒有token');
+                console.log(router.query);
+                validation_token = router.query['valdation_token'];
+                console.log(validation_token);
+            }
             const response = await fetch("http://127.0.0.1:8000/reg/api/val", {
                 
                 method: "POST",
                 headers:{
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${validaton_token}`,
+                    "Authorization": `Bearer ${validation_token}`,
                 },
                 // 添加需要的請求標頭和數據
             });
@@ -46,23 +52,23 @@ export default function CountdownTimer() {
                 // 伺服器建立使用者鄉資訊並驗證完成
                 const responseData = await response.json()
                 setMessage(`驗證成功！${responseData.message}`);
-                localStorage.setItem('access_token', response.access_token)
-                localStorage.clear('access_token')
-                router.push(responseData.redirect)
+                localStorage.setItem('access_token', response.access_token);
+                localStorage.clear('access_token');
+                router.push(responseData.redirect);
             } else if(response.status === 302) {
                 // 已經驗證過，請求跳轉。
-                const responseData = await response.json()
-                localStorage.clear('validaton_token')
-                router.push(responseData.redirect)
+                const responseData = await response.json();
+                localStorage.clear('validaton_token');
+                router.push(responseData.redirect);
             } else {
                 // POST請求失敗，處理錯誤情況
-                const responseData = await response.json()
+                const responseData = await response.json();
                 setMessage(`POST請求失敗！${responseData.message}`);
                 // console.log(responseData.message)
             }
         } catch (error) {
         // 處理錯誤情況
-        console.error(error);
+            console.error(error);
         }
     };
 
