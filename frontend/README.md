@@ -1,8 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Getting Started
 
-## Getting Started
-
-First, run the development server:
+開啟前端伺服器，本機地址 [http://127.0.0.1:3000/](http://127.0.0.1:3000/)
 
 ```bash
 npm run dev
@@ -12,27 +10,45 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# 頁面
+## 已完成功能
+* reg底下的頁面
+    * [首頁](http://127.0.0.1:3000/uchi)
+    * [登入頁面](http://127.0.0.1:3000/reg/login)
+    * [忘記密碼](http://127.0.0.1:3000/reg/forgetpassword)
+    * [註冊帳號](http://127.0.0.1:3000/reg/register)
+    * [驗證信箱](http://127.0.0.1:3000/reg/valemail)
+        > 註冊時會跳轉到此頁面，登入時未驗證也會。
+        > <br/>若自己獲得連結可能會有bug
+        > <br/><input type="checkbox" disabled> 修正，再不同瀏覽器開啟此頁面會導致驗證碼無法驗證到該帳號。
+    * [驗證頁面](http://127.0.0.1:3000/reg/val?valdation_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5lZG9nNTM2OTVAZ2VrbWUuY29tIiwidmFsMSI6MTM4OTI1LCJ2YWwyIjpmYWxzZSwiZXhwIjoxNjk3MDAyMjUyLCJpYXQiOjE2OTYzOTc0NTJ9.L5C7-FnJUhVUbvngScGQDEAzYPN9FWVrf9jWkQnV3dE)
+        > 會再 http://127.0.0.1:3000/reg/val?valdation_token= 放入jwttoken用來驗證。 此連結會在使用者收到信時可以點擊。
+* ifm 底下的頁面
+    * [個人資料](http://127.0.0.1:3000/ifm)
+    * [個人字卡](http://127.0.0.1:3000/ifm/card)
+    * [修改資料](http://127.0.0.1:3000/ifm/remeishi)
+* forum 底下的頁面
+    * [討論區](http://127.0.0.1:3000/forum)
+    * [討論區的頁面](http://127.0.0.1:3000/forum/1)
+        > 看該篇文章的 id 大概是 http://127.0.0.1:3000/forum/[n]
+    * [發送文章](http://127.0.0.1:3000/forum/send)
+* billboard 底下的頁面
+    * [公佈欄](http://127.0.0.1:3000/billboard)
+    * [公佈欄的頁面](http://127.0.0.1:3000/billboard/1)
+        > 看該篇文章的 id 大概是 http://127.0.0.1:3000/billboard/[n]
+    * [發送公告](http://127.0.0.1:3000/billboard/send)
+        > 若不據權限進入會自動跳轉至首頁
+* study 底下的頁面
+    * [學習中心](http://127.0.0.1:3000/study)
+    * [英文字母](http://127.0.0.1:3000/study/english)
+    * [測驗頁面](http://127.0.0.1:3000/study/testtype/1/q0)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## 未完成的
+* [測驗結束頁面](http://127.0.0.1:3000/study/test/result)
+* [線上聊天室](http://127.0.0.1:3000/study/test/onlinechat)
+* [學習成果頁面](http://127.0.0.1:3000/study/test/result)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+[]
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
