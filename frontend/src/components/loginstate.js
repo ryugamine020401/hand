@@ -81,7 +81,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
     
     return(
 
-        <div>
+        <div className={Style.navbar}>
             {logincheck ?(
             
             <>
@@ -154,7 +154,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 
                 </header>
                 
-                <h1>未登入</h1>
+                {/* <h1>未登入</h1> */}
                 
             </>
             

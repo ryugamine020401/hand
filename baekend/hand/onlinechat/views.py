@@ -22,7 +22,7 @@ from reg.forms import LoginForm, EmailCheckForm
 # from study.forms import UploadEnglishForm, UploadTeachTypeForm
 # from study.serializers import UseWordCardSerializer
 # from hand.settings import ROOT_EMAIL
-
+from .pusher import pusher_client
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -65,6 +65,18 @@ def loging_check(func):
 # -------------- 聊天室 ---------------
 def lobby(request):
     return render(request, 'lobby.html', {})
+# -------------- 聊天室 ---------------
+# -------------- 聊天室 ---------------
+class MessagePostAPIView(APIView):
+    """
+    聊天室的API 
+    """
+    def post(self, request):
+        pusher_client.trigger('chat', 'message', {
+            'username':request.data['username'],
+            'message':request.data['message']
+        })
+        return Response([])
 
 
 # -------------- 聊天室 ---------------

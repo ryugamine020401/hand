@@ -6,3 +6,10 @@
     text-decoration: underline;
     margin: 20px;
 }
+
+.fullscreen{
+    width: 100%; /* 使用百分比設置寬度 */
+    /*max-width: 1200px; /* 可選的最大寬度，以防止元素變得過寬 */
+    height: 800px;
+    background-color: blueviolet;
+}

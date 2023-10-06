@@ -20,7 +20,7 @@ export default function Home(){
 
     console.log('Data >>', {resource})
     return(
-        <div>
+        <div className="full">
             <Head>
                 <title>首頁</title>
             </Head>

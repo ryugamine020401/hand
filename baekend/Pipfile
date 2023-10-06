@@ -17,6 +17,7 @@ keras = "*"
 tensorflow = "*"
 drf-yasg = "*"
 django-cors-headers = "*"
+pusher = "*"
 
 [dev-packages]
 

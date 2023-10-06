@@ -1,10 +1,16 @@
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
 .HeaderContainer {
     display: flex;
     justify-content: space-between; /* 將子元素均勻分佈在容器中，水平對齊 */
     align-items: center; /* 垂直居中對齊子元素 */
     /* width: 100%; /* 設置網頁的寬度為 100% */
     /*height: 60px; 設置容器的高度為 100px，你可以調整這個值 */
-    background-color: rgba(60, 60, 60, 1);
+    background-color: rgba(10, 10, 10, 0.45);
     padding-right: 5px;
     /* min-width: 480px; /* 設置網頁的最大寬度為 1200 像素 */
     /* min-heig: 1080px; /* 設置網頁的最大寬度為 1200 像素 */

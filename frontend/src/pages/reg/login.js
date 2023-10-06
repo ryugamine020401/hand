@@ -2,6 +2,8 @@ import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
 import Link from "next/link";
+import style from '@/pages/reg/login.module.css'
+import LoginState from "@/components/loginstate";
 
 export default function Ifm({ data, done, access_token, refresh_token }) {
   const [email, setEmail] = useState("");
@@ -96,40 +98,60 @@ const handleSubmit = async (e) => {
 };
     
   return (
-  <div>
-    <Head>
-      <title>登入</title>
-      <meta name="register" content="使用者登入的頁面" />
-    </Head>
-    <h1>登入</h1>
-    <form action="http://localhost:8000/reg/login" method="POST" onSubmit={handleSubmit}>
-      <label htmlFor="email">Email:</label>
-      <input
-      type="text"
-      id="email"
-      name="email"
-      required
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      />
-      <br />
-      <label htmlFor="password">Password:</label>
-      <input
-      type="password"
-      id="password"
-      name="password"
-      required
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-      <Link href={'./register'}>沒有帳號?</Link><Link href={'./forgetpassword'}>忘記密碼?</Link>
-      <br />
-      <button type="submit">點擊登入</button>
-    </form>
+    <>
+        <LoginState
+            profilePath="../../ifm"
+            resetPasswordPath="./"
+            logoutPath=""
+        />
+        <div className={style.loginpagecontainer}>
+            <Head>
+            <title>登入</title>
+            <meta name="register" content="使用者登入的頁面" />
+            </Head>
 
-    {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
-  </div>
+            
+            {/* <h1>登入</h1> */}
+            
+            <div className={style.loginformcontainer}>
+                
+                <div className={style.emailcontainer}>
+                <label htmlFor="email" className={style.label1}>電子信箱:</label>
+                    <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className={style.passwordcontainer}>
+                    <label htmlFor="password"  className={style.label2}>密碼:</label>
+                    <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                
+                {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
+                <button type="submit" className={style.button} onClick={handleSubmit}>點擊登入</button>
+                
+                <div>
+                    <Link href={'./register'} className={style.link1}>沒有帳號?</Link>
+                    <Link href={'./forgetpassword'} className={style.link2}>忘記密碼?</Link>
+                </div>
+                
+            </div>
+
+        
+        </div>
+    </>
+  
   );
 }
 
