@@ -1,6 +1,8 @@
 import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
+import LoginState from "@/components/loginstate";
+import style from "@/pages/reg/register.module.css"
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -9,6 +11,7 @@ export default function Register() {
     const [password_check, setPassword_Check] = useState("");   // 確認密碼
     const [passwordsLegth, setpasswordsLegth] = useState(false); // 用於檢查密碼長度
     const [passwordsMatch, setPasswordsMatch] = useState(false); // 用於檢查密碼匹配
+	const [buttonClick, setButtonClick] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [birthday, setBirthday] = useState(""); 
     const router = useRouter(); // 初始化 useRouter
@@ -50,6 +53,7 @@ export default function Register() {
         // 清除錯誤消息
         setErrorMessage("");
         // 如果格式驗證通過，執行表單提交操作
+		setButtonClick(true);
         try {
         const response = await fetch("http://localhost:8000/reg/api/register", {
             method: "POST",
@@ -95,62 +99,76 @@ export default function Register() {
             <title>註冊</title>
             <meta name="register" content="使用者註冊的頁面" />
         </Head>
-      <form action="http://localhost:8000/reg/login" method="POST" onSubmit={handleSubmit}>
-        <h1>註冊帳號</h1>
-        <label htmlFor="username">使用者暱稱:</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          required
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+		<LoginState
+            profilePath="../../ifm"
+            resetPasswordPath="./"
+            logoutPath=""
         />
-        <br />
-        <label htmlFor="email">電子郵件:</label>
-        <input
-          type="text"
-          id="email" name="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br/>
-        <label htmlFor="email">密碼:</label>
-        <input
-          type="password"
-          id="password" name="password"
-          required
-          value={password}
-          onChange={handlePasswordLegthCheckChange}
-        />
-        {passwordsLegth && <span style={{ color: "green" }}> &#10003; </span>}
-        {!(passwordsLegth) && <span style={{ color: "red" }}> 密碼長度不足 </span>}
-        <br />
-        <label htmlFor="password">確認密碼:</label>
-        <input
-          type="password"
-          id="password_check" name="password_check"
-          required
-          value={password_check}
-          onChange={handlePasswordCheckChange}
-        />
-        {passwordsMatch && <span style={{ color: "green" }}> &#10003; </span>}
-        {!(passwordsMatch) && <span style={{ color: "red" }}> 兩次輸入的密碼不相符 </span>}
-        <br />
-        <label htmlFor="birthday">生日:</label>
-        <input
-          type="date"
-          id="birthday" name="birthday"
-          required
-          value={birthday}
-          onChange={(e) => setBirthday(e.target.value)}
-        />
-        <br />
-        <button type="submit">點擊註冊</button>
-      </form>
-      
-      {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
+      	<div className={style.registerpageconntainer}>
+			<div className={style.registerformcontainer}>
+				<div className="useramecotainer">
+					<label htmlFor="username">使用者暱稱:</label>
+					<input
+						type="text"
+						id="username"
+						name="username"
+						required
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						/>
+				</div>
+				<div className="emailcontainer">
+					<label htmlFor="email">電子郵件:</label>
+					<input
+					type="text"
+					id="email" name="email"
+					required
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					/>
+				</div>
+				<div className="passwordcontainer">
+					<label htmlFor="email">密碼:</label>
+					<input
+					type="password"
+					id="password" name="password"
+					required
+					value={password}
+					onChange={handlePasswordLegthCheckChange}
+					/>
+					{passwordsLegth && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+					{!(passwordsLegth) && <span style={{ color: "red" }} className={style.errormsg}> 密碼長度不足 </span>}
+				</div>
+				<div className="passwordcontainer">
+					<label htmlFor="password">確認密碼:</label>
+					<input
+					type="password"
+					id="password_check" name="password_check"
+					required
+					value={password_check}
+					onChange={handlePasswordCheckChange}
+					/>
+					{passwordsMatch && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+					{!(passwordsMatch) && <span style={{ color: "red" }} className={style.errormsg}> 兩次輸入的密碼不相符 </span>}
+					
+				</div>
+				
+				<div className="birthdaycontainer">
+					<label htmlFor="birthday">生日:</label>
+					<input
+					type="date"
+					id="birthday" name="birthday"
+					required
+					value={birthday}
+					onChange={(e) => setBirthday(e.target.value)}
+					/>
+				</div>	
+				<button type="submit" onClick={handleSubmit} className={style.button}>點擊註冊</button>
+				{buttonClick && <div className={style.loader}/>}
+				{errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
+				
+			</div>
+		</div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import style from '@/pages/reg/valemail.module.css'
 
 export default function Valemail({email}){
     const router = useRouter();
@@ -61,6 +62,7 @@ export default function Valemail({email}){
 
 
     const resendButtonClick = async () =>{
+        setErrorMessage('');
         const access_token = localStorage.getItem('access_token');
         setButtonEnable(false);
         setCountDown(60);
@@ -92,10 +94,7 @@ export default function Valemail({email}){
             console.error(error);
         }
     }
-    /* 
-    useEffect(()=>{}, [XXX, XXX]);
-    setInterval(()=>{}, <秒>);
-     */
+
     useEffect(()=>{
         let countdownInteval;
         const acccess_token_check = localStorage.getItem('access_token');
@@ -130,30 +129,44 @@ export default function Valemail({email}){
                  resetPasswordPath="./"
                  logoutPath=""
             />
-            <h1>驗證頁面</h1>
-            <label>驗證碼</label>
-            <input
-                type="number"
-                className="valdatioNum"
-                onChange={(e) => setValidationNum(e.target.value)}
-            />
-            <button
-                className="valdatebutton"
-                onClick={sendValButtonClick}
-            >
-                點擊驗證
-            </button>
-            <br/>
-            <label>沒有收到?</label>
-            <button
-                className="resendeemailbutton"
-                onClick={resendButtonClick}
-                disabled={!butonEnable}
-            >
-                再發送一次
-            </button>
-            {errorMessage && <span style={{ color:"red" }}>{errorMessage}</span>}
-            {!butonEnable && <span>{message}</span>}
+            <div className={style.valemailpagecontainer}>
+                <div className={style.valemailformcontainer}>
+                    <div className="valnumcontainer">
+                        <label>驗證碼</label>
+                        <input
+                            type="number"
+                            className="valdatioNum"
+                            onChange={(e) => setValidationNum(e.target.value)}
+                        />
+                    </div>
+                    {!butonEnable && <div style={{ color:"red" }}>{message}</div>}
+                    {errorMessage && <div style={{ color:"red" }}>{errorMessage}</div>}
+                    <button
+                    className={style.button}
+                    onClick={sendValButtonClick}>
+                        點擊驗證
+                    </button>
+                    <div className={style.resendemaincontainer}>
+                        <label>沒有收到?</label>
+                        <button
+                            className="resendeemailbutton"
+                            onClick={resendButtonClick}
+                            disabled={!butonEnable}
+                        >
+                            再發送一次
+                        </button>
+                    </div>
+                
+                    
+                    
+                
+                </div>
+            </div>
+            
+            
+            
+            
+            
 
 
         

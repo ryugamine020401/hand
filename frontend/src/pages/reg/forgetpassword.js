@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import ButtonStyle from "./button.module.css";
 import Head from "next/head";
+import LoginState from "@/components/loginstate";
+import style from "@/pages/reg/forgetpassword.module.css"
 /*
 	未登入使用者忘記密碼，跳轉到此頁面可以輸入信箱寄出驗證碼驗證
 
@@ -157,101 +158,114 @@ export default function ForgetPassword() {
 
   return (
     <>
-	<Head>
-		<title>忘記密碼</title>
-	</Head>
-	  {!valSuccess && <div className="novaldate">
-		<h1>忘記密碼</h1>
-		<div className="email_container">
-			<label htmlFor="email">電子郵件:</label>
-			<input
-				type="text"
-				id="email"
-				name="email"
-				required
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-			/>
-			<br />
-			{ErrorMessage && <p style={{color:"red"}}>{ErrorMessage}</p>}
-			<div id={ButtonStyle.buttoncontainer}>
-				<button
-				className="sendEmail"
-				id={ButtonStyle.button}
-				onClick={handleSendEmailClick}
-				disabled={!buttonEnabled}
-				>
-				發送郵件
-				</button>
-				{!buttonEnabled && <span style={{ color: "red" }}>{message}</span>}
-			</div>
-		</div>
-		<br />
+		<Head>
+			<title>忘記密碼</title>
+		</Head>
+		<LoginState
+            profilePath="../../ifm"
+            resetPasswordPath="./"
+            logoutPath=""
+        />
+		{/* 進入網站未發送郵件前 */}
+		{!valSuccess && <div className="novaldate">
+			<div className={style.forgetpwdpagecontainer}>
+				<div className={style.formcontainer}>
+					<div className="emailcontainer">
+						<label htmlFor="email">電子郵件:</label>
+						<input
+							type="text"
+							id="email"
+							name="email"
+							required
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+					</div>
+					<button
+						className={style.button}
+						id="button"
+						onClick={handleSendEmailClick}
+						disabled={!buttonEnabled}
+						>
+						發送郵件
+					</button>
+					{!buttonEnabled && <div style={{ color: "red" }} className={style.errormsg}>{message}</div>}
+					{valEnabled && 
+						<div className="validation_container">
+							<label htmlFor="validationNum">驗證碼:</label>
+							<input
+								type="number"
+								id="validationNum"
+								name="validation_num"
+								required
+								value={validationNum}
+								onChange={(e) => setValidationNum(e.target.value)}
+							/>
 
-		{valEnabled && <div className="validation_container">
-			<label htmlFor="validationNum">驗證碼:</label>
-			<input
-				type="number"
-				id="validationNum"
-				name="validation_num"
-				required
-				value={validationNum}
-				onChange={(e) => setValidationNum(e.target.value)}
-			/>
-			
-
-			<div id={ButtonStyle.buttoncontainer}>
-				<button 
-					className="sendValdationnum" 
-					id={ButtonStyle.button}
-					onClick={hadsendValnumClick}
-				>
-				驗證
-				</button>
+							<button 
+								className={style.sendValdationnum} 
+								id="button"
+								onClick={hadsendValnumClick}
+							>
+							驗證
+							</button>
+						</div>
+						
+						
+					}
+				{ErrorMessage && <div style={{color:"red"}} className={style.errormsg}>{ErrorMessage}</div>}
+				</div>
+				
 			</div>
 		</div>}
 
-      </div> }
-
 		{valSuccess && 
-		<div className="valdated">
-			<h1>重設密碼</h1>
-			<label>電子郵件:</label>
-			<input
-				type = "email"
-				defaultValue = {email}
-				disabled = 'false'
-			/>
-			<br/>
-			<label htmlFor="email">密碼:</label>
-        	<input
-				type="password"
-				id="password" name="password"
-				required
-				value={password}
-				onChange={handlePasswordLegthCheckChange}
-        	/>
-			{passwordsLegth && <span style={{ color: "green" }}> &#10003; </span>}
-			{!(passwordsLegth) && <span style={{ color: "red" }}> 密碼長度不足 </span>}
-			<br />
-			<label htmlFor="password">確認密碼:</label>
-			<input
-				type="password"
-				id="password_check" name="password_check"
-				required
-				value={password_check}
-				onChange={handlePasswordCheckChange}
-        	/>
-			{passwordsMatch && <span style={{ color: "green" }}> &#10003; </span>}
-			{!(passwordsMatch) && <span style={{ color: "red" }}> 與密碼不相符 </span>}
-			<br/>
-			<button
-				className="resetpassword"
-				onClick={resetPaawordEmailClick}
-				disabled={!passwordsMatch}
-			>
-				修改密碼
-			</button>
+		<div className={style.resetpwdpagecontainer}>
+			<div className={style.resetpwdpageformcontainer}>
+				<div className="emailcontainer">
+					<label>電子郵件:</label>
+					<input
+						type = "email"
+						defaultValue = {email}
+						disabled = 'false'
+					/>
+				</div>
+				<div className="passwordcontainer">
+					<label htmlFor="email">密碼:</label>
+					<input
+						type="password"
+						id="password" name="password"
+						required
+						value={password}
+						onChange={handlePasswordLegthCheckChange}
+					/>
+					{passwordsLegth && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+					{!(passwordsLegth) && <span style={{ color: "red" }} className={style.errormsg}> 密碼長度不足 </span>}
+				</div>
+				
+				<div className="passwordcontainer">
+					<label htmlFor="password">確認密碼:</label>
+					<input
+						type="password"
+						id="password_check" name="password_check"
+						required
+						value={password_check}
+						onChange={handlePasswordCheckChange}
+					/>
+					{passwordsMatch && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+					{!(passwordsMatch) && <span style={{ color: "red" }} className={style.errormsg}> 與密碼不相符 </span>}
+				</div>
+				
+				<button
+					className={style.button2}
+					onClick={resetPaawordEmailClick}
+					disabled={!passwordsMatch}
+				>
+					修改密碼
+				</button>
+				
+			</div>
+			
 		</div>}
 	
     </>

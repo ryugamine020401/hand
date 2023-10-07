@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-
+import LoginState from '@/components/loginstate';
+import style from '@/pages/reg/val.module.css'
 export default function CountdownTimer() {
     const [countdown, setCountdown] = useState(5);
     const [message, setMessage] = useState("驗證中請稍等");
@@ -60,6 +61,10 @@ export default function CountdownTimer() {
                 const responseData = await response.json();
                 localStorage.clear('validaton_token');
                 router.push(responseData.redirect);
+            } else if(response.status === 500) {
+                // POST請求失敗，處理錯誤情況
+                setMessage(`POST請求失敗！`);
+                
             } else {
                 // POST請求失敗，處理錯誤情況
                 const responseData = await response.json();
@@ -79,7 +84,18 @@ export default function CountdownTimer() {
             <title>驗證頁面</title>
             <meta name="description" content="自動跳轉的驗證頁面" />
         </Head>
-        {<p>{message}</p>}
+        {/* <LoginState
+                 profilePath="../../ifm"
+                 resetPasswordPath="./"
+                 logoutPath=""
+        /> */}
+        <div className={style.valpagecontainer}>
+            <div className={style.valformcontainer}>
+                <div className={style.loader}></div>
+                {<div><label>{message}</label></div>}
+            </div>
+        </div>
+        
 
         </div>
     );
