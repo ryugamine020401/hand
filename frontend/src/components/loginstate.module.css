@@ -13,7 +13,7 @@
     background-color: rgba(10, 10, 10, 0.45);
     padding-right: 5px;
     /* min-width: 480px; /* 設置網頁的最大寬度為 1200 像素 */
-    /* min-heig: 1080px; /* 設置網頁的最大寬度為 1200 像素 */
+    min-height: 80; /* 設置網頁的最大寬度為 1200 像素
     margin: 0 auto; /* 水平居中對齊網頁內容 */
 }
 
@@ -94,12 +94,32 @@
   
 .overlayBox {
     width: 160px;
-    background-color: rgb(152, 38, 38);
-    border: 1px solid #be1818;
+    background-color: rgb(170, 155, 155);
+    border: 1px solid #ba9393;
     /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);*/ 
     z-index: 999; /* 設定 z-index 以控制堆疊順序，數字越大越在最上層 */
+    display: flex;
+    flex-direction: column;
 }
 
 .UL {
-    padding: 30px;
+    padding: 5px 3px 0px 5px;
+    list-style: none;
 }
+
+.UL li{
+    margin: 15px 15px;
+    display: flex;
+}
+
+.UL li img{
+    margin-right: 3px;
+}
+.UL li span{
+    margin-bottom: 10px;
+}
+
+.UL li:hover{
+    text-decoration: underline;
+}
+

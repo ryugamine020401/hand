@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import Head from "next/head";
 import LoginState from "@/components/loginstate";
 import style from "@/pages/reg/forgetpassword.module.css"
@@ -171,6 +172,7 @@ export default function ForgetPassword() {
 			<div className={style.forgetpwdpagecontainer}>
 				<div className={style.formcontainer}>
 					<div className="emailcontainer">
+						<Image src="/images/email.png" width={20} height={20} alt="emailicon"/>
 						<label htmlFor="email">電子郵件:</label>
 						<input
 							type="text"
@@ -192,6 +194,7 @@ export default function ForgetPassword() {
 					{!buttonEnabled && <div style={{ color: "red" }} className={style.errormsg}>{message}</div>}
 					{valEnabled && 
 						<div className="validation_container">
+							<Image src="/images/valdation.png" width={20} height={20} alt="emailicon"/>
 							<label htmlFor="validationNum">驗證碼:</label>
 							<input
 								type="number"
@@ -223,6 +226,7 @@ export default function ForgetPassword() {
 		<div className={style.resetpwdpagecontainer}>
 			<div className={style.resetpwdpageformcontainer}>
 				<div className="emailcontainer">
+				<Image src="/images/email.png" width={20} height={20} alt="emailicon"/>
 					<label>電子郵件:</label>
 					<input
 						type = "email"
@@ -231,6 +235,7 @@ export default function ForgetPassword() {
 					/>
 				</div>
 				<div className="passwordcontainer">
+					<Image src="/images/password.png" width={20} height={20} alt="pwdicon"/>
 					<label htmlFor="email">密碼:</label>
 					<input
 						type="password"
@@ -244,6 +249,7 @@ export default function ForgetPassword() {
 				</div>
 				
 				<div className="passwordcontainer">
+				<Image src="/images/password.png" width={20} height={20} alt="pwdicon"/>
 					<label htmlFor="password">確認密碼:</label>
 					<input
 						type="password"

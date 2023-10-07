@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
 import Link from "next/link";
@@ -116,6 +117,7 @@ const handleSubmit = async (e) => {
             <div className={style.loginformcontainer}>
                 
                 <div className={style.emailcontainer}>
+                <Image src="/images/email.png" width={20} height={20} alt="emailicon"/>
                 <label htmlFor="email" className={style.label1}>電子信箱:</label>
                     <input
                     type="text"
@@ -127,6 +129,7 @@ const handleSubmit = async (e) => {
                     />
                 </div>
                 <div className={style.passwordcontainer}>
+				<Image src="/images/password.png" width={20} height={20} alt="pwdicon"/>
                     <label htmlFor="password"  className={style.label2}>密碼:</label>
                     <input
                     type="password"

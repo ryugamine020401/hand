@@ -5,6 +5,7 @@
 */
 import LoginState from "@/components/loginstate";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import style from '@/pages/reg/valemail.module.css'
@@ -132,6 +133,7 @@ export default function Valemail({email}){
             <div className={style.valemailpagecontainer}>
                 <div className={style.valemailformcontainer}>
                     <div className="valnumcontainer">
+                    <Image src="/images/valdation.png" width={20} height={20} alt="valicon"/>
                         <label>驗證碼</label>
                         <input
                             type="number"
@@ -147,6 +149,7 @@ export default function Valemail({email}){
                         點擊驗證
                     </button>
                     <div className={style.resendemaincontainer}>
+                    <Image src="/images/resendmail.png" width={20} height={20} alt="valicon"/>
                         <label>沒有收到?</label>
                         <button
                             className="resendeemailbutton"

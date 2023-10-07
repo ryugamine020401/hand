@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
 import LoginState from "@/components/loginstate";
@@ -107,6 +108,7 @@ export default function Register() {
       	<div className={style.registerpageconntainer}>
 			<div className={style.registerformcontainer}>
 				<div className="useramecotainer">
+					<Image src="/images/username.png" width={20} height={20} alt="usernameicon"/>
 					<label htmlFor="username">使用者暱稱:</label>
 					<input
 						type="text"
@@ -118,6 +120,7 @@ export default function Register() {
 						/>
 				</div>
 				<div className="emailcontainer">
+				<Image src="/images/email.png" width={20} height={20} alt="usernameicon"/>
 					<label htmlFor="email">電子郵件:</label>
 					<input
 					type="text"
@@ -128,6 +131,7 @@ export default function Register() {
 					/>
 				</div>
 				<div className="passwordcontainer">
+				<Image src="/images/password.png" width={20} height={20} alt="usernameicon"/>
 					<label htmlFor="email">密碼:</label>
 					<input
 					type="password"
@@ -140,6 +144,7 @@ export default function Register() {
 					{!(passwordsLegth) && <span style={{ color: "red" }} className={style.errormsg}> 密碼長度不足 </span>}
 				</div>
 				<div className="passwordcontainer">
+				<Image src="/images/password.png" width={20} height={20} alt="usernameicon"/>
 					<label htmlFor="password">確認密碼:</label>
 					<input
 					type="password"
@@ -154,6 +159,7 @@ export default function Register() {
 				</div>
 				
 				<div className="birthdaycontainer">
+					<Image src="/images/birthday.png" width={20} height={20} alt="usernameicon"/>
 					<label htmlFor="birthday">生日:</label>
 					<input
 					type="date"

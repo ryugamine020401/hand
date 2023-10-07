@@ -1,7 +1,9 @@
 import LoginState from "@/components/loginstate";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import style from '@/pages/reg/resetpassword.module.css'
 
 export default function ResetPassword(){
     const router = useRouter();
@@ -88,45 +90,66 @@ export default function ResetPassword(){
                 logoutPath="../../uchi"
             />
             <Head><title>重設密碼</title></Head>
-            <h1>重設密碼_登入後</h1>
-            <label htmlFor="password">舊密碼:</label>
-            <input
-            type="password"
-            id="password_check" name="password_check"
-            required
-            onChange={(e) => setPassword_Old(e.target.value)}
-            value={password_old}
-            />
-            <br/>
-            <label htmlFor="email">密碼:</label>
-            <input
-            type="password"
-            id="password" name="password"
-            required
-            value={password_new}
-            onChange={handlePasswordLegthCheckChange}
-            />
-            {passwordsLegth && <span style={{ color: "green" }}> &#10003; </span>}
-            {!(passwordsLegth) && <span style={{ color: "red" }}> 密碼長度不足 </span>}
-            <br />
-            <label htmlFor="password">確認密碼:</label>
-            <input
-            type="password"
-            id="password_check" name="password_check"
-            required
-            value={password_check}
-            onChange={handlePasswordCheckChange}
-            />
-            {passwordsMatch && <span style={{ color: "green" }}> &#10003; </span>}
-            {!(passwordsMatch) && <span style={{ color: "red" }}> 兩次輸入的密碼不相符 </span>}
-            <br/>
-            {errorMessage && <p style={{color : 'red'}}>{errorMessage}</p>}
-            <button
-                className="resetPassword"
-                onClick={ResetPasswordClick}
-            >
-                修改密碼
-            </button>
+            <div className={style.resetpwdpageconntainer}>
+                <div className={style.resetpwdformcontainer}>
+                <div className="pwdcontianer">
+                <Image src="/images/oldpassword.png" width={20} height={20} alt="pwdicon"/>
+                    <label htmlFor="password">舊密碼:</label>
+                    <input
+                    type="password"
+                    id="password_check" name="password_check"
+                    required
+                    onChange={(e) => setPassword_Old(e.target.value)}
+                    value={password_old}
+                    />
+                </div>
+                <div className="newpwncontainer">
+                    <Image src="/images/password.png" width={20} height={20} alt="pwdicon"/>
+                    <label htmlFor="email">密碼:</label>
+                    <input
+                    type="password"
+                    id="password" name="password"
+                    required
+                    value={password_new}
+                    onChange={handlePasswordLegthCheckChange}
+                    />
+                    {passwordsLegth && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+                    {!(passwordsLegth) && <span style={{ color: "red" }} className={style.errormsg}> 密碼長度不足 </span>}
+                </div>
+                
+                <div className="pwncheckcontainer">
+                    <Image src="/images/password.png" width={20} height={20} alt="pwdicon"/>
+                    <label htmlFor="password">確認密碼:</label>
+                    <input
+                    type="password"
+                    id="password_check" name="password_check"
+                    required
+                    value={password_check}
+                    onChange={handlePasswordCheckChange}
+                    />
+                    {passwordsMatch && <span style={{ color: "green" }} className={style.errormsg}> &#10003; </span>}
+                    {!(passwordsMatch) && <span style={{ color: "red" }} className={style.errormsg}> 兩次輸入的密碼不相符 </span>}
+                </div>
+                
+
+                <button
+                    className={style.button}
+                    onClick={ResetPasswordClick}
+                >
+                    修改密碼
+                </button>
+                <div>
+                    {errorMessage && <p style={{color : 'red'}}>{errorMessage}</p>}
+                </div>
+                
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            
         </>
     );
 }
