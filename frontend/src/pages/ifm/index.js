@@ -4,10 +4,19 @@ import LoginState from "../../components/loginstate"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import "./css/index.module.css"
+import style from "./css/index.module.css"
+
+
 
 export default function Ifm () {
     const router = useRouter();
+    const imgurl = ['/images/ifm_resetinformation.png', '/images/ifm_userwordcard2.png', '/images/ifm_viewresault.png']
+    const imgclassname = [
+        style.img_1,
+        style.img_2,
+        style.img_3,
+    ]
+    
     const [headiImageURL, setHeadiImageURL] = useState("");
     const [describe, setDescribe] = useState("");
     const [username, setUsername] = useState("");
@@ -17,6 +26,15 @@ export default function Ifm () {
         './' : '學習狀況評估',
     }
 
+    const divbtnclick = (index) =>{
+        const redirectlist = [
+            './ifm/remeishi',
+            './ifm/card',
+            './'
+        ]
+        console.log(redirectlist[index]);
+        router.push(redirectlist[index]);
+    }
 
     const getUserInformation = async() => {
         const access_token = localStorage.getItem('access_token');
@@ -56,44 +74,48 @@ export default function Ifm () {
     
     return(
         <>
-            <Head>
-                <title>個人資料</title>
-            </Head>
             <LoginState
                 profilePath="./ifm"
                 resetPasswordPath="../reg/resetpassword"
                 logoutPath="../"
             />
-            <div className="profilecard" style={{border:'3px solid red'}}>
-                <Image
-                    src={ headiImageURL }
-                    alt="頭圖"
-                    height={45}
-                    width={45}
-                    priority
-                /><span style={{fontSize:'30px'}}>{ username }</span>
-                <p>{ describe }</p>
+            <div className={style.ifmindexpagecontainer}>
+                <Head>
+                    <title>個人資料</title>
+                </Head>
+                <div className={style.profilecard}>
+                    <div className={style.imagecontainer}>
+                        <Image
+                            src={ headiImageURL }
+                            alt="頭圖"
+                            height={45}
+                            width={45}
+                            priority
+                        />
+                    </div>
+                    <div className={style.textcontainer}>
+                        <div className={style.username}><span style={{fontSize:'30px'}}>{ username }</span></div>
+                        <div className={style.describe}><p>{ describe }</p></div>
+                    </div>
+                    
+                    
+                </div>
                 
-            </div>
-            <h1>個人資料</h1>
-            
-            {/* <button>
-                修改個人資料
-            </button>
-            <Link className={Style.userworcard} href={'./ifm/card'}>
-                個人字卡
-            </Link>
-            <button>
-                學習狀況評估
-            </button> */}
-            <div>
+                <div className={style.ifmtypecontainer}>
                 {Object.keys(resourceObject).map((key, index)=>(
-                    
-                    <Link key={`ifmlink_${index}`} href={key} className={`link_${index}`}>{resourceObject[key]}</Link>
-                    
+                    <div key={`ifmlinkdiv_${index}`} className={style.linkcontainer} onClick={()=>divbtnclick(index)}>
+                        <Image
+                            height={100}
+                            width={100}
+                            className={`${imgclassname[index]}`}
+                            alt="圖片"
+                            src={imgurl[index]}
+                        />
+                        <Link key={`ifmlink_${index}`} href={key} className={`${imgclassname[index]}`}>{resourceObject[key]}</Link>
+                    </div>
                 ))}
-            </div>
-            
+                </div>
+            </div>       
         </>
     );
 

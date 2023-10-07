@@ -114,7 +114,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 </div>
                 
                 </header>
-                <h1>登入</h1>
+                {/* <h1>登入</h1> */}
                 {showOverlay && 
                 <OverlayBox
                     profilePath={profilePath}
