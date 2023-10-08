@@ -103,17 +103,17 @@ export default function CropPage() {
 			{cropenable && <button onClick={handleCrop}>裁剪</button>}
 			
 			{croppedImageDatasrc && 
-				<>
-					<div className={Style.imagecontainer}>
-						<img 
-							alt='裁圖'
-							src={croppedImageDatasrc}
-							className={Style.image}
-						/>
-						
-					</div> 
-					<button onClick={uploadImage}>確定修改大頭貼</button>
-				</>}
+			<>
+				<div className={Style.imagecontainer}>
+					<img 
+						alt='裁圖'
+						src={croppedImageDatasrc}
+						className={Style.image}
+					/>
+					
+				</div> 
+				<button onClick={uploadImage}>確定修改大頭貼</button>
+			</>}
 	</div>
 	</>
     

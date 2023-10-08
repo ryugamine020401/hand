@@ -50,12 +50,14 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                     setButtommsg("登入");
                     const currentURL = window.location.href;
                     console.log('網址是:', currentURL);
+                    localStorage.clear('access_token');
+                    localStorage.clear('refresh_token');
+                    
                     // router.push('http://127.0.0.1:3000/uchi');
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
                     router.push('http://127.0.0.1:3000/reg/valemail');
-                    // localStorage.clear('access_token');
-                    // localStorage.clear('refresh_token');
+                    
                 } else {
                     console.log(responseData.message)
                 }

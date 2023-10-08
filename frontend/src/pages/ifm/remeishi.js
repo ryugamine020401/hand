@@ -5,6 +5,7 @@ import Head from "next/head";
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import Style from './components/crop.module.css'
+import style from '@/pages/ifm/css/remeishi.module.css'
 
 
 export default function ReMeishi(){
@@ -13,10 +14,42 @@ export default function ReMeishi(){
     const [describe, setDescribe] = useState("");
     const [birthday, setBirthday] = useState("");
     const [imageName, setImageName ] = useState("crop.jpg");
+    const [headiImageURL, setHeadiImageURL] = useState("");
     const cropperRef = useRef(null);
 	const [headimage, setHeadimage] = useState("");
 	const [croppedImageDatasrc, setcroppedImageDatasrc] = useState('');
 	const [cropenable, setCropEnable] = useState(false);
+    const getUserInformation = async() => {
+        const access_token = localStorage.getItem('access_token');
+        try {
+            const response = await fetch("http://127.0.0.1:8000/ifm/api/userinformation",{
+                method:"GET",
+                headers:{
+                    "Authorization" : `Bearer ${access_token}`,
+                }
+            })
+
+            if (response.status === 200) {
+                const responseData = await response.json();
+                console.log("有");
+                setHeadiImageURL(responseData.headimageurl);
+                setUsername(responseData.username);
+                setDescribe(responseData.describe);
+                console.log(responseData.message);
+            } else if(response.status === 403){
+                
+                localStorage.clear('access_token');
+                localStorage.clear('refresh_token');
+                router.push('../uchi');
+            } else {
+                const responseData = await response.json();
+                console.log(responseData)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleUpload = (e) => {
 		e.preventDefault();
 		const fileInput = document.getElementById('fileInput');
@@ -39,13 +72,15 @@ export default function ReMeishi(){
             img.onload = () => {
                 console.log('高度：', img.height);
                 console.log('寬度：', img.width);
-            };
-		};
+            }
+		}
 
 		try {
 			reader.readAsDataURL(file);
 		} catch (error) {
 			console.error(error);
+            setCropEnable(false);
+            getUserInformation();
 		}
 		
 	};
@@ -54,6 +89,7 @@ export default function ReMeishi(){
 		const croppedImageData = cropperRef.current.cropper.getCroppedCanvas().toDataURL();
 		
 		setcroppedImageDatasrc(croppedImageData);
+        setHeadiImageURL(croppedImageDatasrc);
 		setHeadimage(croppedImageData);
 		setCropEnable(false);
 		
@@ -88,43 +124,9 @@ export default function ReMeishi(){
             router.push('../uchi');
         }
         console.log(access_token);
-        
+        getUserInformation();
     },[]);
     
-    // const headImageUpload = async (e) =>{
-    //     const file = e.target.files[0];
-    //     const reader = new FileReader();
-    //     if (file) {
-    //         // 檢查文件大小（以字節為單位）
-    //         const maxSizeInBytes = 25 * 1024 * 1024; // 25MB
-    //         if (file.size <= maxSizeInBytes) {
-    //             const regex = /\.[^.]+$/;
-    //             const filenameExtension = file.name.match(regex);
-    //             const allowFileType = ['.jpg', '.jpeg', '.png', '.gif', ];
-                
-    //             if(filenameExtension && allowFileType.includes(filenameExtension[0])){
-    //                 console.log('允許', filenameExtension, file.name);
-    //                 setImageName(file.name);
-    //                 reader.onload = (Event) => {
-    //                     const Base64Data = Event.target.result;
-    //                     setHeadimage(Base64Data);
-    //                 }
-    //             } else {
-    //                 e.target.value = '';
-    //                 e.preventDefault();
-    //                 console.log('不符合規範的副檔名', filenameExtension, filenameExtension[0]);
-    //                 alert('不符合規範的副檔名');
-    //                 return;
-    //             }
-                
-    //         } else {
-    //           alert('選擇的文件太大，請選擇小於1MB的文件。');
-    //           e.target.value = ''; // 清除文件輸入字段中的值
-    //         }
-    //     }
-        
-    //     reader.readAsDataURL(file);
-    // }
 
     const uploadButtonClick = async () =>{
 
@@ -166,73 +168,104 @@ export default function ReMeishi(){
 
     return(
         <>  {/* 在這裡 ./ 就會是{base}/app/ 所以這裡是 {base}/ifm*/}
-            <Head><title>修改個人資料</title></Head>
+            
             <LoginState
                 profilePath="./"
                 resetPasswordPath="../reg/resetpassword"
                 logoutPath="../uchi"
             />
-            <label>頭像</label>
-            <div className='cut'>
-                <input
-                        type="file"
-                        id="fileInput"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }}
-                    />
-                    <button onClick={handleUpload}>上傳圖像</button>
-                    {!croppedImageDatasrc && <Cropper
-                        ref={cropperRef}
-                        className={Style.test}
-                        style={{height:100, width:'50%'}}
-                        // height={originImageHeigth}
-                        // width={originImageWidth}
-                        aspectRatio={1}
-                        zoomable={false}
-                    />
-                    }
-                    {cropenable && <button onClick={handleCrop}>裁剪</button>}
-                    
-                    {croppedImageDatasrc && 
-                        <>
-                            <div className={Style.imagecontainer}>
-                                <img 
-                                    alt='裁圖'
-                                    src={croppedImageDatasrc}
-                                    className={Style.image}
+            <div className={style.remeishipagecontainer}>
+                <Head><title>修改個人資料</title></Head>
+                <div className={style.formcontianer}>
+                    <div className={style.uppercontainer}>
+                        <div className={style.headimgcontainer}>
+                            {croppedImageDatasrc ?( 
+                            <img
+                                src={ croppedImageDatasrc }
+                                alt="頭圖"
+                                priority
+                                className={style.headimage}
+                            /> 
+                            ):(
+                                <img
+                                    // src={ croppedImageDatasrc }
+                                    src={ headiImageURL }
+                                    alt="頭圖"
+                                    priority
+                                    className={style.headimage}
                                 />
-                                
-                            </div> 
-                            <button onClick={uploadImage}>確定修改大頭貼</button>
-                    </>}
+                            )}
+                            <input
+                                type="file"
+                                id="fileInput"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                            />
+                            {!cropenable && <button onClick={handleUpload}>上傳圖像</button>}
+                            <div className={style.cropcontainer}>
+                                {!croppedImageDatasrc && <Cropper
+                                    ref={cropperRef}
+                                    className={Style.test}
+                                    // style={{height:100, width:'50%'}}
+                                    aspectRatio={1}
+                                    zoomable={false}
+                                    id="itmememememe"
+                                />}
+                                {cropenable && <button onClick={handleCrop}>裁剪</button>}
+                                {/* {croppedImageDatasrc && 
+                                <>
+                                    <div className={Style.imagecontainer}>
+                                        <img 
+                                            alt='裁圖'
+                                            src={croppedImageDatasrc}
+                                            className={Style.image}
+                                        />
+                                        
+                                    </div> 
+                                    <button onClick={uploadImage}>確定修改大頭貼</button>
+                                </>} */}
+                            </div>
+                        </div>
+                        <div className={style.describecontainer}>
+                            <label>個人簡介</label>
+                            <textarea
+                                id="describe"
+                                name="describe"
+                                required
+                                value={describe}
+                                onChange={(e)=>setDescribe(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    
+
+                    <div className={style.usernamecontainer}>
+                        <label>暱稱</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            required
+                            value={username}
+                            onChange={(e)=>setUsername(e.target.value)}
+                        />
+                    </div>
+                    
+                    <div className={style.birthdaycontainer}>
+                        <label>生日</label>
+                        <input
+                            type="date"
+                            name="birthday"
+                            value={birthday}
+                            onChange={(e)=>setBirthday(e.target.value)}
+                        />
+                    </div>  
+                </div>
             </div>
-            <label>暱稱</label>
-            <input
-                type="text"
-                id="username"
-                name="username"
-                required
-                value={username}
-                onChange={(e)=>setUsername(e.target.value)}
-            />
-            <br/>
-            <label>個人簡介</label>
-            <textarea
-                id="describe"
-                name="describe"
-                required
-                value={describe}
-                onChange={(e)=>setDescribe(e.target.value)}
-            />
-            <br/>
-            <label>生日</label>
-            <input
-                type="date"
-                name="birthday"
-                value={birthday}
-                onChange={(e)=>setBirthday(e.target.value)}
-            />
+            
+            
+            
 
             <button
                 onClick={uploadButtonClick}

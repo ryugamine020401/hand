@@ -11,12 +11,3 @@
     height: auto; /* 讓圖片的高度自動調整以保持原始比例 */
     object-fit: cover;
 }
-
-/* .test {
-    height: 100px;
-
-}
-
-.coppor-wrap-box {
-    background: none;
-} */

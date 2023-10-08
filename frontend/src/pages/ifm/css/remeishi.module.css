@@ -1,0 +1,142 @@
+
+
+.remeishipagecontainer {
+    /* background-image: url('/images/BACKGROUND.png'); */
+    /* width: 100%; /* 使用百分比設置寬度 */
+    /* max-width: 1600px; /* 可選的最大寬度，以防止元素變得過寬 */
+    height: 100vh;
+    margin: 0; /* 清除默認的body邊距 */
+    padding: 0; /* 清除默認的body內邊距 */
+    background-size: cover; /* 使圖像覆蓋整個視窗 */
+    background-repeat: no-repeat; /* 防止圖像重複 */
+    background-attachment: fixed; /* 防止圖像滾動 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formcontianer {
+    border: 1px solid #000;
+    height: 25rem;
+    width: 48rem;
+    background-color: rgb(245, 245, 245, 0.95);
+    margin: 30;
+    border-radius: 50px;
+    padding-top: 2rem;
+    
+}
+
+/* .formcontianer div.headimgcontainer{
+    display: flex;
+    
+} */
+
+.formcontianer div.uppercontainer {
+    display: flex;
+    justify-content: center;
+}
+.formcontianer div.uppercontainer div.headimgcontainer{
+    height: 200px;
+}
+.formcontianer div.uppercontainer img.headimage{
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+}
+.cropcontainer{
+    max-height: 100px; /* 设置最大高度 */
+    width: auto; /* 宽度自动调整 */
+    height: auto; /* 高度自动调整，以保持等比例缩放 */
+}
+
+.cropcontainer img{
+    max-height: 100px; /* 设置最大高度 */
+    width: auto; /* 宽度自动调整 */
+    height: auto; /* 高度自动调整，以保持等比例缩放 */
+}
+
+/* .cropcontainer div{
+    z-index: 99999;
+    width: 10rem;
+    height: 10rem;
+} */
+
+/* .cropcontainer span{
+    
+    width: 1rem;
+    height: 1rem;
+} */
+
+/*
+.formcontianer div img{
+    position: absolute;
+    margin-top: 3px;
+    left: 5.8rem;
+} */
+
+/* .formcontianer div span.errormsg{
+    
+    position: absolute;
+    left: 37rem;
+    padding: 3px;
+}
+
+.formcontianer div label{   
+    flex: 3;
+    color: #000;
+    margin-left: 16%;
+    padding: 2px 4px;
+}
+
+
+.formcontianer div input{
+    flex: 12;
+    margin-right: 22.5%;
+    background-color: rgba(140, 248, 212, 0.6);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    height: 30px;
+    padding-left: 10px;
+}
+
+.formcontianer div input:webkit-autofill{
+    color: #ff0000;
+}
+
+
+
+
+.formcontianer div span{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+
+.formcontianer div input:-webkit-any(){
+    flex: 1.1;
+    margin-right: 20%;
+    background-color: rgba(140, 248, 212, 0.6);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    height: 30px;
+} */
+
+
+.button {
+    /* margin: 1rem 16rem;     /* 上下  左又*/
+    margin: 0 16rem 1rem 20rem; /* 由上開始順時針 */
+    width: 8rem;
+    height: 45px;
+    border-radius: 20px;
+    background-color: rgb(123, 65, 248, 0.5); /* 按鈕背景顏色 */
+    color: #000000; /* 按鈕文字顏色 */
+    border: none; /* 移除按鈕邊框*/
+    cursor: pointer; /* 改變游標 */
+}
+.button:hover {
+    background-color: rgba(88, 45, 180, 0.5); /* 按鈕背景顏色 */
+}
+
