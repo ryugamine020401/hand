@@ -1,0 +1,99 @@
+.ifmcardpagecontainer {
+    /* background-image: url('/images/BACKGROUND.png'); */
+    /* width: 100%; /* 使用百分比設置寬度 */
+    /* max-width: 1600px; /* 可選的最大寬度，以防止元素變得過寬 */
+    height: auto;
+    margin: 0; /* 清除默認的body邊距 */
+    padding: 0; /* 清除默認的body內邊距 */
+    background-size: cover; /* 使圖像覆蓋整個視窗 */
+    background-repeat: no-repeat; /* 防止圖像重複 */
+    /*background-attachment: fixed; /* 防止圖像滾動 */
+    
+    background-color: rgba(231, 195, 221, 0.9);
+}
+
+.pagetitle{
+    /* padding-top: 5rem; */
+    padding: 5rem 25rem;
+    padding-bottom: 0px;
+    padding-right: 0;
+    margin-bottom: 10px;
+}
+
+
+.wordcardcontainer{
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    
+}
+
+.wordcard {
+    width: 30rem;
+    border : 3px solid rgb(210, 166, 166);
+    background-color: rgb(148, 204, 213);
+    margin: 10px;
+    padding: 5px 10px;     /*上下 左右*/
+    border-radius: 5px;
+    display: flex;
+    justify-content: flex-start;
+}
+.wordcardleft img{
+    border-radius: 5px;
+}
+.wordcardright {
+    align-self: center;
+    margin: 0 auto;
+    /* align-self: flex-end;  */
+    /* justify-self: flex-end; */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.wordcardright div.describecontainer{
+    margin-bottom: 10%;
+    /* padding-bottom: 10px; */
+    font-weight: 900;
+    font-size: 26px;
+    color: black;
+}
+
+.wordcardright div.buttoncontainer{
+    width: 6rem;
+    height: 3rem;
+    margin-left: 6rem;
+}
+
+.wordcardright div.buttoncontainer button{
+    width: 6rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(171, 42, 42);
+}
+
+.wordcardright div.buttoncontainer button:hover{
+    background-color: rgb(116, 29, 29);
+}
+
+.leftpic {
+    width: 13rem;
+    height: 11.5rem;
+    position: fixed;
+    bottom: 0;
+    left: 25px; 
+    z-index: 999; 
+}
+
+.rightpic {
+    width: 13rem;
+    height: 11.5rem;
+    position: fixed;
+    bottom: 0;
+    right: 25px; 
+    z-index: 999; 
+}
+

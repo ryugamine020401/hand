@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import React, { useCallback } from 'react';
+import style from '@/pages/ifm/css/card.module.css'
 
 
 function UserWordCard(){
@@ -27,7 +28,12 @@ function UserWordCard(){
                 const responseData = await response.json();
                 router.reload();
                 console.log(responseData);
-            } else {
+            } else if(response.status === 403) {
+                localStorage.clear('access_token');
+                localStorage.clear('refresh_token');
+                alert('登入過期，請重新登入。');
+                router.push('/reg/login');
+            }else {
                 const responseData = await response.json();
                 console.log(responseData);
             }
@@ -35,8 +41,6 @@ function UserWordCard(){
             console.log(error);
         }
         console.log(key);
-        
-
     }
 
     const checkAcccesstoken = () => {
@@ -106,45 +110,49 @@ function UserWordCard(){
                 resetPasswordPath="../../reg/resetpassword"
                 logoutPath="../../"
             />
-            <h1>字卡</h1>
+            {/* <h1>字卡</h1> */}
+            <div className={style.ifmcardpagecontainer}>
+                <h1 className={style.pagetitle}> 使用者字卡 </h1>
+                <div className={style.wordcardcontainer}>
+                {Object.keys(userWordcardURL2).map((key, index) => (
+                    <div key={`UserWordCardContainer_${index}`} className={style.wordcard}>
+                        <div className={style.wordcardleft}>
+                            <Image
+                                priority
+                                height={100}
+                                width={100}
+                                alt="字卡"
+                                src={userWordcardURL2[key]}
+                                key={`UserWordCardImage_${index}`}
+                                />
+                        </div>
+                        <div className={style.wordcardright}>
+                            <div className={style.describecontainer}>
+                                <p key={`UserWordCardDescribe_${index}`}>字母手勢{key}</p>
+                            </div>
+                            <div className={style.buttoncontainer}>
+                                <button key={`DeleteWordCardbutton_${index}`} onClick={() => DeleteUserWordCardButtonCheck(key)}>刪除字卡</button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
 
-            {/* <div>
-                {userWordcardURL ? (
-                    userWordcardURL.map((url, index) => (
-                    <div key={index} style={{'border':'3px solid red',margin:"5px"}}>
-                        <Image
-                          priority
-                          height={50}
-                          width={50}
-                          alt="字卡"
-                          src={url}
-                        />
-                        <p>這是描述圖像的文字</p>
-                        <button key={index}>刪除字卡</button>
-                      </div>
-                    ))
-                ) : (
-                    <p>Loading...</p>
-                )}
-            </div> */}
-
-            {Object.keys(userWordcardURL2).map((key, index) => (
-                <div key={`UserWordCardContainer_${index}`} style={{'border':'3px solid red',margin:"5px"}}>
-                    <Image
-                          priority
-                          height={50}
-                          width={50}
-                          alt="字卡"
-                          src={userWordcardURL2[key]}
-                          key={`UserWordCardImage_${index}`}
-                        />
-                    <p key={`UserWordCardDescribe_${index}`}>字母手勢{key}</p>
-                    <button key={`DeleteWordCardbutton_${index}`} onClick={() => DeleteUserWordCardButtonCheck(key)}>刪除字卡</button>
-                    {/* <p>{key}: {userWordcardURL2[key]}</p> */}
-                    
                 </div>
-            ))}
-            
+                <Image
+                    width={400}
+                    height={354}
+                    alt="pic"
+                    src={'/images/ifm_wordcadbook.png'}
+                    className={style.leftpic}
+                />
+                <Image
+                    width={400}
+                    height={354}
+                    alt="pic"
+                    src={'/images/ifm_wordcadteacher.png'}
+                    className={style.rightpic}
+                />
+            </div>
         </>
     );
 }
