@@ -53,6 +53,11 @@ export default function Ifm () {
                 setUsername(responseData.username);
                 setDescribe(responseData.describe);
                 console.log(responseData.message);
+            } else if(response.status === 403){
+                
+                localStorage.clear('access_token');
+                localStorage.clear('refresh_token');
+                router.push('./uchi');
             } else {
                 const responseData = await response.json();
                 console.log(responseData)

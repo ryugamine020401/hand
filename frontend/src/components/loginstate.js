@@ -45,9 +45,11 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
             } else {
                 // 驗證失敗，無登入狀態或過期。
                 const responseData = await response.json();
-                if ( response.status === 403){
+                if (response.status === 403){
                     console.log(responseData.detail);
                     setButtommsg("登入");
+                    const currentURL = window.location.href;
+                    console.log('網址是:', currentURL);
                     // router.push('http://127.0.0.1:3000/uchi');
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
