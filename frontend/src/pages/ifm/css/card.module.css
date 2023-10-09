@@ -3,6 +3,7 @@
     /* width: 100%; /* 使用百分比設置寬度 */
     /* max-width: 1600px; /* 可選的最大寬度，以防止元素變得過寬 */
     height: auto;
+    min-height: 100vh;
     margin: 0; /* 清除默認的body邊距 */
     padding: 0; /* 清除默認的body內邊距 */
     background-size: cover; /* 使圖像覆蓋整個視窗 */

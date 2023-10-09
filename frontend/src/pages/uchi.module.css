@@ -1,0 +1,50 @@
+.link_0, .link_1, .link_2, .link_3, .link_4 {
+    margin: 20px;
+}
+
+.link_0:hover, .link_1:hover, .link_2:hover, .link_3:hover, .link_4:hover {
+    text-decoration: underline;
+    margin: 20px;
+}
+
+.fullscreen{
+    width: 100%; /* 使用百分比設置寬度 */
+    /*max-width: 1200px; /* 可選的最大寬度，以防止元素變得過寬 */
+    height: 800px;
+    background-color: blueviolet;
+}
+
+.uchipagecontainer {
+    background-image: url('/images/BACKGROUND2.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    /* zoom: 150%; */
+}
+
+.uppercontainer{
+    width: 60%;
+    padding-bottom: 50px;
+    margin-top: 13.5rem;
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lowercontainer{
+    position: fixed;
+    bottom: 6.5rem;
+    width: 80%;
+    padding-top: 6rem;
+    display: flex;
+    justify-content: space-between;
+}

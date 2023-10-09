@@ -1,0 +1,41 @@
+.studypagecontainer {
+    background-image: url('/images/study_indexpageBG.jpg');
+    background-size: cover; /* 使圖像覆蓋整個視窗 */
+    background-repeat: no-repeat; /* 防止圖像重複 */
+    background-attachment: fixed; /* 防止圖像滾動 */
+    height: 100vh;
+    /* display: flex;
+    justify-content: center; */
+    /* margin-top: 3.8rem; */
+}
+
+.blackboardcontainer {
+    display: flex;
+    justify-content: flex-start;
+    width: 50rem;
+    max-width: 50rem;
+    padding-top: 6rem;
+    margin: 0rem 15rem;
+    flex-wrap: wrap;
+}
+
+.blackboardcontainer div.techtypecontainer a{
+    padding: 0px;
+    font-size: 40px;
+    margin: 0 2rem;
+}
+.blackboardcontainer div.techtypecontainer a:hover{
+    text-decoration: underline;
+}
+
+
+.techtypecontainer{
+    width: 16rem;
+    border: 2px solid white;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+.techtypecontainer:hover{
+    background-color: rgba(0, 0, 0, 0.535);
+}

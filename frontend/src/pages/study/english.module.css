@@ -1,0 +1,50 @@
+.englishpagecontainer{
+    /* height: 100vh; */
+    margin: 0; 
+    background-color: antiquewhite;
+    background-size: cover;
+    /* background-attachment: fixed; */
+    padding: 6rem 4rem;
+}
+
+.wordcardcontainer{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    justify-content: flex-start;
+    margin-left: 3rem;
+}
+.alphabetcontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.alphabetcontainer img{
+    margin-bottom: 10px;
+}
+
+.alphabetcontainer button{
+    width: 4rem;
+    height: 2rem;
+    border-radius: 3px;
+    border: none;
+    background-color: rgb(179, 102, 26);
+}
+
+.alphabetcontainer button:hover{
+    cursor: pointer;
+    background-color: rgb(108, 62, 16);
+}
+
+.alphabetcontainer button:disabled{
+    cursor:not-allowed;
+    background-color: rgb(108, 62, 16);
+    
+}
+
+.alphabetcontainer button:disabled:hover{
+    cursor:not-allowed;
+    
+}
+

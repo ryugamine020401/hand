@@ -405,6 +405,48 @@ class TeachingCenterEnglishView(APIView):
 
 # ------------------------學習中心_英文------------------------------------
 
+# ------------------------ 學習中心_英文_字卡按鈕 -------------------------
+class UserWordCardButtonCheckView(APIView):
+    """
+    可以讓使用者已加入字卡的字卡按鈕disable
+    """
+    def get(self, request):
+        """
+        需要登入狀態，jwt的id可用來辨別使用者
+        可以讓使用者已加入字卡的字卡按鈕disable
+        """
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(auth[1])
+        wordarray = UseWordCard.objects.filter(user_id=token_payload['id'])
+        no_add_wordcard_buttonenable_list = []
+        for word_id in wordarray:
+            no_add_wordcard_buttonenable_list.append(ord(word_id.word)-97)
+        print(wordarray, no_add_wordcard_buttonenable_list)
+
+        data= {
+            'message':'成功獲取未加入字卡的id',
+            'enablelist': no_add_wordcard_buttonenable_list,
+        }
+        response = JsonResponse(data=data, status=status.HTTP_200_OK)
+        return response
+
+# ------------------------ 學習中心_英文_字卡按鈕 -------------------------
+
 
 # ------------------------測驗_1-------------------------------------------
 class TestOneViews(APIView):
