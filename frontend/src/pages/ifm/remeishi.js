@@ -19,6 +19,30 @@ export default function ReMeishi(){
 	const [headimage, setHeadimage] = useState("");
 	const [croppedImageDatasrc, setcroppedImageDatasrc] = useState('');
 	const [cropenable, setCropEnable] = useState(false);
+
+    const fetchImageAndConvertToBase64 = async (imageUrl) => {
+        try {
+          const response = await fetch(imageUrl);
+          if (response.status === 200) {
+            const blob = await response.blob();
+            const base64Data = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            setHeadimage(base64Data);
+            return base64Data;
+          } else {
+            console.error('加载图片失败:', response.status);
+            return null;
+          }
+        } catch (error) {
+          console.error('加载图片失败:', error);
+          return null;
+        }
+      };
+      
     const getUserInformation = async() => {
         const access_token = localStorage.getItem('access_token');
         try {
@@ -35,7 +59,9 @@ export default function ReMeishi(){
                 setHeadiImageURL(responseData.headimageurl);
                 setUsername(responseData.username);
                 setDescribe(responseData.describe);
+                fetchImageAndConvertToBase64(responseData.headimageurl);
                 console.log(responseData.message);
+                console.log('預設',headimage);
             } else if(response.status === 403){
                 
                 localStorage.clear('access_token');
@@ -59,6 +85,7 @@ export default function ReMeishi(){
 
 	const handleFileChange = (e) => {
 		setcroppedImageDatasrc('');
+        getUserInformation();
 		setCropEnable(true);
 		const file = e.target.files[0];
 		const reader = new FileReader();
@@ -165,7 +192,7 @@ export default function ReMeishi(){
         }
 
     }
-
+    
     return(
         <>  {/* 在這裡 ./ 就會是{base}/app/ 所以這裡是 {base}/ifm*/}
             
@@ -182,7 +209,7 @@ export default function ReMeishi(){
                             {croppedImageDatasrc ?( 
                             <img
                                 src={ croppedImageDatasrc }
-                                alt="頭圖"
+                                alt="頭圖_裁剪後"
                                 priority
                                 className={style.headimage}
                             /> 
@@ -190,7 +217,7 @@ export default function ReMeishi(){
                                 <img
                                     // src={ croppedImageDatasrc }
                                     src={ headiImageURL }
-                                    alt="頭圖"
+                                    alt="頭圖_裁減前"
                                     priority
                                     className={style.headimage}
                                 />
@@ -228,6 +255,7 @@ export default function ReMeishi(){
                             </div>
                         </div>
                         <div className={style.describecontainer}>
+
                             <label>個人簡介</label>
                             <textarea
                                 id="describe"
@@ -239,39 +267,47 @@ export default function ReMeishi(){
                         </div>
                     </div>
                     
-
-                    <div className={style.usernamecontainer}>
-                        <label>暱稱</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            required
-                            value={username}
-                            onChange={(e)=>setUsername(e.target.value)}
-                        />
+                    <div className={style.lowercontainer}>
+                        <div className={style.usernamecontainer}>
+                            <img src="/images/username.png" width={20} height={20} alt="emailicon"/>
+                            <label>暱稱</label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                required
+                                value={username}
+                                onChange={(e)=>setUsername(e.target.value)}
+                            />
+                        </div>
+                        
+                        <div className={style.birthdaycontainer}>
+                            <img src="/images/birthday.png" width={20} height={20} alt="emailicon"/>
+                            <label>生日</label>
+                            <input
+                                type="date"
+                                name="birthday"
+                                value={birthday}
+                                onChange={(e)=>setBirthday(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <button
+                                onClick={uploadButtonClick}
+                            >
+                                修改資料
+                            </button>
+                        </div>
                     </div>
                     
-                    <div className={style.birthdaycontainer}>
-                        <label>生日</label>
-                        <input
-                            type="date"
-                            name="birthday"
-                            value={birthday}
-                            onChange={(e)=>setBirthday(e.target.value)}
-                        />
-                    </div>  
+                    
                 </div>
             </div>
             
             
             
 
-            <button
-                onClick={uploadButtonClick}
-            >
-                修改資料
-            </button>
+            
         </>
     );
 }

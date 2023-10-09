@@ -10,11 +10,12 @@
     background-size: cover; /* 使圖像覆蓋整個視窗 */
     background-repeat: no-repeat; /* 防止圖像重複 */
     background-attachment: fixed; /* 防止圖像滾動 */
+    background-color: rgba(231, 195, 221, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
+/* 整個表單 */
 .formcontianer {
     border: 1px solid #000;
     height: 25rem;
@@ -22,21 +23,24 @@
     background-color: rgb(245, 245, 245, 0.95);
     margin: 30;
     border-radius: 50px;
-    padding-top: 2rem;
-    
+    padding-top: 1rem;
+    position: relative;
 }
+/* 整個表單 */
 
-/* .formcontianer div.headimgcontainer{
-    display: flex;
-    
-} */
 
+/* 上面的表單，包含頭像、個人狀態描述。 */
 .formcontianer div.uppercontainer {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
 }
 .formcontianer div.uppercontainer div.headimgcontainer{
     height: 200px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 3.45rem;
+    margin-right: 1.70rem;
+    margin-top: 1rem;
 }
 .formcontianer div.uppercontainer img.headimage{
     border-radius: 50%;
@@ -44,37 +48,43 @@
     height: 120px;
 }
 .cropcontainer{
-    max-height: 100px; /* 设置最大高度 */
-    width: auto; /* 宽度自动调整 */
-    height: auto; /* 高度自动调整，以保持等比例缩放 */
+    position: absolute;
+    top: 5rem;
+    left: 15rem;
+    display: block;
+    z-index: 9999;
 }
 
 .cropcontainer img{
-    max-height: 100px; /* 设置最大高度 */
-    width: auto; /* 宽度自动调整 */
-    height: auto; /* 高度自动调整，以保持等比例缩放 */
+    max-height: 200px; 
+    width: auto; 
+    height: auto; 
 }
 
-/* .cropcontainer div{
+
+.cropcontainer div{
     z-index: 99999;
-    width: 10rem;
+    width: auto;
+    height: auto;
+}
+
+.cropcontainer button{
+    width: 60px;
+}
+
+.uppercontainer div.describecontainer textarea{
+    width: 26rem;
     height: 10rem;
-} */
+    color: #000;
+    background-color: rgba(140, 255, 255, 0.6);
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+}
+/* 上面的表單，包含頭像、個人狀態描述。 */
 
-/* .cropcontainer span{
-    
-    width: 1rem;
-    height: 1rem;
-} */
-
-/*
-.formcontianer div img{
-    position: absolute;
-    margin-top: 3px;
-    left: 5.8rem;
-} */
-
-/* .formcontianer div span.errormsg{
+/* 下面的表單 使用者暱稱、生日*/
+.formcontianer div span.errormsg{
     
     position: absolute;
     left: 37rem;
@@ -89,6 +99,7 @@
 }
 
 
+
 .formcontianer div input{
     flex: 12;
     margin-right: 22.5%;
@@ -100,29 +111,30 @@
     padding-left: 10px;
 }
 
-.formcontianer div input:webkit-autofill{
-    color: #ff0000;
+
+.formcontianer div.lowercontainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-
-
-
-.formcontianer div span{
-    position: fixed;
-    top: 0px;
-    left: 0px;
+.formcontianer div.lowercontainer div{
+    width: 55rem;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    
 }
 
-
-.formcontianer div input:-webkit-any(){
-    flex: 1.1;
-    margin-right: 20%;
-    background-color: rgba(140, 248, 212, 0.6);
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    height: 30px;
-} */
+.formcontianer div.lowercontainer div img{
+    
+    margin-top: 3px;
+    position: absolute;
+    left: 7rem;
+    
+}
 
 
 .button {
