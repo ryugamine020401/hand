@@ -294,6 +294,7 @@ export default function ReMeishi(){
                         <div>
                             <button
                                 onClick={uploadButtonClick}
+                                disabled={cropenable}
                             >
                                 修改資料
                             </button>
@@ -302,6 +303,10 @@ export default function ReMeishi(){
                     
                     
                 </div>
+                <div className={style.dogimgcontainer}>
+                    <img src="/images/ifm_remeshidog.png" alt="dogimg"/>
+                </div>
+                
             </div>
             
             

@@ -26,7 +26,8 @@ class UserDefIfm(models.Model):
     """
     id = models.AutoField(primary_key=True) # 自動生成累進的數字
     headimg = models.ImageField(upload_to='headimage', blank=False, null= False)
-    describe = models.CharField(max_length=256)
+    # describe = models.CharField(max_length=256)
+    describe = models.TextField()
     user_id = models.ForeignKey('reg.UserIfm', to_field='id', on_delete = models.CASCADE)
     score = models.FloatField(default=0.0, null=True)
     objects = models.Manager()

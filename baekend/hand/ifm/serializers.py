@@ -12,7 +12,7 @@ class UserDefIfmSerializer(serializers.Serializer):
     # 使用者輸入
     # headimg = serializers.CharField(max_length=100)
     headimg = serializers.ImageField(default='headimage/defaultimage.png')
-    describe = serializers.CharField(max_length=256)
+    describe = serializers.CharField(max_length=5000)
     user_id = serializers.IntegerField()
     score = serializers.FloatField()
 

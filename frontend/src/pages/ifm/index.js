@@ -100,7 +100,7 @@ export default function Ifm () {
                     </div>
                     <div className={style.textcontainer}>
                         <div className={style.username}><span style={{fontSize:'30px'}}>{ username }</span></div>
-                        <div className={style.describe}><p>{ describe }</p></div>
+                        <div className={style.describe}><textarea defaultValue={describe} disabled/></div>
                     </div>
                     
                     
