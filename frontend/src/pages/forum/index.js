@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import LoginState from "@/components/loginstate";
-
-
+import style from '@/pages/forum/index.module.css'
+import { useRouter } from "next/router";
 
 export default function Billboard(){
     const [title, setTitle] = useState({});
+    const router = useRouter();
+    const {page} = router.query;
+    const pageNumber = page ? parseInt(page, 10) : 1;
 
     const initialSetPage = async () =>{
         try {
@@ -28,13 +31,24 @@ export default function Billboard(){
 
     }
 
+    const buttonClick = (key) => {
+        router.push(`forum/${key}`);
+    }
+    const ClickPostConent = () => {
+        if (localStorage.getItem('access_token') === null) {
+            router.push('reg/login');
+        } else {
+            router.push('forum/send');
+        }
+        
+    }
     useEffect(() => {
         initialSetPage();        
     }, []);
     
     return(
         <>  
-            <Head><title>公告欄</title></Head>
+            <Head><title>討論區</title></Head>
             
             <LoginState
                 profilePath="./ifm"
@@ -42,14 +56,33 @@ export default function Billboard(){
                 logoutPath="./"
 
             />
-            <h1>公告欄</h1>
-            {Object.keys(title).map((key, index)=>(
-                <div key={`billboardcontainer_${index}`}>
-                
-                    <Link key={`bill_link_${index}`} href={`./forum/${key}`}>{title[key]}</Link>
-                
+            <div className={style.forumindexpagecontainer}>
+                <div className={style.formcontainer}>
+                    {Object.keys(title).slice(5*(pageNumber-1), pageNumber*5).map((key, index)=>(
+                        <div key={`forumcontainer_${index}`} className={style.forumurlcontainer}
+                            onClick={()=>buttonClick(key)}
+                        >
+                        
+                            <Link key={`forum_link_${index}`} href={`./forum/${key}`}>{title[key]}</Link>
+                        
+                        </div>
+                    ))}
+                    <div className={style.forumurlcontainer} onClick={()=>ClickPostConent()}>
+                        
+                        <Link  href={`./forum/send`}>發佈文章</Link>
+                    
+                    </div>
                 </div>
-            ))}
+                <div className={style.chanhepagecontainer}>
+                    <a href={`./forum?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</a>
+                    <span>{pageNumber}</span>
+                    <a href={`./forum?page=${Object.keys(title).length > pageNumber*6? pageNumber+1 : pageNumber}`}>下一頁</a>
+                    {/* <a href={`./forum?page=${pageNumber+1}`}>下一頁</a> */}
+                </div>
+                
+            </div>
+
+            
 
         </>
     );

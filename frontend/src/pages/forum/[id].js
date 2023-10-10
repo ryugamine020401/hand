@@ -6,12 +6,13 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
+import style from '@/pages/forum/detial.module.css'
 function DynamicPage() {
   	const router = useRouter();
   	const { id } = router.query;
 	const [title, setTitle] = useState();
 	const [content, setContent] = useState();
+	const [authorname, setAuthorname] = useState();
 	const [responsehint, setResponsehint] = useState('');
 	const [userResponse, setuUserResponse] = useState();
 	const [date, setDate] = useState();
@@ -33,6 +34,7 @@ function DynamicPage() {
 				setContent(responseData.articalContent);
 				setArticalHeadimage(responseData.authorImageUrl);
 				setResponse(responseData.response);
+				setAuthorname(responseData.authorname);
 				console.log(responseData.response);
 			} else {
 				const responseData = await response.json();
@@ -91,53 +93,78 @@ function DynamicPage() {
 				resetPasswordPath="../reg/resetpassword"
 				logoutPath="./uchi"
 			/>
-			<div className='content'>
-				<Image
-					alt = "發文者頭像"
-					src = {articalheadimage}
-					width={80}
-					height={80}
-				/>
-				<h2>{title}</h2>
-				<h6>{date}</h6>
-				<p style={{padding:100}}>{content}</p>
-			</div>
-			{response && 
-				<div className='response'>
-					{Object.keys(response).map((id, index) => (
-						<div key={`test${index}`}>
-							<Image
-								alt = "回覆者的頭像"
-								width = {30}
-								height = {30}
-								src = {response[id].headimagUrl}
-							/>
-							<span key={`response_name_${index}`}>{response[id].username}  </span>
-							<span key={`response_date_${index}`}>{response[id].upload_date}</span>
-							<div key={`response_content_${index}`}>{response[id].response}</div>
-
+			<div className={style.detailpagecontainer}>
+			
+				<div className={style.contnetcontainer}>
+					<div className={style.uppercontainer}>
+						<div className={style.rightcontainer}>
+							<h1>{title}</h1>
+						</div>
+						<div className={style.leftcontainer}>
+						<Image
+							alt = "發文者頭像"
+							src = {articalheadimage}
+							width={80}
+							height={80}
+						/>
+						<p>{authorname}</p>
+						<h6>{date}</h6>
 						</div>
 						
-					))}
-
-				</div>}
-
-				<div className='usersendResponsecomtainer'>
+					</div>
+					<hr></hr>
+					<div className={style.lowercontainer}>
 						<textarea 
-							id="content"
-							name="content"
-							required
-							defaultValue={responsehint}
-							onChange={(e)=>setuUserResponse(e.target.value)}
-							disabled={!logincheck}
+							disabled={true}
+							value={content}
 						/>
-						<button
-							onClick={sendUserResponsebuttonClick}
-							disabled={!logincheck}
-						>
-							送出回復
-						</button>
+					</div>
 				</div>
+				<div className={style.responseArea}>
+					{response && 
+						<div className='response'>
+							{Object.keys(response).map((id, index) => (
+								<div key={`test${index}`} className={style.responsecontainer}>
+									<div className={style.responseuppercontainer}>
+										<Image
+											alt = "回覆者的頭像"
+											width = {50}
+											height = {50}
+											src = {response[id].headimagUrl}
+										/>
+										<p key={`response_name_${index}`}>{response[id].username}  </p>
+										<span key={`response_date_${index}`}>{response[id].upload_date}</span>
+									</div>
+									<div className={style.responselowercontainer}>
+										<p key={`response_content_${index}`}>{response[id].response}</p>
+									</div>
+									
+									
+
+								</div>
+								
+							))}
+
+						</div>}
+
+						<div className={style.usersendResponsecomtainer}>
+								<textarea 
+									id="content"
+									name="content"
+									required
+									defaultValue={responsehint}
+									onChange={(e)=>setuUserResponse(e.target.value)}
+									disabled={!logincheck}
+								/>
+								<button
+									onClick={sendUserResponsebuttonClick}
+									disabled={!logincheck}
+								>
+									送出回復
+								</button>
+						</div>
+				</div>
+			</div>	
     	</div>
 	)
 }

@@ -1,0 +1,66 @@
+.forumpagecontainer {
+    background-image: url('/images/forum_BG.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.forumpagecontainer button{
+    width: 6rem;
+    height: 3rem;
+    align-self: center;
+    margin: 1rem 38rem;
+    border-radius: 5px;
+    border: none;
+    background-color: rgba(240, 248, 255, 0.619);
+    color: black;
+}
+
+.forumpagecontainer button:hover{
+    cursor: pointer;
+    background-color: rgb(183, 106, 47);
+}
+
+
+.formcontainer{
+    padding: 20px 40px;
+    margin: 6rem 10rem;
+    margin-bottom: 0;
+    width: 60rem;
+    height: 25rem;
+    background-color: rgba(240, 248, 255, 0.619);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.formcontainer div.titlecontainer input{
+    margin-top: 1rem;
+    width: 26rem;
+    height: 2.5rem;
+    background-color: rgba(87, 177, 147, 0.577);
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.formcontainer div.contentcontainer textarea{
+    margin-top: 1.85rem;
+    padding: 10px;
+    width: 55rem;
+    height: 15rem;
+    background-color: rgba(87, 172, 177, 0.577);
+    color: black;
+    resize: none;
+    border: none;
+    border-radius: 10px;
+}
+

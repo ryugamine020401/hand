@@ -2,7 +2,7 @@ import LoginState from "@/components/loginstate";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-
+import style from '@/pages/forum/send.module.css'
 
 export default function ReMeishi(){
     const router = useRouter();
@@ -102,30 +102,43 @@ export default function ReMeishi(){
                 resetPasswordPath="../reg/resetpassword"
                 logoutPath="../uchi"
             />
-            <label>標題</label>
-            <input
-                type="text"
-                id="contentTitle"
-                name="contentTitle"
-                required
-                value={contentTitle}
-                onChange={(e)=>setContentTitle(e.target.value)}
-            />
-            <br/>
-            <label>內文</label>
-            <textarea
-                id="content"
-                name="content"
-                required
-                value={content}
-                onChange={(e)=>setContent(e.target.value)}
-            />
-            <br/>
-            <button
-                onClick={uploadButtonClick}
-            >
-                上傳文章
-            </button>
+            <div className={style.forumpagecontainer}>
+                <div className={style.formcontainer}>
+                    <div className={style.titlecontainer}>
+                        <input
+                        type="text"
+                        id="contentTitle"
+                        name="contentTitle"
+                        required
+                        value={contentTitle}
+                        placeholder="標題"
+                        onChange={(e)=>setContentTitle(e.target.value)}
+                        />
+                    </div>
+                    <div className={style.contentcontainer}>
+                        <textarea
+                        placeholder="內文"
+                            id="content"
+                            name="content"
+                            required
+                            value={content}
+                            onChange={(e)=>setContent(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <button
+                        onClick={uploadButtonClick}
+                    >
+                        上傳文章
+                    </button>
+                </div>
+            </div>
+            
+            
+            
+            
+            
         </>
     );
 }

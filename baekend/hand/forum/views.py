@@ -146,6 +146,7 @@ class ForumArticalAPIView(APIView):
         """
         instance = Discuss.objects.get(id=artical_id)
         author = instance.user.id   # 獲得該文章使用者的 userid
+        author_name = UserIfm.objects.get(id=author).username
         user_instance = UserDefIfm.objects.get(user_id = author)
         author_headimage_url = f'{DOMAIN_NAME}/ifm{user_instance.headimg.url}'  # 獲得文章作者的頭像
         response = DiscussResponse.objects.filter(dis_id=artical_id)    # 獲得該頁面所有回復
@@ -176,6 +177,7 @@ class ForumArticalAPIView(APIView):
         data = {
             'message' : '請求成功',
             'articalTitle' : instance.title,
+            'authorname' : author_name,
             'authorImageUrl' : author_headimage_url,
             'articalContent' : instance.content,
             'uploadDate' : instance.upload_date,

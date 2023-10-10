@@ -1,0 +1,62 @@
+.forumindexpagecontainer {
+    background-image: url('/images/forum_BG.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.formcontainer{
+    margin-top: 4rem;
+    /* margin-left: 1.8rem; */
+    width: 80rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.forumurlcontainer {
+    width: 300px;
+    height: 240px;
+    margin: 0px 3rem;
+    background-image: url('/images/forum_titlecontainer.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-size: 50px;
+    font-weight: 800;
+    /* word-wrap: break-word; */
+}
+
+.forumurlcontainer:hover {
+    background-color: rgba(0, 0, 0, 0.205);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.chanhepagecontainer {
+    /* background-color: red; */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-weight: 900;
+    font-size: 20px;
+}
+.chanhepagecontainer a{
+    padding: 10px; 
+}
+.chanhepagecontainer span{
+    padding-top: 12.5px;
+}
+.chanhepagecontainer a:hover{
+    text-decoration:  underline;
+}
