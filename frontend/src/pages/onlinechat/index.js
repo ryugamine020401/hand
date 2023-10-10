@@ -44,10 +44,18 @@ const Lobby = () => {
         const message = newMessage.trim(); // 移除消息的前後空格
         if (message){
             if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-                const message = newMessage;
-                chatSocket.send(JSON.stringify({
-                    message,
-                }));
+				const access_token = localStorage.getItem('access_token');
+				const message = newMessage;
+				const messageData = {
+					message: message,
+					Authorization: `Bearer ${access_token}`, // header
+				};
+				chatSocket.send(JSON.stringify(messageData));
+
+                // const message = newMessage;
+                // chatSocket.send(JSON.stringify({
+                //     message,
+                // }));
                 setNewMessage('');
             }
         }

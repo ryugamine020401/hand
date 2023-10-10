@@ -3,6 +3,7 @@
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 999;
 }
 .HeaderContainer {
     display: flex;
@@ -84,7 +85,7 @@
     
     position: absolute;
     top: 70px; /* 選單出現在圖片的下方 */
-    right: 100px;
+    right: 60px;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -97,7 +98,7 @@
     background-color: rgb(170, 155, 155);
     border: 1px solid #ba9393;
     /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);*/ 
-    z-index: 999; /* 設定 z-index 以控制堆疊順序，數字越大越在最上層 */
+    /* z-index: 999; /* 設定 z-index 以控制堆疊順序，數字越大越在最上層 */
     display: flex;
     flex-direction: column;
 }
@@ -105,21 +106,30 @@
 .UL {
     padding: 5px 3px 0px 5px;
     list-style: none;
+    /* z-index: 999; */
 }
 
 .UL li{
     margin: 15px 15px;
     display: flex;
+    /* z-index: 999; */
 }
 
 .UL li img{
     margin-right: 3px;
+    /* z-index: 999; */
+}
+.UL li a{
+    margin-right: 3px;
+    /* z-index: 999; */
 }
 .UL li span{
     margin-bottom: 10px;
+    /* z-index: 999; */
 }
 
 .UL li:hover{
     text-decoration: underline;
+    /* z-index: 999; */
 }
 

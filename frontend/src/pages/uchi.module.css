@@ -7,18 +7,13 @@
     margin: 20px;
 }
 
-.fullscreen{
-    width: 100%; /* 使用百分比設置寬度 */
-    /*max-width: 1200px; /* 可選的最大寬度，以防止元素變得過寬 */
-    height: 800px;
-    background-color: blueviolet;
-}
 
 .uchipagecontainer {
     background-image: url('/images/BACKGROUND2.png');
+    /* background-size: cover; */
     background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    /* background-repeat: no-repeat;
+    background-attachment: fixed; */
     margin: 0;
     padding: 0;
 
@@ -28,18 +23,46 @@
     justify-content: flex-start;
     align-items: center;
 
-    /* zoom: 150%; */
+    
+    /*zoom: 150%;     /* 100% */
+    /*zoom: 140%;     /* 110% */
+    /*zoom: 125%;     /* 125% */
+    /*zoom: 100%;     /* 150% */
+    
+    
+    
 }
-
+/* 上排圖片樣式 */
 .uppercontainer{
     width: 60%;
     padding-bottom: 50px;
-    margin-top: 13.5rem;
+    margin-top: 6rem;
     margin-bottom: 50px;
     display: flex;
     justify-content: space-between;
 }
 
+.billboardcontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.uppercontainer div.billboardcontainer img{
+    width: 150px;
+    height: 150px;
+}
+
+.onlinechatcontainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.uppercontainer div.onlinechatcontainer img{
+    width: 150px;
+    height: 150px;
+}
+
+/* 下排圖片樣式 */
 .lowercontainer{
     position: fixed;
     bottom: 6.5rem;
@@ -47,4 +70,90 @@
     padding-top: 6rem;
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
 }
+
+.discusscontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.lowercontainer div.discusscontainer img{
+    width: 150px;
+    height: 150px;
+}
+.lowercontainer div.discusscontainer img.discusslock{
+    opacity: 0;
+}
+
+.studycontainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.lowercontainer div.studycontainer img{
+    width: 400px;
+    height: 358px;
+    z-index: 1;
+}
+.lowercontainer div.studycontainer img.studylock{
+    opacity: 0;
+}
+.informationcontainer{
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lowercontainer div.informationcontainer img{
+    width: 200px;
+    height: 158.5px;
+}
+
+/* 未登入的 */
+.informationcontainernologin{
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.lowercontainer div.informationcontainernologin img{
+    width: 200px;
+    height: 158.5px;
+    opacity: 0.5;
+}
+.lowercontainer div.informationcontainernologin img.informationlock{
+    opacity: 1;
+    position: absolute;
+    z-index: 6;
+    width: 150px;
+    height: 100px;
+    bottom:50px;
+}
+
+/* 上下兩容器共用 */
+.uppercontainer div a, .lowercontainer div a{
+    color: black;
+    font-weight: 900;
+    font-size: 30px;
+}
+.uppercontainer div{
+    z-index: 2;
+    border-radius: 10px;
+}
+
+.uppercontainer div:hover{
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.073);
+}
+
+.lowercontainer div{
+    border-radius: 10px;
+    z-index: 1;
+}
+.lowercontainer div:hover{
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.073);
+}
+
