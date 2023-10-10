@@ -1,0 +1,44 @@
+.billboardpagecontainer{
+    background: linear-gradient(
+        to bottom,
+        #fcff49 -30%,
+        #66ccff 50%,
+        #08900e 140%);
+    padding-top: 3rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Billboardlinkcontainer {
+    border: 2px solid rgba(45, 237, 192, 0.259);
+    width: 40rem;
+    height: 3.5rem;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: black;
+    background-color: rgba(234, 236, 238, 0.466);
+}
+
+.Billboardlinkcontainer:hover {
+    
+    background-color: rgba(137, 137, 138, 0.466);
+}
+
+.button {
+    background-color: rgb(164, 174, 183);
+    color: black;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+}
+
+.button:hover {
+    background-color: rgb(98, 104, 109);
+}

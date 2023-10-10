@@ -83,9 +83,14 @@ export default function Studyindex() {
                         <Link key={`study_link_${index}`} href={`./study/${key}`}>{resource[key]}</Link>
                     </div>
                     ))}
+                    <div className={style.chanhepagecontainer}>
+                        <a href={`./study?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</a>
+                        <span>{pageNumber}</span>
+                        <a href={`./study?page=${linklist.length > pageNumber*6? pageNumber+1 : pageNumber}`}>下一頁</a>
+                    </div>
+                    
                 </div>
-                <a href={`./study?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</a>
-                <a href={`./study?page=${linklist.length > pageNumber*6? pageNumber+1 : pageNumber}`}>下一頁</a>
+                
             </div>
             
         </>

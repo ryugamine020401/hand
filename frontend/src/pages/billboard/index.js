@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import LoginState from "@/components/loginstate";
-
+import style from "@/pages/billboard/index.module.css"
+import { Router, useRouter } from "next/router";
+import { redirect } from "next/dist/server/api-utils";
 
 
 export default function Billboard(){
     const [title, setTitle] = useState({});
-
+    const router = useRouter();
     const initialSetPage = async () =>{
         try {
             const response = await fetch("http://127.0.0.1:8000/billboard/api/gettitle/",{
@@ -28,6 +30,12 @@ export default function Billboard(){
 
     }
 
+    const divClick = (key) =>{
+        router.push(`/billboard/${key}`);
+    }
+    const backpageClick = ()=>{
+        router.push('./uchi');
+    }
     useEffect(() => {
         initialSetPage();        
     }, []);
@@ -42,15 +50,20 @@ export default function Billboard(){
                 logoutPath="./"
 
             />
-            <h1>公告欄</h1>
-            {Object.keys(title).map((key, index)=>(
-                <div key={`billboardcontainer_${index}`}>
-                
-                    <Link key={`bill_link_${index}`} href={`./billboard/${key}`}>{title[key]}</Link>
-                
-                </div>
-            ))}
 
+            <div className={style.billboardpagecontainer}>
+                {Object.keys(title).map((key, index)=>(
+                    <div key={`billboardcontainer_${index}`} className={style.Billboardlinkcontainer}
+                    onClick={()=>divClick(key)}
+                    >
+                    
+                        <Link key={`bill_link_${index}`} href={`./billboard/${key}`}>{title[key]}</Link>
+                    
+                    </div>
+                ))}
+                <button className={style.button} onClick={backpageClick}>回上一頁</button>
+            </div>
+            
         </>
     );
 }

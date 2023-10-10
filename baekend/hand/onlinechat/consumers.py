@@ -3,6 +3,7 @@
 """
 import json
 
+import rest_framework
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
@@ -76,16 +77,14 @@ class ChatConsumer(WebsocketConsumer):
         """
         使用者送出訊息。
         """
-        try:
-            token = self.scope['cookies']['access_token']
-            try:
-                user_id = decode_access_token(token)['id']
-            except AuthenticationFailed as error_msg:
-                print(error_msg, "登入時效已過。")
-                self.send(json.dumps({
-                    'redirect': '../reg/login'
-                }))
+        text_data_json = json.loads(text_data)
+        print(str(text_data_json['Authorization']).split()[1])
+        token = str(text_data_json['Authorization']).split()[1]
 
+        try:
+            if token != b'null':
+                print('有access token')
+                user_id = decode_access_token(token)['id']
             username = UserIfm.objects.get(id=user_id).username
             headimg = UserDefIfm.objects.get(user_id=user_id).headimg
         except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
@@ -96,8 +95,13 @@ class ChatConsumer(WebsocketConsumer):
             print(error_msg, "沒有登入。")
             username = "我沒有登入"
             headimg = UserDefIfm.objects.get(user_id=80928899).headimg
-        text_data_json = json.loads(text_data)
+        except rest_framework.exceptions.AuthenticationFailed as error_msg:
+            print(error_msg)
+            username = "我沒有登入"
+            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
+
         message = text_data_json['message']
+        print(text_data_json)
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {

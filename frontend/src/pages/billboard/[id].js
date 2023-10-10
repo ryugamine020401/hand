@@ -5,6 +5,7 @@ import { Tillana } from 'next/font/google';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import style from '@/pages/billboard/detial.module.css'
 
 function DynamicPage() {
   	const router = useRouter();
@@ -49,11 +50,24 @@ function DynamicPage() {
 				resetPasswordPath="../reg/resetpassword"
 				logoutPath="./uchi"
 			/>
-
-			<h1>這是動態頁面 {id}</h1>
-			<h2>{title}</h2>
-			<h6>{date}</h6>
-			<p style={{padding:100}}>{content}</p>
+			
+			{/* <h1>這是動態頁面 {id}</h1> */}
+			<div className={style.detailpagecontainer}>
+				<div className={style.mainareacontainer}>
+					<div className={style.uppercontainer}>
+						<h1>{title}</h1><h6>{date}</h6>
+					</div>
+					<div className={style.lowercontainer}>
+						<textarea
+						value={content}
+						disabled
+						/>
+					</div>
+				</div>
+			</div>
+			
+			{/* <h6>{date}</h6>
+			<p style={{padding:100}}>{content}</p> */}
     	</div>
   	);
 }

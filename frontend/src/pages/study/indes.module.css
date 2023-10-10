@@ -18,6 +18,21 @@
     margin: 0rem 15rem;
     flex-wrap: wrap;
 }
+.blackboardcontainer div.chanhepagecontainer {
+    /* background-color: red; */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.blackboardcontainer div.chanhepagecontainer a{
+    padding: 10px;
+}
+.blackboardcontainer div.chanhepagecontainer span{
+    padding-top: 12.5px;
+}
+.blackboardcontainer div.chanhepagecontainer a:hover{
+    text-decoration:  underline;
+}
 
 .blackboardcontainer div.techtypecontainer a{
     padding: 0px;

@@ -1,14 +1,24 @@
+.pagecontainer{
+    background: linear-gradient(to bottom, rgb(160, 125, 188) -50%, rgb(151, 213, 246));
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .textarea {
-    width: 900px;
-    height: 500px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 65rem;
+    height: 26rem;
+    margin-top: 2rem;
+    margin-bottom: 20px;
     border: 1px solid #21add4;
     overflow-y: auto;
+    background-color: rgba(240, 248, 255, 0.37);
+    border-radius: 10px;
 }
-  
+
+
 .messages {
     max-height: 100%;
     overflow-y: auto;
@@ -21,33 +31,76 @@
 }
 
 .headimg {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     overflow: hidden;
     margin-right: 10px;
-    border: 3px solid #19ed98;
+    border: 3px solid #19edbf47;
 }
 
 
-.headimgcontainer {
+.uppercontainer {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    margin-top: 0.3rem;
     margin-left: 10px;
+    position: relative;
+    font-size: 20px;
+    font-weight: 800;
+}
+.lowercontainer {
+    padding-bottom: 10px;
 }
 
 .userMessage {
     margin-top: 0;
-    margin-left: 70px;
-    padding: 1%;
+    margin-left: 5rem;
+    margin-bottom: 0.5rem;
+    padding: 5px;
 }
 .user_name {
     margin-top: 14px;
     margin-bottom: 10px;
 }
 .chat_container { 
-    margin: 3px 30px 3px 30px;
+    word-wrap: break-word;
+    margin: 6px 30px 6px 30px;
     border-radius: 20px;
-    background-image: linear-gradient(to bottom, rgba(16, 208, 247, 0.3) , rgba(22, 7, 238, 0.2))
+    background:rgba(180, 124, 213, 0.448);
+    display: flex;
+    flex-direction: column;
+    color: black;
 }
-/* Add any additional styling you want */
+
+.form {
+    display: flex;
+    padding: 5px;
+    width: 65rem;
+    height: 3rem;
+    /* border: 1px solid #d45d21; */
+}
+
+.form input{
+    width: 60rem;
+    background-color: rgba(250, 235, 215, 0.309);
+    color: black;
+    padding: 10px;
+    border: none;
+    border-radius: 25px;
+}
+
+.form button{
+    width: 5rem;
+    border: none;
+    margin-left: 30px;
+    background-color: rgba(160, 255, 223, 0.725);
+    border-radius: 10px;
+    color: black;
+}
+.form button:hover{
+    border: none;
+    background-color: rgba(124, 198, 173, 0.725);
+    cursor: pointer;
+    color: black;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import Style from '@/pages/onlinechat/index.module.css';
+import LoginState from '@/components/loginstate';
 
 const Lobby = () => {
     const messagesRef = useRef(null); // 創建一個ref 用來把視窗滾到最新訊息
@@ -63,31 +64,40 @@ const Lobby = () => {
 
   return (
     <div>
-      <h1>Online ChatRoom!</h1>
-      <form className={Style.textarea}>
-        <div className={Style.messages} ref={messagesRef}>
-          {messages.map((data, index) => (
-            <div className={Style.chat_container} key={index}>
-              <div className={Style.headimgcontainer}>
-                <img className={Style.headimg} src={`http://127.0.0.1:8000/ifm${data.headimg}`} alt="User Avatar" />
-                <p className={Style.user_name}>{data.username}</p>
-
-              </div>
-              <p className={Style.userMessage}>{data.message}</p>
-            </div>
-          ))}
-        </div>
-      </form>
-      <form className={Style.form} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="message"
-          className="input"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <button type="submit">Send</button>
-      </form>
+		<LoginState
+			profilePath="../ifm"
+			resetPasswordPath="../reg/resetpassword"
+			logoutPath="./"
+		/>
+		<div className={Style.pagecontainer}>
+			
+			<form className={Style.textarea}>
+				<div className={Style.messages} ref={messagesRef}>
+				{messages.map((data, index) => (
+					<div className={Style.chat_container} key={index}>
+						<div className={Style.uppercontainer}>
+							<img className={Style.headimg} src={`http://127.0.0.1:8000/ifm${data.headimg}`} alt="User Avatar" />
+							<p className={Style.user_name}>{data.username}</p>
+						</div>
+						<div className={Style.lowercontainer}>
+							<p className={Style.userMessage}>{data.message}</p>
+						</div>
+					</div>
+				))}
+				</div>
+			</form>
+			{/* <hr width="75%" color="blue"/> */}
+			<form className={Style.form} onSubmit={handleSubmit}>
+				<input
+				type="text"
+				name="message"
+				className="input"
+				value={newMessage}
+				onChange={(e) => setNewMessage(e.target.value)}
+				/>
+				<button type="submit">Send</button>
+			</form>
+		</div>
     </div>
   );
 };

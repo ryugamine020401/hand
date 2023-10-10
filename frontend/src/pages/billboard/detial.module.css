@@ -1,0 +1,53 @@
+.detailpagecontainer {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, 
+        rgb(194, 210, 27) -30%, 
+        rgba(33, 238, 249, 0.816) 50%, 
+        rgb(154, 235, 41) 160%);
+    display: flex;
+    justify-content: center;
+    padding-top: 6rem;
+}
+
+.mainareacontainer {
+
+}
+
+.mainareacontainer div{
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+    color: black;
+}
+
+.mainareacontainer h1{
+    margin-left: 0rem;
+    justify-self: self-start;
+}
+
+.mainareacontainer h6{
+    padding-top: 1.5rem;
+    margin-left: auto;
+    justify-self: self-start;
+}
+
+.mainareacontainer textarea{
+    min-width: 40rem;
+    min-height: 20rem;
+    max-height: 100rem;
+    height: auto;
+    padding: 1rem;
+    background-color:rgba(250, 235, 215, 0.6);
+    border: none;
+    resize: none;
+    border: none;
+    color: black;
+    border-radius: 10px;
+}
+
+.lowercontainer{
+    
+    overflow:inherit;
+    min-height: 20rem;
+    height: auto;
+}
