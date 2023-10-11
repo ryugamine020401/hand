@@ -1,0 +1,74 @@
+/* 最外圍 */
+.resultpagecontainer{
+    background-image: radial-gradient(circle,rgba(255, 246, 143, 0.864) ,rgb(165, 147, 255));
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+/* 上的contianer */
+.uppercontainer{
+    margin: 5rem 25rem;
+    margin-bottom: 0;
+    margin-right: 0;
+    color: black;
+    font-weight: 600;
+
+}
+/* 下面的contianer */
+.lowercontainer{
+    display: flex;
+    align-self: self-end;
+    margin-top: auto;
+}
+.leftcontainer{
+    /* border: 5px solid red; */
+    border-radius: 20px;
+    padding: 5px;
+    margin-right: 6rem;
+    display: flex;
+    flex-direction: column;
+    width: 20rem;
+    height: 23rem;
+    color: black;
+    font-size: 20px;
+    font-weight: 600;
+    background-color: rgba(240, 255, 255, 0.184);
+    backdrop-filter: blur(6px);
+    align-items: flex-start;
+    padding: 20px 3px;
+    text-align: justify;
+}
+.leftcontainer p.fixtext{
+    margin-bottom: 12px;
+    margin-left: 3rem;
+}
+.leftcontainer p{
+    margin-left: 1.2rem;
+    
+}
+
+.middlecontainer{
+    margin-right: 18rem;
+}
+.rightcontainer{
+    display: flex;
+    flex-direction: column;
+    margin-right: 7rem;
+    margin-top: 13rem;
+}
+
+.rightcontainer button{
+    background-color: blanchedalmond;
+    border-radius: 5px;
+    width: 6rem;
+    color: black;
+    height: 3rem;
+    margin: 3px;
+    border: none;
+}
+
+.rightcontainer button:hover{
+    cursor: pointer;
+    background-color: rgb(197, 182, 158);
+    
+}

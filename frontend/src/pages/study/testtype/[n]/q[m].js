@@ -18,7 +18,8 @@ function TestPage() {
 	const [ans, setAns] = useState("");
 	const [questionNum, setQuestionNum] = useState("");
 	const [checkquestion, setCheckQuestion] = useState(false);
-	
+	const btnRef = useRef(null);	// 用來進入考試頁面
+	const btn2Ref = useRef(null);	//
 
 	const captureImage = () => {
 		if (webcamRef.current) {
@@ -124,29 +125,43 @@ function TestPage() {
 		}
 	} 
 
-  useEffect(()=>{
-    loginstatetest();
-	console.log('一')
-	// console.log(parseInt(m.replace("q", ""), 10));
-	if (n && m) {
-		getQueation();
-		console.log(`n: ${n}, m: ${m}`);
-		console.log(parseInt(m.replace("q", ""), 10));
-		setQuestionNum(parseInt(m.replace("q", ""), 10));
-	}
-	// isAllowedTransition();
-  }, [n, m]);
+	useEffect(()=>{
+		loginstatetest();
+		console.log('一')
+		// console.log(parseInt(m.replace("q", ""), 10));
+		if (n && m) {
+			getQueation();
+			console.log(`n: ${n}, m: ${m}`);
+			console.log(parseInt(m.replace("q", ""), 10));
+			setQuestionNum(parseInt(m.replace("q", ""), 10));
+		}
+		// isAllowedTransition();
+	}, [n, m]);
   
 	useEffect(()=>{
 		if (imageBase64) {
-			// console.log(imageBase64);
+			/* 送出影像 */
 			postImagetoBackend();
-			
-		} else {
-
 		}
-		
 	},[imageBase64]);
+
+	useEffect(() => {
+		// 設定焦點在按鈕上
+		btnRef.current.focus();
+	
+		// 監聽鍵盤事件，當按下 Enter 鍵時觸發點擊按鈕
+		const handleKeyPress = (event) => {
+		  if (event.key === 'Enter') {
+			btnRef.current.click();
+		  }
+		};
+	
+		document.addEventListener('keydown', handleKeyPress);
+		return () => {
+			document.removeEventListener('keydown', handleKeyPress);
+		  };
+		
+	  }, []);
   
   return (
     <div>
@@ -167,38 +182,39 @@ function TestPage() {
 					<p>考試隨機出題，一共五題。</p>
 					<p>開始測驗後，系統會提示是否開啟相機，請選擇開啟。</p>
 					<p></p>
-					<button onClick={()=>StartTestButtonClick()}>點擊開始考試</button>
+					<button onClick={()=>StartTestButtonClick()} ref={btnRef}>點擊開始考試</button>
 				</div>
 				
 			</div>
 		}
-		<div className={style.queationpagecontainer}>
-			<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
-			<div>
-				<div className={style.leftcontainer}>
-					{checkquestion && 
+		{checkquestion&&
+			<div className={style.queationpagecontainer}>
+				<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
+				<div>
+					<div className={style.leftcontainer}>
+						{checkquestion && 
 
-					<div>
-						<div className={style.videoContainer}>
-							<Webcam audio={false} ref={webcamRef} mirrored={false} className={style.camera}/>			
-						</div>
-						
-					</div>}
+						<div>
+							<div className={style.videoContainer}>
+								<Webcam audio={false} ref={webcamRef} mirrored={false} className={style.camera}/>			
+							</div>
+							
+						</div>}
+					</div>
+					
+					<div className={style.rightcontainer}>
+						{imageBase64 && (
+							<div>
+							<img src={imageBase64} alt="Captured" />
+							</div>
+						)}
+					</div>
 				</div>
 				
-				<div className={style.rightcontainer}>
-					{imageBase64 && (
-						<div>
-						<img src={imageBase64} alt="Captured" />
-						</div>
-					)}
-				</div>
+				<button onClick={()=>captureImage()} className={style.button} ref={btnRef}>完成作答</button>
+				{imageBase64 && <p style={{"color":"red"}}>{errormsg}</p>}
 			</div>
-			
-			<button onClick={()=>captureImage()} className={style.button}>完成作答</button>
-			{imageBase64 && <p style={{"color":"red"}}>{errormsg}</p>}
-		</div>
-		
+		}
 		</div>
   );
 }

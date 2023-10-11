@@ -460,6 +460,13 @@ class TestOneViews(APIView):
         """
         獲得頁面。
         """
+        # if (param2>6):
+        #         data = {
+        #             'message' : '不正確的管道連入網站',
+        #             'push' : '/study/testtype/1/q0'
+        #         }
+        #         response = JsonResponse(data, status=status.HTTP_302_FOUND)
+        #         return response
         auth = get_authorization_header(request).split()
 
         try:
@@ -484,6 +491,7 @@ class TestOneViews(APIView):
                 test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
                 print(test_instance)
                 if test_instance.kotae_go == '':
+                    print("沒有東西")
                     test_instance.delete()
                     data = {
                         'message' : '準備開始測驗...。'
@@ -543,13 +551,37 @@ class TestOneViews(APIView):
                 response = JsonResponse(data, status=status.HTTP_302_FOUND)
                 return response
         if param2 > 5:
-            print('第五題')
-            data = {
-                "message :" : '已完成測驗，跳轉至測驗結束畫面。',
-                'push' : '/study/test/result'
-            }
-            response = JsonResponse(data, status=status.HTTP_302_FOUND)
-            return response
+            test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            if test_instance.kotae_go == '':
+                print("沒有東西")
+                test_instance.delete()
+                data = {
+                    'message' : '不正確的管道連入網站',
+                    'push' : '/study/testtype/1/q0'
+                }
+                response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                return response
+            else:
+                print('第五題')
+                
+                correct_cnt = 0
+                for value, key in enumerate(vars(test_instance).items()):
+                    if 2 <= value <= 6:
+                        tmp = key[1].upper()
+                        if(tmp[0] == tmp[1]):
+                            correct_cnt += 1
+                    print(key, value)
+                    if value == 8:
+                        test_instance.cor_rate = correct_cnt*20
+                        print(test_instance.cor_rate, correct_cnt*20)
+                        test_instance.save()
+                data = {
+                    "message :" : '已完成測驗，跳轉至測驗結束畫面。',
+                    "push" : "/study/testtype/result",
+                    "point": correct_cnt,
+                }
+                response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                return response
         data = {
             "para1": param1,
             "para2": param2,
@@ -649,3 +681,52 @@ class TestOneViews(APIView):
         }
         return JsonResponse(payload)
 # ------------------------測驗_1------------------------------------
+
+# ------------------------ 測驗_1 結算 -----------------------------
+class TestOneGetResultAPIView(APIView):
+    """
+    使用者測驗完成當下 call的API
+    用於獲得此次測驗對了幾題
+    """
+    def get(self, request):
+        """
+        使用者測驗完成當下 call的API
+        用於獲得此次測驗對了幾題
+        """
+        auth = get_authorization_header(request).split()
+
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+        detiallist = []
+        for value, key in enumerate(vars(test_instance).items()):
+            print(value, key)
+            if 2 <= value <= 6:
+                detiallist.append(key[1])
+
+        data = {
+            'meseage':'成功獲取資源',
+            'point': test_instance.cor_rate/20,
+            'detial': detiallist,
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+
+
+
+
