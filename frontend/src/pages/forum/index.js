@@ -57,6 +57,7 @@ export default function Billboard(){
 
             />
             <div className={style.forumindexpagecontainer}>
+            <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>回首頁</button>
                 <div className={style.formcontainer}>
                     {Object.keys(title).slice(5*(pageNumber-1), pageNumber*5).map((key, index)=>(
                         <div key={`forumcontainer_${index}`} className={style.forumurlcontainer}

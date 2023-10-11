@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import Style from '@/pages/onlinechat/css/index.module.css';
 import LoginState from '@/components/loginstate';
+import { useRouter } from 'next/router';
 
 const Lobby = () => {
     const messagesRef = useRef(null); // 創建一個ref 用來把視窗滾到最新訊息
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [chatSocket, setChatSocket] = useState(null);
+    const router = useRouter();
 
   useEffect(() => {
     let socket = new WebSocket(`ws://127.0.0.1:8000/ws/socket-server/`);
@@ -70,7 +72,7 @@ const Lobby = () => {
 			logoutPath="./"
 		/>
 		<div className={Style.pagecontainer}>
-			
+      <button className={Style.repagebtn} onClick={()=>router.push('../uchi ')}>上一頁</button>
 			<form className={Style.textarea}>
 				<div className={Style.messages} ref={messagesRef}>
 				{messages.map((data, index) => (

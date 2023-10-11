@@ -50,7 +50,7 @@ export default function Billboard(){
                 logoutPath="./"
 
             />
-
+            <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>回首頁</button>
             <div className={style.billboardpagecontainer}>
                 {Object.keys(title).map((key, index)=>(
                     <div key={`billboardcontainer_${index}`} className={style.Billboardlinkcontainer}
@@ -61,7 +61,7 @@ export default function Billboard(){
                     
                     </div>
                 ))}
-                <button className={style.button} onClick={backpageClick}>回上一頁</button>
+                {/* <button className={style.button} onClick={backpageClick}>回上一頁</button> */}
             </div>
             
         </>

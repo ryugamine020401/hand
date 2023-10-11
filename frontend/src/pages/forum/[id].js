@@ -94,7 +94,7 @@ function DynamicPage() {
 				logoutPath="./uchi"
 			/>
 			<div className={style.detailpagecontainer}>
-			
+				<button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
 				<div className={style.contnetcontainer}>
 					<div className={style.uppercontainer}>
 						<div className={style.rightcontainer}>

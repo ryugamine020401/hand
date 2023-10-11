@@ -53,6 +53,7 @@ function DynamicPage() {
 			
 			{/* <h1>這是動態頁面 {id}</h1> */}
 			<div className={style.detailpagecontainer}>
+				<button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
 				<div className={style.mainareacontainer}>
 					<div className={style.uppercontainer}>
 						<h1>{title}</h1><h6>{date}</h6>

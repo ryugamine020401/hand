@@ -203,6 +203,7 @@ export default function ReMeishi(){
             />
             <div className={style.remeishipagecontainer}>
                 <Head><title>修改個人資料</title></Head>
+                <button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
                 <div className={style.formcontianer}>
                     <div className={style.uppercontainer}>
                         <div className={style.headimgcontainer}>

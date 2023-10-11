@@ -112,6 +112,7 @@ function UserWordCard(){
             />
             {/* <h1>字卡</h1> */}
             <div className={style.ifmcardpagecontainer}>
+                <button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
                 <h1 className={style.pagetitle}> 使用者字卡 </h1>
                 <div className={style.wordcardcontainer}>
                 {Object.keys(userWordcardURL2).map((key, index) => (

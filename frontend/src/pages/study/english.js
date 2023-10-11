@@ -3,11 +3,13 @@ import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import style from '@/pages/study/css/english.module.css'
+import { useRouter } from "next/router";
 
 export default function Studyindex() {
     const [englishWordCard, setEnglishWordCard] = useState({});
     const [loginButtonEnable, setLoginButtonEnable] = useState([]);   // 以加入的字卡不能再點擊加入
     const [enableCuttunClick, setEnableCuttunClick] = useState(false);
+    const router = useRouter();
     const initialChecking = async () => {
         const acccess_token = localStorage.getItem('access_token');
         if (acccess_token === null){
@@ -111,6 +113,7 @@ export default function Studyindex() {
                 logoutPath="./uchi"
             />
             <div className={style.englishpagecontainer}>
+                <button className={style.repagebtn} onClick={()=>router.push('./ ')}>上一頁</button>
                 <div className={style.wordcardcontainer}>
                     {Object.keys(englishWordCard).map((key, index)=>(
                     <div key={`wordcardImage_cotainer_${index}`} className={style.alphabetcontainer}>

@@ -102,7 +102,9 @@ export default function ReMeishi(){
                 resetPasswordPath="../reg/resetpassword"
                 logoutPath="../uchi"
             />
+            <button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
             <div className={style.forumpagecontainer}>
+                
                 <div className={style.formcontainer}>
                     <div className={style.titlecontainer}>
                         <input

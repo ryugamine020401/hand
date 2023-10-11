@@ -173,6 +173,7 @@ function TestPage() {
 		/>
 		{!checkquestion&&
 			<div className={style.testillustratepagecontainer}>
+				<button className={style.repagebtn} onClick={()=>router.push('../../')}>上一頁</button>
 				{/* <h1>{ans}</h1> */}
 				<div className={style.illustratecontainer}>
 					<h1>測驗說明</h1>
@@ -189,6 +190,7 @@ function TestPage() {
 		}
 		{checkquestion&&
 			<div className={style.queationpagecontainer}>
+				
 				<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
 				<div>
 					<div className={style.leftcontainer}>

@@ -48,3 +48,21 @@
     
 }
 
+.repagebtn{
+    position: fixed;
+    top: 5rem;
+    left: 1.3rem;
+    width: 6rem;
+    height: 2rem;
+    border-radius: 30px;
+    border: none;
+    background-color: rgb(255, 194, 53);
+    color: black;
+    font-size: 20px;
+    font-weight: 900;
+
+}
+.repagebtn:hover{
+    cursor: pointer;
+    background-color: rgb(172, 132, 37);
+}

@@ -76,7 +76,7 @@ export default function Studyindex() {
                     logoutPath="./uchi"
             />
             <div className={style.studypagecontainer}>
-                
+                <button className={style.repagebtn} onClick={()=>router.push('../uchi ')}>上一頁</button>
                 <div className={style.blackboardcontainer}>
                     {Object.keys(resource).slice(6*(pageNumber-1), pageNumber*6).map((key, index)=>(
                     <div key={`study_linkcontainer_${index}`} className={style.techtypecontainer} onClick={()=>buttonChickfunction(index)}>

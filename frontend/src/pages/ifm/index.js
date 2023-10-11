@@ -88,6 +88,7 @@ export default function Ifm () {
                 <Head>
                     <title>個人資料</title>
                 </Head>
+                <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>上一頁</button>
                 <div className={style.profilecard}>
                     <div className={style.imagecontainer}>
                         <Image
