@@ -170,7 +170,7 @@ export default function Register() {
 					/>
 				</div>	
 				<button type="submit" onClick={handleSubmit} className={style.button}>點擊註冊</button>
-				{buttonClick && <div className={style.loader}/>}
+				{buttonClick && !errorMessage && <div className={style.loader}/>}
 				{errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
 				
 			</div>
