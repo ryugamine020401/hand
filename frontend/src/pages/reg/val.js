@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import LoginState from '@/components/loginstate';
-import style from '@/pages/reg/val.module.css'
+import style from '@/pages/reg/css/val.module.css'
 export default function CountdownTimer() {
     const [countdown, setCountdown] = useState(5);
     const [message, setMessage] = useState("驗證中請稍等");

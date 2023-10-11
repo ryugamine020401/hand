@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import LoginState from "@/components/loginstate";
-import style from '@/pages/forum/index.module.css'
+import style from '@/pages/forum/css/index.module.css'
 import { useRouter } from "next/router";
 
 export default function Billboard(){

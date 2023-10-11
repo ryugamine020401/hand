@@ -2,7 +2,7 @@ import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import style from '@/pages/study/english.module.css'
+import style from '@/pages/study/css/english.module.css'
 
 export default function Studyindex() {
     const [englishWordCard, setEnglishWordCard] = useState({});

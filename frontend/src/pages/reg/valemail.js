@@ -8,7 +8,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import style from '@/pages/reg/valemail.module.css'
+import style from '@/pages/reg/css/valemail.module.css'
 
 export default function Valemail({email}){
     const router = useRouter();

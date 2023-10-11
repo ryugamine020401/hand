@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Head from "next/head";
 import LoginState from "@/components/loginstate";
-import style from "@/pages/reg/forgetpassword.module.css"
+import style from "@/pages/reg/css/forgetpassword.module.css"
 /*
 	未登入使用者忘記密碼，跳轉到此頁面可以輸入信箱寄出驗證碼驗證
 

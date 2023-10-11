@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
 import LoginState from "@/components/loginstate";
-import style from "@/pages/reg/register.module.css"
+import style from "@/pages/reg/css/register.module.css"
 
 export default function Register() {
     const [email, setEmail] = useState("");

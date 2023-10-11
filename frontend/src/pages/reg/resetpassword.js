@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import style from '@/pages/reg/resetpassword.module.css'
+import style from '@/pages/reg/css/resetpassword.module.css'
 
 export default function ResetPassword(){
     const router = useRouter();

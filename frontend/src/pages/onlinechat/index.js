@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import Style from '@/pages/onlinechat/index.module.css';
+import Style from '@/pages/onlinechat/css/index.module.css';
 import LoginState from '@/components/loginstate';
 
 const Lobby = () => {

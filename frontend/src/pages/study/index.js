@@ -1,7 +1,7 @@
 import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import Link from "next/link";
-import style from '@/pages/study/indes.module.css'
+import style from '@/pages/study/css/index.module.css'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 

@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRef, useCallback, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
-import Style from './q.module.css'
+import style from '@/pages/study/css/q.module.css'
 
 function TestPage() {
   	const router = useRouter();
@@ -157,28 +157,48 @@ function TestPage() {
 			logoutPath="../../../uchi"
 		/>
 		{!checkquestion&&
-			<div>
-				<h1>{ans}</h1>
-				<button onClick={()=>StartTestButtonClick()}>點擊開始考試</button>
+			<div className={style.testillustratepagecontainer}>
+				{/* <h1>{ans}</h1> */}
+				<div className={style.illustratecontainer}>
+					<h1>測驗說明</h1>
+					<p>畫面上會出現有的字母，使用者需要開啟相機並比出相應的手勢，</p>
+					<p>比出正確手勢後，點擊 完成作答 後進入下一題。</p>
+					<p>若作答一半退出頁面會算未完成作答，無法繼續此次測驗，下次測驗會重製。</p>
+					<p>考試隨機出題，一共五題。</p>
+					<p>開始測驗後，系統會提示是否開啟相機，請選擇開啟。</p>
+					<p></p>
+					<button onClick={()=>StartTestButtonClick()}>點擊開始考試</button>
+				</div>
+				
 			</div>
 		}
-		
-		{checkquestion && <div>
+		<div className={style.queationpagecontainer}>
 			<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
-			
-			
-			<div className={Style.videoContainer}>
-				<Webcam audio={false} ref={webcamRef} mirrored={false} className={Style.camera}/>			
-			</div>
-			<button onClick={()=>captureImage()}>Capture Image</button>
-		</div>}
-		{imageBase64 && (
 			<div>
-			<h2>Captured Image</h2>
-			<img src={imageBase64} alt="Captured" />
-			<p>{errormsg}</p>
+				<div className={style.leftcontainer}>
+					{checkquestion && 
+
+					<div>
+						<div className={style.videoContainer}>
+							<Webcam audio={false} ref={webcamRef} mirrored={false} className={style.camera}/>			
+						</div>
+						
+					</div>}
+				</div>
+				
+				<div className={style.rightcontainer}>
+					{imageBase64 && (
+						<div>
+						<img src={imageBase64} alt="Captured" />
+						</div>
+					)}
+				</div>
 			</div>
-		)}
+			
+			<button onClick={()=>captureImage()} className={style.button}>完成作答</button>
+			{imageBase64 && <p style={{"color":"red"}}>{errormsg}</p>}
+		</div>
+		
 		</div>
   );
 }

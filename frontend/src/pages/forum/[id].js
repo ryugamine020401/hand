@@ -6,7 +6,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import style from '@/pages/forum/detial.module.css'
+import style from '@/pages/forum/css/detial.module.css'
 function DynamicPage() {
   	const router = useRouter();
   	const { id } = router.query;

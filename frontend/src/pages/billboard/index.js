@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import LoginState from "@/components/loginstate";
-import style from "@/pages/billboard/index.module.css"
+import style from "@/pages/billboard/css/index.module.css"
 import { Router, useRouter } from "next/router";
 import { redirect } from "next/dist/server/api-utils";
 

@@ -5,7 +5,7 @@ import { Tillana } from 'next/font/google';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import style from '@/pages/billboard/detial.module.css'
+import style from '@/pages/billboard/css/detial.module.css'
 
 function DynamicPage() {
   	const router = useRouter();

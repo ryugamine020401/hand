@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // 導入 useRouter
 import Link from "next/link";
-import style from '@/pages/reg/login.module.css'
+import style from '@/pages/reg/css/login.module.css'
 import LoginState from "@/components/loginstate";
 
 export default function Ifm({ data, done, access_token, refresh_token }) {
