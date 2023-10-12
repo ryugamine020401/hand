@@ -23,14 +23,14 @@ export default function Ifm () {
     const resourceObject = {
         './ifm/remeishi': '修改個人資料',
         './ifm/card' : '個人字卡',
-        './' : '學習狀況評估',
+        './allresultview' : '學習狀況評估',
     }
 
     const divbtnclick = (index) =>{
         const redirectlist = [
             './ifm/remeishi',
             './ifm/card',
-            './'
+            './ifm/allresultview'
         ]
         console.log(redirectlist[index]);
         router.push(redirectlist[index]);
@@ -91,7 +91,7 @@ export default function Ifm () {
                 <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>上一頁</button>
                 <div className={style.profilecard}>
                     <div className={style.imagecontainer}>
-                        <Image
+                        <img
                             src={ headiImageURL }
                             alt="頭圖"
                             height={45}

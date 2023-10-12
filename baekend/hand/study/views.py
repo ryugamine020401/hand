@@ -23,7 +23,7 @@ from rest_framework import status
 from reg.views import decode_access_token
 from reg.models import UserIfm
 # from reg.forms import LoginForm, EmailCheckForm
-from ifm.models import UseWordCard
+from ifm.models import UseWordCard, UserDefIfm
 from study.models import TeachWordCard, Test1Ans
 from study.serializers import UseWordCardSerializer
 from hand.settings import DOMAIN_NAME
@@ -726,7 +726,60 @@ class TestOneGetResultAPIView(APIView):
         }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
+# ------------------------ 測驗_1 結算 -----------------------------
 
+# ------------------------ 測驗總結算 ------------------------------
+class getAllresultAPIView(APIView):
+    """
+    可以獲得使用者所有的測驗結果並統整。需要有Accesstoken
+    """
+    def get(self, request):
+        auth = get_authorization_header(request).split()
 
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                    'push':'/reg/login',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
 
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                    'push':'/reg/login',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        instance = UserDefIfm.objects.get(user_id=token_payload['id'])
+        cnt = 0 # 用來計算使用者有幾筆資料
+        tmp = 0 # 用來加總使用者分數總和
+        for i in Test1Ans.objects.filter(user_id=token_payload['id']):
+            if i.kotae_go != '':
+                cnt += 1
+                tmp += i.cor_rate    
+        # print(tmp/cnt, int((tmp/cnt)/20+1))
+        try:
+            data = {
+                'message':'成功獲取資源',
+                'resultScore1':tmp/cnt,
+                'start1':int((tmp/cnt)/20+1),
+                'headimageurl':f'{DOMAIN_NAME}/ifm{instance.headimg.url}'
 
+            }
+        except ZeroDivisionError as error_msg:
+            print(error_msg)
+            data = {
+                'message':'成功獲取資源',
+                'resultScore1':0,
+                'start1':1,
+                'headimageurl':f'{DOMAIN_NAME}/ifm{instance.headimg.url}'
+
+            }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+# ------------------------ 測驗總結算 ------------------------------
