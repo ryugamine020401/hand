@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import style from '@/pages/reg/css/valemail.module.css'
 
 export default function Valemail({email}){
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState("");
     const [message, setMessage] = useState("");
@@ -31,7 +32,7 @@ export default function Valemail({email}){
 
         try{
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch("http://127.0.0.1:8000/reg/api/valdatae", {
+            const response = await fetch(`${nginxdomain}/reg/api/valdatae`, {
                 method:"POST",
                 body:JSON.stringify({ validationNum }),
                 headers:{
@@ -69,7 +70,7 @@ export default function Valemail({email}){
         setCountDown(60);
         try{
             
-            const response = await fetch("http://127.0.0.1:8000/reg/api/emailresend", {
+            const response = await fetch(`${nginxdomain}/reg/api/emailresend`, {
                 method:"POST",
                 body:JSON.stringify({email}),
                 headers:{   

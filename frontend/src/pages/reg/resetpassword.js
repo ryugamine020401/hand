@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import style from '@/pages/reg/css/resetpassword.module.css'
 
 export default function ResetPassword(){
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const router = useRouter();
     const [password_old, setPassword_Old] = useState("");   // 舊密碼
     const [password_new, setPassword_New] = useState("");   // 新密碼
@@ -56,7 +57,7 @@ export default function ResetPassword(){
             setErrorMessage("");
         }
         try {
-            const response = await fetch("http://127.0.0.1:8000/reg/api/repassword", {
+            const response = await fetch(`${nginxdomain}/reg/api/repassword`, {
                 method: 'POST',
                 body : JSON.stringify({password_old, password_new}),
                 headers:{

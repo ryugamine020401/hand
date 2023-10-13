@@ -4,8 +4,17 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] })
-
+export const getServerSideProps = () =>{
+  console.log(process.env.NGINX_DOMAIN);
+  return{
+    props:{
+      env:'hello',
+    }
+  }
+}
 export default function Home() {
+  const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+  console.log(nginxdomain);
   return (
     <>
       <Head>

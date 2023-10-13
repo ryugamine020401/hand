@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 
 
 export default function SendBillboard() {
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
     const router = useRouter();
     const CheckAccessToken = async() => {
         try {
             const access_token = await localStorage.getItem('access_token');
-            const response = await fetch("http://127.0.0.1:8000/billboard/api/rootcheck",{
+            const response = await fetch(`${nginxdomain}/billboard/api/rootcheck`,{
                 method:'POST',
                 headers:{
                     'Authorization':`Bearer ${access_token}`,
@@ -40,7 +41,7 @@ export default function SendBillboard() {
                 console.log('不能發送空白的公告.');
                 return;
             }
-            const response = await fetch("http://127.0.0.1:8000/billboard/api/send",{
+            const response = await fetch(`${nginxdomain}/billboard/api/send`,{
                 method:'POST',
                 body:JSON.stringify({content, title}),
                 headers:{

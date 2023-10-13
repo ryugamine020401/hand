@@ -20,5 +20,6 @@ module.exports = nextConfig
 module.exports = {
   images: {
     domains: ['127.0.0.1'],
+    domains: [process.env.NGINX_DOMAIN_IP],
   },
 }

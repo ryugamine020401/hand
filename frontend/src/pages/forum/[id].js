@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import style from '@/pages/forum/css/detial.module.css'
 function DynamicPage() {
+	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
   	const router = useRouter();
   	const { id } = router.query;
 	const [title, setTitle] = useState();
@@ -23,7 +24,7 @@ function DynamicPage() {
 
 	const GetArticalcontent = async () => {
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/forum/api/${id}/`, {
+			const response = await fetch(`${nginxdomain}/forum/api/${id}/`, {
 				method:'GET',
             });
 			if (response.status === 200){
@@ -47,7 +48,7 @@ function DynamicPage() {
 	const sendUserResponsebuttonClick = async () => {
 		try {
 			const access_token = localStorage.getItem('access_token');
-			const response = await fetch(`http://127.0.0.1:8000/forum/api/${id}/`,{
+			const response = await fetch(`${nginxdomain}/forum/api/${id}/`,{
 				method:'POST',
 				body:JSON.stringify({userResponse}),
 				headers:{

@@ -6,6 +6,7 @@ import style from '@/pages/forum/css/index.module.css'
 import { useRouter } from "next/router";
 
 export default function Billboard(){
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const [title, setTitle] = useState({});
     const router = useRouter();
     const {page} = router.query;
@@ -13,7 +14,7 @@ export default function Billboard(){
 
     const initialSetPage = async () =>{
         try {
-            const response = await fetch("http://127.0.0.1:8000/forum/api/",{
+            const response = await fetch(`${nginxdomain}/forum/api/`,{
                 method:'GET',
             });
 
@@ -77,7 +78,7 @@ export default function Billboard(){
                 <div className={style.chanhepagecontainer}>
                     <a href={`./forum?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</a>
                     <span>{pageNumber}</span>
-                    <a href={`./forum?page=${Object.keys(title).length > pageNumber*6? pageNumber+1 : pageNumber}`}>下一頁</a>
+                    <a href={`./forum?page=${Object.keys(title).length > pageNumber*5? pageNumber+1 : pageNumber}`}>下一頁</a>
                     {/* <a href={`./forum?page=${pageNumber+1}`}>下一頁</a> */}
                 </div>
                 

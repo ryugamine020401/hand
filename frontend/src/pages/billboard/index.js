@@ -8,11 +8,12 @@ import { redirect } from "next/dist/server/api-utils";
 
 
 export default function Billboard(){
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const [title, setTitle] = useState({});
     const router = useRouter();
     const initialSetPage = async () =>{
         try {
-            const response = await fetch("http://127.0.0.1:8000/billboard/api/gettitle/",{
+            const response = await fetch(`${nginxdomain}/billboard/api/gettitle/`,{
                 method:'GET',
             });
 

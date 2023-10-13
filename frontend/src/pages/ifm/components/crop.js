@@ -4,6 +4,7 @@ import 'cropperjs/dist/cropper.css';
 import Style from './crop.module.css'
 
 export default function CropPage() {
+	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
 	const cropperRef = useRef(null);
 	const [headimage, setHeadimage] = useState("");
 	const [croppedImageDatasrc, setcroppedImageDatasrc] = useState('');
@@ -58,7 +59,7 @@ export default function CropPage() {
 		try {
 			// setHeadimage(croppedImageDatasrc);
 			// console.log(croppedImageDatasrc);
-			const response = await fetch("http://127.0.0.1:8000/ifm/api/reMeishi", {
+			const response = await fetch(`${nginxdomain}/ifm/api/reMeishi`, {
 				method:'POST',
 				body:JSON.stringify({headimage}),
 				headers:{

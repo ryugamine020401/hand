@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import style from '@/pages/billboard/css/detial.module.css'
 
 function DynamicPage() {
+	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
   	const router = useRouter();
   	const { id } = router.query;
 	const [title, setTitle] = useState();
@@ -17,7 +18,7 @@ function DynamicPage() {
 
 	const GetBillboardcontent = async () => {
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/billboard/api/${id}/`, {
+			const response = await fetch(`${nginxdomain}/billboard/api/${id}/`, {
 				method:'GET',
             });
 			if (response.status === 200){

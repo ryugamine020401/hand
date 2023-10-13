@@ -5,6 +5,7 @@ import Head from "next/head";
 import style from '@/pages/forum/css/send.module.css'
 
 export default function ReMeishi(){
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const router = useRouter();
     const [contentTitle, setContentTitle] = useState("");
     const [content, setContent] = useState("");
@@ -70,7 +71,7 @@ export default function ReMeishi(){
 
         try {
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch("http://127.0.0.1:8000/forum/api/send/",{
+            const response = await fetch(`${nginxdomain}/forum/api/send/`,{
                 method:"POST",
                 body:JSON.stringify({contentTitle, content}),
                 headers:{

@@ -42,6 +42,10 @@
     border-radius: 10px;
     backdrop-filter: blur(5px);
 }
+.forumurlcontainer a{
+    word-break: break-all;
+    padding: 3px 16px;
+}
 
 .chanhepagecontainer {
     /* background-color: red; */

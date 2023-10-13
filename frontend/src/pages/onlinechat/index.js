@@ -4,6 +4,7 @@ import LoginState from '@/components/loginstate';
 import { useRouter } from 'next/router';
 
 const Lobby = () => {
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const messagesRef = useRef(null); // 創建一個ref 用來把視窗滾到最新訊息
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -78,7 +79,7 @@ const Lobby = () => {
 				{messages.map((data, index) => (
 					<div className={Style.chat_container} key={index}>
 						<div className={Style.uppercontainer}>
-							<img className={Style.headimg} src={`http://127.0.0.1:8000/ifm${data.headimg}`} alt="User Avatar" />
+							<img className={Style.headimg} src={`${nginxdomain}/ifm${data.headimg}`} alt="User Avatar" />
 							<p className={Style.user_name}>{data.username}</p>
 						</div>
 						<div className={Style.lowercontainer}>
@@ -135,7 +136,7 @@ export default Lobby;
 //     const submit = async (e) => {
 //         e.preventDefault();
 
-//         await fetch('http://127.0.0.1:8000/onlinechat/api/message', {
+//         await fetch('nginxdomain/onlinechat/api/message', {
 //             method: "POST",
 //             headers: {'Content-Type': 'application/json'},
 //             body: JSON.stringify({

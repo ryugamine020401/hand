@@ -6,6 +6,7 @@ import LoginState from "@/components/loginstate";
 import style from "@/pages/reg/css/register.module.css"
 
 export default function Register() {
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");   // 第一次密碼
@@ -56,7 +57,7 @@ export default function Register() {
         // 如果格式驗證通過，執行表單提交操作
 		setButtonClick(true);
         try {
-        const response = await fetch("http://localhost:8000/reg/api/register", {
+        const response = await fetch(`${nginxdomain}/reg/api/register`, {
             method: "POST",
             body: JSON.stringify({ username, email, password, password_check, birthday }),
             headers: {

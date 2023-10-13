@@ -11,11 +11,13 @@ import OverlayBox from './overlay'
 /> 
 */
 export default function LoginState({children, profilePath, resetPasswordPath, logoutPath}) {
+    const nginxDomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN
     const [logincheck, setLogincheck] = useState(false);
-    const [headimgurl, setHeadImgURL] = useState('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png')
+    const [headimgurl, setHeadImgURL] = useState(`${nginxDomain}/ifm/getmedia/headimage/guester.png`)
     const [buttommsg, setButtommsg] = useState("")
     const [showOverlay, setShowOverlay] = useState(false)
     const router = useRouter()
+    
     function logindDirect (){
         router.push('http://127.0.0.1:3000/reg/login');
     }
@@ -23,10 +25,11 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
         console.log(showOverlay)
         setShowOverlay(!showOverlay)
     }
-    const sendPostRequest = async () => {     
+    const sendPostRequest = async () => {  
+
         try{
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch("http://127.0.0.1:8000/reg/api/logincheck",{
+            const response = await fetch(`${nginxDomain}/reg/api/logincheck`,{
 
                 method: "POST",
                 headers:{
@@ -63,7 +66,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 }
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
-                setHeadImgURL('http://127.0.0.1:8000/ifm/getmedia/headimage/guester.png');
+                setHeadImgURL(`${nginxDomain}/ifm/getmedia/headimage/guester.png`);
                 
             }
         } catch(error) {
@@ -80,6 +83,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
     }
 
     useEffect(()=>{
+        
         sendPostRequest();
     }, [logincheck])
     

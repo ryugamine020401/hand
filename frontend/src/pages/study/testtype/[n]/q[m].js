@@ -9,6 +9,7 @@ import Webcam from 'react-webcam';
 import style from '@/pages/study/css/q.module.css'
 
 function TestPage() {
+	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
   	const router = useRouter();
   	const { n, m } = router.query;
 	const webcamRef = useRef(null);
@@ -41,7 +42,7 @@ function TestPage() {
 	const postImagetoBackend = async() =>{
 		try {
 			const access_token = localStorage.getItem('access_token');
-			const response = await fetch(`http://127.0.0.1:8000/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
+			const response = await fetch(`${nginxdomain}/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
 				method:'POST',
 				body:JSON.stringify({imageBase64, ans}),
 				headers:{
@@ -68,7 +69,7 @@ function TestPage() {
 		router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`)
 		const access_token = localStorage.getItem('access_token');
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
+			const response = await fetch(`${nginxdomain}/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
 				method:'GET',
 				headers:{
 					'Authorization':`Bearer ${access_token}`,
@@ -99,7 +100,7 @@ function TestPage() {
 	const getQueation = async () => {
 		// const access_token = localStorage.getItem('access_token');
 		const access_token = localStorage.getItem('access_token');
-		const response = await fetch(`http://127.0.0.1:8000/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`, {
+		const response = await fetch(`${nginxdomain}/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`, {
 			method:'GET',
 			headers:{
 				'Authorization':`Bearer ${access_token}`,

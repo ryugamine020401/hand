@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import LoginState from '@/components/loginstate';
 import style from '@/pages/reg/css/val.module.css'
 export default function CountdownTimer() {
+    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
     const [countdown, setCountdown] = useState(5);
     const [message, setMessage] = useState("驗證中請稍等");
     const router = useRouter(); // 初始化 useRouter
@@ -36,7 +37,7 @@ export default function CountdownTimer() {
                 validation_token = router.query['valdation_token'];
                 console.log(validation_token);
             }
-            const response = await fetch("http://127.0.0.1:8000/reg/api/val", {
+            const response = await fetch(`${nginxdomain}/reg/api/val`, {
                 
                 method: "POST",
                 headers:{
