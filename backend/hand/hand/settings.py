@@ -34,7 +34,10 @@ JWT_REFRESH_TOKEN_KEY = config('JWT_REFRESH_TOKEN_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '192.168.209.130',
+    # 'localhost',
+]
 
 # 上傳圖片需要的網址
 MEDIA_URL = '/getmedia/'
@@ -65,7 +68,7 @@ INSTALLED_APPS = [
     'bugreport.apps.BugreportConfig',
 ]
 # 用來訪問SERVER的位置
-DOMAIN_NAME = config('DOMAIN_NAME')
+NGINX_DOMAIN = config('NGINX_DOMAIN')
 ASGI_APPLICATION = 'hand.asgi.application'
 
 MIDDLEWARE = [
@@ -84,6 +87,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     config('FONTEND_ORIGIN'),  # 允許的前端源頭
     config('FONTEND_ORIGIN2'),  # 允許的前端源頭
+    config('FONTEND_ORIGIN3'),  # 允許的前端源頭
 ]
 
 CORS_ALLOW_METHODS = [

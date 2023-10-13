@@ -34,7 +34,7 @@ from ifm.serializers import UserDefIfmSerializer
 from hand.settings import SECRET_KEY, JWT_ACCRSS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY
 from hand.settings import ROOT_EMAIL
 
-from hand.settings import DOMAIN_NAME   # 用來生成訪問圖像的網址
+from hand.settings import NGINX_DOMAIN   # 用來生成訪問圖像的網址
 
 # ------------------------- 登入驗證裝飾器(header) ------------------------------
 def loging_check(func):
@@ -110,7 +110,7 @@ class LoginCheckAPIView(APIView):
                 if UserIfm.objects.get(id=token_payload['id']):
                     # 登入狀態正常
                     instance = UserIfm.objects.get(id=token_payload['id'])
-                    img_url = DOMAIN_NAME+'/ifm'
+                    img_url = NGINX_DOMAIN+'/ifm'
                     try:
                         img_url += UserDefIfm.objects.get(user_id=token_payload['id']).headimg.url
                     except UserDefIfm.DoesNotExist as error:    # pylint: disable=E1101
@@ -195,6 +195,7 @@ class RegisterView(APIView):
         """
         前端打POST過來輸入好準備註冊
         """
+        print(request.META)
         print(request.data)
         try:
             # 只有在網站內post才會有_mutable的屬性，用POSTMAN無效。

@@ -22,7 +22,7 @@ from reg.models import UserIfm
 from ifm.serializers import UserDefIfmSerializer
 from ifm.models import UserDefIfm, UseWordCard
 
-from hand.settings import DOMAIN_NAME
+from hand.settings import NGINX_DOMAIN
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 # --------------- 獲取個人資訊 ----------------
 class UserInformationAPIViwe(APIView):
@@ -55,7 +55,7 @@ class UserInformationAPIViwe(APIView):
         token = auth[1]
         token_payload = decode_access_token(token)
         instance = UserDefIfm.objects.get(user_id = token_payload['id'])
-        headimageurl = f'{DOMAIN_NAME}/ifm{instance.headimg.url}'
+        headimageurl = f'{NGINX_DOMAIN}/ifm{instance.headimg.url}'
         data = {
             'message': "成功獲得",
             "username" : UserIfm.objects.get(id = token_payload['id']).username,
@@ -151,7 +151,7 @@ class ResetprofileView(APIView):
             # 權衡之下的結果 物件本身副檔名無所謂 但不固定檔名會導致錯誤
         else:
             print("頭像不存在")
-        file_path = os.path.join('/home/ymzk/桌面/HAND/baekend', 'saved_gif.gif')
+        file_path = os.path.join('/home/ymzk/桌面/HAND/backend', 'saved_gif.gif')
         with open(file_path, 'wb') as headimage_file:
             headimage_file.write(headimage_binary)
 
@@ -240,7 +240,7 @@ class UserWordCardAPIView(APIView):
         需要身分驗證
         """
         auth = get_authorization_header(request).split()
-
+        print(request.META)
         try:
             token = auth[1]
             if token == b'null':
@@ -269,9 +269,9 @@ class UserWordCardAPIView(APIView):
         card_url_list = []
         card_url_diec = {}
         for instance in wordcard_db:
-            card_url_list.append(DOMAIN_NAME+'/study'+instance.img.url)
+            card_url_list.append(NGINX_DOMAIN+'/study'+instance.img.url)
             key = instance.word
-            value = DOMAIN_NAME+'/study'+instance.img.url
+            value = NGINX_DOMAIN+'/study'+instance.img.url
             card_url_diec[key] = value
         print(card_url_diec)
         print(card_url_list)
