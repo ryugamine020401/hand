@@ -34,11 +34,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('reg/', include('reg.urls')),
-    path('forum/', include('forum.urls')),
-    path('ifm/', include('ifm.urls')),
-    path('onlinechat/', include('onlinechat.urls')),
-    path('study/', include('study.urls')),
-    path('billboard/', include('billboard.urls')),
+    path('api/reg/', include('reg.urls')),
+    path('api/forum/', include('forum.urls')),
+    path('api/ifm/', include('ifm.urls')),
+    path('api/onlinechat/', include('onlinechat.urls')),
+    path('api/study/', include('study.urls')),
+    path('api/billboard/', include('billboard.urls')),
     path('doc/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
 ]

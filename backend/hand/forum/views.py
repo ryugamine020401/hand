@@ -148,7 +148,7 @@ class ForumArticalAPIView(APIView):
         author = instance.user.id   # 獲得該文章使用者的 userid
         author_name = UserIfm.objects.get(id=author).username
         user_instance = UserDefIfm.objects.get(user_id = author)
-        author_headimage_url = f'{NGINX_DOMAIN}/ifm{user_instance.headimg.url}'  # 獲得文章作者的頭像
+        author_headimage_url = f'{NGINX_DOMAIN}/api/ifm{user_instance.headimg.url}'  # 獲得文章作者的頭像
         response = DiscussResponse.objects.filter(dis_id=artical_id)    # 獲得該頁面所有回復
 
         response_list_name = ['id', 'response', 'upload_date']
@@ -161,12 +161,12 @@ class ForumArticalAPIView(APIView):
 
             try:
                 userdef_instance = UserDefIfm.objects.get(user_id = i.user_id.id)
-                response_person['headimagUrl'] = f'{NGINX_DOMAIN}/ifm{userdef_instance.headimg.url}'
+                response_person['headimagUrl'] = f'{NGINX_DOMAIN}/api/ifm{userdef_instance.headimg.url}'
                 response_person['username'] = i.user_id.username
             except AttributeError as error_msg:
                 print(error_msg, 'ForumArticalAPIView')
                 userdef_instance = UserDefIfm.objects.get(user_id = 80928899)   # 預設頭貼
-                response_person['headimagUrl'] = f'{NGINX_DOMAIN}/ifm{userdef_instance.headimg.url}'
+                response_person['headimagUrl'] = f'{NGINX_DOMAIN}/api/ifm{userdef_instance.headimg.url}'
                 response_person['username'] = '帳戶已刪除'
 
             response_diec[i.id] = response_person

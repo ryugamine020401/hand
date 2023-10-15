@@ -313,7 +313,7 @@ class TeachingCenterEnglishView(APIView):
         english_alphabet = TeachWordCard.objects.all()
         wordcard = {}
         for instance in english_alphabet:
-            wordcard[instance.id] = f'{NGINX_DOMAIN}/study'+instance.img.url
+            wordcard[instance.id] = f'{NGINX_DOMAIN}/api/study'+instance.img.url
         data = {
             'wordcard' : wordcard,
             'message' : "成功獲取資源."
@@ -768,7 +768,7 @@ class getAllresultAPIView(APIView):
                 'message':'成功獲取資源',
                 'resultScore1':tmp/cnt,
                 'start1':int((tmp/cnt)/20+1),
-                'headimageurl':f'{NGINX_DOMAIN}/ifm{instance.headimg.url}'
+                'headimageurl':f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
 
             }
         except ZeroDivisionError as error_msg:
@@ -777,7 +777,7 @@ class getAllresultAPIView(APIView):
                 'message':'成功獲取資源',
                 'resultScore1':0,
                 'start1':1,
-                'headimageurl':f'{NGINX_DOMAIN}/ifm{instance.headimg.url}'
+                'headimageurl':f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
 
             }
         response = JsonResponse(data, status=status.HTTP_200_OK)

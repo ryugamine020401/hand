@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import style from '@/pages/billboard/css/detial.module.css'
 
 function DynamicPage() {
-	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+	const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   	const router = useRouter();
   	const { id } = router.query;
 	const [title, setTitle] = useState();
@@ -18,7 +18,7 @@ function DynamicPage() {
 
 	const GetBillboardcontent = async () => {
 		try {
-			const response = await fetch(`${nginxdomain}/billboard/api/${id}/`, {
+			const response = await fetch(`${backedUrl}/billboard/api/${id}/`, {
 				method:'GET',
             });
 			if (response.status === 200){
@@ -49,7 +49,7 @@ function DynamicPage() {
 			<LoginState
 				profilePath="../ifm"
 				resetPasswordPath="../reg/resetpassword"
-				logoutPath="./uchi"
+				logoutPath="/uchi"
 			/>
 			
 			{/* <h1>這是動態頁面 {id}</h1> */}

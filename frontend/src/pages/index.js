@@ -13,8 +13,8 @@ export const getServerSideProps = () =>{
   }
 }
 export default function Home() {
-  const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
-  console.log(nginxdomain);
+  const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log(backedUrl);
   return (
     <>
       <Head>

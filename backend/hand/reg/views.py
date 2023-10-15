@@ -110,7 +110,7 @@ class LoginCheckAPIView(APIView):
                 if UserIfm.objects.get(id=token_payload['id']):
                     # 登入狀態正常
                     instance = UserIfm.objects.get(id=token_payload['id'])
-                    img_url = NGINX_DOMAIN+'/ifm'
+                    img_url = NGINX_DOMAIN+'/api/ifm'
                     try:
                         img_url += UserDefIfm.objects.get(user_id=token_payload['id']).headimg.url
                     except UserDefIfm.DoesNotExist as error:    # pylint: disable=E1101

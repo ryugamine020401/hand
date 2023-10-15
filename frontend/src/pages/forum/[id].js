@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import style from '@/pages/forum/css/detial.module.css'
 function DynamicPage() {
-	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+	const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   	const router = useRouter();
   	const { id } = router.query;
 	const [title, setTitle] = useState();
@@ -24,7 +24,7 @@ function DynamicPage() {
 
 	const GetArticalcontent = async () => {
 		try {
-			const response = await fetch(`${nginxdomain}/forum/api/${id}/`, {
+			const response = await fetch(`${backedUrl}/forum/api/${id}/`, {
 				method:'GET',
             });
 			if (response.status === 200){
@@ -48,7 +48,7 @@ function DynamicPage() {
 	const sendUserResponsebuttonClick = async () => {
 		try {
 			const access_token = localStorage.getItem('access_token');
-			const response = await fetch(`${nginxdomain}/forum/api/${id}/`,{
+			const response = await fetch(`${backedUrl}/forum/api/${id}/`,{
 				method:'POST',
 				body:JSON.stringify({userResponse}),
 				headers:{
@@ -92,7 +92,7 @@ function DynamicPage() {
 			<LoginState
 				profilePath="../ifm"
 				resetPasswordPath="../reg/resetpassword"
-				logoutPath="./uchi"
+				logoutPath="/uchi"
 			/>
 			<div className={style.detailpagecontainer}>
 				<button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>

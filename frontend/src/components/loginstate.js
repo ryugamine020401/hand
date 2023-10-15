@@ -11,15 +11,22 @@ import OverlayBox from './overlay'
 /> 
 */
 export default function LoginState({children, profilePath, resetPasswordPath, logoutPath}) {
-    const nginxDomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+    const frontendUrl = process.env.NEXT_PUBLIC_FRONTED_URL
     const [logincheck, setLogincheck] = useState(false);
-    const [headimgurl, setHeadImgURL] = useState(`${nginxDomain}/ifm/getmedia/headimage/guester.png`)
+    const [headimgurl, setHeadImgURL] = useState(`${backedUrl}/ifm/getmedia/headimage/guester.png`)
     const [buttommsg, setButtommsg] = useState("")
     const [showOverlay, setShowOverlay] = useState(false)
     const router = useRouter()
     
     function logindDirect (){
-        router.push('http://127.0.0.1:3000/reg/login');
+        const nowUrlpath = router.pathname;
+        if (nowUrlpath === '/reg/login') {
+            
+        } else {
+            router.push(`${frontendUrl}/reg/login`);
+        }
+        
     }
     const jumpMenu = () => {
         console.log(showOverlay)
@@ -29,7 +36,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
 
         try{
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch(`${nginxDomain}/reg/api/logincheck`,{
+            const response = await fetch(`${backedUrl}/reg/api/logincheck`,{
 
                 method: "POST",
                 headers:{
@@ -56,17 +63,24 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                     localStorage.clear('access_token');
                     localStorage.clear('refresh_token');
                     
-                    // router.push('http://127.0.0.1:3000/uchi');
+                    
                 } else if (response.status === 401) {
                     console.log(responseData.message, '帳號沒有驗證');
-                    router.push('http://127.0.0.1:3000/reg/valemail');
+                    const nowUrlpath = router.pathname;
+                    console.log(nowUrlpath);
+                    if (nowUrlpath === '/reg/valemail') {
+                        
+                    } else {
+                        router.push(`${frontendUrl}/reg/valemail`);
+                    }
+                    
                     
                 } else {
                     console.log(responseData.message)
                 }
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
-                setHeadImgURL(`${nginxDomain}/ifm/getmedia/headimage/guester.png`);
+                setHeadImgURL(`${backedUrl}/ifm/getmedia/headimage/guester.png`);
                 
             }
         } catch(error) {
@@ -79,7 +93,14 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
     };
 
     const goHomeFunvrion = () =>{
-        router.push('http://127.0.0.1:3000/uchi');
+        const nowUrlpath = router.pathname;
+        console.log(nowUrlpath);
+        if (nowUrlpath === '/uchi') {
+            
+        } else {
+            router.push(`${frontendUrl}/uchi`);
+        }
+        
     }
 
     useEffect(()=>{

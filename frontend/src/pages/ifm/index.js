@@ -9,7 +9,7 @@ import style from "./css/index.module.css"
 
 
 export default function Ifm () {
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
     const imgurl = ['/images/ifm_resetinformation.png', '/images/ifm_userwordcard2.png', '/images/ifm_viewresault.png']
     const imgclassname = [
@@ -40,7 +40,7 @@ export default function Ifm () {
     const getUserInformation = async() => {
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/ifm/api/userinformation`,{
+            const response = await fetch(`${backedUrl}/ifm/api/userinformation`,{
                 method:"GET",
                 headers:{
                     "Authorization" : `Bearer ${access_token}`,
@@ -83,7 +83,7 @@ export default function Ifm () {
             <LoginState
                 profilePath="./ifm"
                 resetPasswordPath="../reg/resetpassword"
-                logoutPath="../"
+                logoutPath="/uchi"
             />
             <div className={style.ifmindexpagecontainer}>
                 <Head>

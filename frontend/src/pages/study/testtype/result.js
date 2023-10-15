@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 export default function Testresult(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [correctNum , setCorrectNum] = useState(5);
     const [detial, setDetial] = useState([]);
     const router = useRouter();
     const getscore = async() =>{
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/study/api/testoneegetresult`,{
+            const response = await fetch(`${backedUrl}/study/api/testoneegetresult`,{
                 method:"GET",
                 headers:{
                     'Authorization':`Bearer ${access_token}`

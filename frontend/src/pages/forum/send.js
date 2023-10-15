@@ -5,7 +5,7 @@ import Head from "next/head";
 import style from '@/pages/forum/css/send.module.css'
 
 export default function ReMeishi(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
     const [contentTitle, setContentTitle] = useState("");
     const [content, setContent] = useState("");
@@ -71,7 +71,7 @@ export default function ReMeishi(){
 
         try {
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch(`${nginxdomain}/forum/api/send/`,{
+            const response = await fetch(`${backedUrl}/forum/api/send/`,{
                 method:"POST",
                 body:JSON.stringify({contentTitle, content}),
                 headers:{
@@ -101,7 +101,7 @@ export default function ReMeishi(){
             <LoginState
                 profilePath="./"
                 resetPasswordPath="../reg/resetpassword"
-                logoutPath="../uchi"
+                logoutPath="/uchi"
             />
             <button className={style.repagebtn} onClick={()=>router.push('./')}>上一頁</button>
             <div className={style.forumpagecontainer}>

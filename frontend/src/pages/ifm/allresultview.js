@@ -6,7 +6,7 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 export default function AllResultView(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [headerImageUrl, setHeaderImageUrl] = useState('');
     const [result, setResult] = useState([]);
     const [start1Url, setStart1] = useState(5);
@@ -17,7 +17,7 @@ export default function AllResultView(){
             router.push('../reg/login?nextpage=../ifm/allresultview');
         }
         try {
-            const response = await fetch(`${nginxdomain}/study/api/getallresult`,{
+            const response = await fetch(`${backedUrl}/study/api/getallresult`,{
                 method:"GET",
                 headers:{
                     'Authorization':`Bearer ${access_token}`
