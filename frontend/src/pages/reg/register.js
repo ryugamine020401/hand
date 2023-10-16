@@ -85,7 +85,7 @@ export default function Register() {
                 // 建立成功，設定驗證token
                 localStorage.setItem('validaton_token', responceData.validaton_token);
                 localStorage.setItem('access_token', responceData.access_token);
-                // router.push('/reg/valemail');
+                router.push('/reg/valemail');
             }
         }
         } catch (error) {

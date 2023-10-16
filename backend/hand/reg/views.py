@@ -239,6 +239,7 @@ class RegisterView(APIView):
                     'username': request.data['username'],
                     'validation_num' : request.data['validation_num'],
                     'validaton_token': validaton_token,
+                    'nginx_domain' : NGINX_DOMAIN
                 }
             )
             email = EmailMessage(

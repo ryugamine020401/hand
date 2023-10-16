@@ -17,12 +17,8 @@ from rest_framework import status
 from reg.views import decode_access_token
 # from reg.models import UserIfm
 from reg.forms import LoginForm, EmailCheckForm
-# from ifm.models import UseWordCard
-# from study.models import TeachWordCard, TeachType
-# from study.forms import UploadEnglishForm, UploadTeachTypeForm
-# from study.serializers import UseWordCardSerializer
-# from hand.settings import ROOT_EMAIL
-from .pusher import pusher_client
+
+
 # ------------------------- 登入驗證裝飾器 ------------------------------
 def loging_check(func):
     """
@@ -67,16 +63,16 @@ def lobby(request):
     return render(request, 'lobby.html', {})
 # -------------- 聊天室 ---------------
 # -------------- 聊天室 ---------------
-class MessagePostAPIView(APIView):
-    """
-    聊天室的API 
-    """
-    def post(self, request):
-        pusher_client.trigger('chat', 'message', {
-            'username':request.data['username'],
-            'message':request.data['message']
-        })
-        return Response([])
+# class MessagePostAPIView(APIView):
+#     """
+#     聊天室的API 
+#     """
+#     def post(self, request):
+#         pusher_client.trigger('chat', 'message', {
+#             'username':request.data['username'],
+#             'message':request.data['message']
+#         })
+#         return Response([])
 
 
 # -------------- 聊天室 ---------------
