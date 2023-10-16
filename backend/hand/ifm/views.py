@@ -55,7 +55,7 @@ class UserInformationAPIViwe(APIView):
         token = auth[1]
         token_payload = decode_access_token(token)
         instance = UserDefIfm.objects.get(user_id = token_payload['id'])
-        headimageurl = f'{NGINX_DOMAIN}/ifm{instance.headimg.url}'
+        headimageurl = f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
         data = {
             'message': "成功獲得",
             "username" : UserIfm.objects.get(id = token_payload['id']).username,
@@ -269,9 +269,9 @@ class UserWordCardAPIView(APIView):
         card_url_list = []
         card_url_diec = {}
         for instance in wordcard_db:
-            card_url_list.append(NGINX_DOMAIN+'/study'+instance.img.url)
+            card_url_list.append(NGINX_DOMAIN+'/api/study'+instance.img.url)
             key = instance.word
-            value = NGINX_DOMAIN+'/study'+instance.img.url
+            value = NGINX_DOMAIN+'/api/study'+instance.img.url
             card_url_diec[key] = value
         print(card_url_diec)
         print(card_url_list)

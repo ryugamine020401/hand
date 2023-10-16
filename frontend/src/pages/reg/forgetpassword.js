@@ -9,7 +9,7 @@ import style from "@/pages/reg/css/forgetpassword.module.css"
 
 */
 export default function ForgetPassword() {
-	const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+	const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [email, setEmail] = useState("");
     const [validationNum, setValidationNum] = useState("");
     const [message, setMessage] = useState("");
@@ -30,7 +30,7 @@ export default function ForgetPassword() {
 		/* 按下修改密碼的按鍵的onClick */
 
 		try{
-			const response = await fetch(`${nginxdomain}/reg/api/resetpassword`, {
+			const response = await fetch(`${backedUrl}/reg/api/resetpassword`, {
 				method:"POST",
 				body : JSON.stringify({email, password}),
 				headers:{
@@ -101,7 +101,7 @@ export default function ForgetPassword() {
 		setErrorMessage("");
 	}
 	try{
-		const response = await fetch(`${nginxdomain}/reg/api/valdatae`, {
+		const response = await fetch(`${backedUrl}/reg/api/valdatae`, {
 			method : "POST",
 			body : JSON.stringify({ email, validationNum }),
 			headers: {
@@ -136,7 +136,7 @@ export default function ForgetPassword() {
 	setValEnabled(true);
     setCountdown(60);
     try{
-		const response = await fetch(`${nginxdomain}/reg/api/forgetpwdvalresend`, {
+		const response = await fetch(`${backedUrl}/reg/api/forgetpwdvalresend`, {
 			method : "POST",
 			body : JSON.stringify({ email }),
 			headers: {

@@ -6,13 +6,13 @@ import style from '@/pages/study/css/english.module.css'
 import { useRouter } from "next/router";
 
 export default function Studyindex() {
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [englishWordCard, setEnglishWordCard] = useState({});
     const [loginButtonEnable, setLoginButtonEnable] = useState([]);   // 以加入的字卡不能再點擊加入
     const [enableCuttunClick, setEnableCuttunClick] = useState(false);
     const router = useRouter();
     const initialChecking = async () => {
-        const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+        const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         const acccess_token = localStorage.getItem('access_token');
         if (acccess_token === null){
             setEnableCuttunClick(false);
@@ -20,7 +20,7 @@ export default function Studyindex() {
             setEnableCuttunClick(true);
         }
         try {
-            const response = await fetch(`${nginxdomain}/study/api/english`,{
+            const response = await fetch(`${backedUrl}/study/api/english`,{
                 method:'GET',
                 headers:{
                     'Authorization':`Bearer ${acccess_token}`,
@@ -46,7 +46,7 @@ export default function Studyindex() {
         console.log(key);
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/study/api/english`, {
+            const response = await fetch(`${backedUrl}/study/api/english`, {
                 method:'POST',
                 body:JSON.stringify(key),
                 headers:{
@@ -80,7 +80,7 @@ export default function Studyindex() {
 
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/study/api/wordcardbuttoncheck`,{
+            const response = await fetch(`${backedUrl}/study/api/wordcardbuttoncheck`,{
                 method:"GET",
                 headers:{
                     'Authorization':`Bearer ${access_token}`,

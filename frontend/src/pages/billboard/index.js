@@ -8,12 +8,12 @@ import { redirect } from "next/dist/server/api-utils";
 
 
 export default function Billboard(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [title, setTitle] = useState({});
     const router = useRouter();
     const initialSetPage = async () =>{
         try {
-            const response = await fetch(`${nginxdomain}/billboard/api/gettitle/`,{
+            const response = await fetch(`${backedUrl}/billboard/api/gettitle/`,{
                 method:'GET',
             });
 
@@ -48,7 +48,7 @@ export default function Billboard(){
             <LoginState
                 profilePath="./ifm"
                 resetPasswordPath="../reg/resetpassword"
-                logoutPath="./"
+                logoutPath="/uchi"
 
             />
             <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>回首頁</button>

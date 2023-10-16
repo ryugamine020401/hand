@@ -8,7 +8,7 @@ import LoginState from "@/components/loginstate";
 
 export default function Ifm({ data, done, access_token, refresh_token }) {
   
-  const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+  const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); 
@@ -20,7 +20,7 @@ export default function Ifm({ data, done, access_token, refresh_token }) {
       try {
         const access_token = localStorage.getItem('access_token');
         // const refresh_token = localStorage.getItem('refresh_token');
-        const response = await fetch(`${nginxdomain}/reg/api/login`, {
+        const response = await fetch(`${backedUrl}/reg/api/login`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${access_token}`,
@@ -68,7 +68,7 @@ const handleSubmit = async (e) => {
 
   // 如果格式驗證通過，執行表單提交操作
   try {
-    const response = await fetch(`${nginxdomain}/reg/api/login`, {
+    const response = await fetch(`${backedUrl}/reg/api/login`, {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {

@@ -4,7 +4,7 @@ import LoginState from '@/components/loginstate';
 import { useRouter } from 'next/router';
 
 const Lobby = () => {
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const messagesRef = useRef(null); // 創建一個ref 用來把視窗滾到最新訊息
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -12,7 +12,7 @@ const Lobby = () => {
     const router = useRouter();
 
   useEffect(() => {
-    let socket = new WebSocket(`ws://127.0.0.1:8000/ws/socket-server/`);
+    let socket = new WebSocket(`ws://192.168.209.130:36514/ws/socket-server/`);
 
     socket.onopen = () => {
       console.log('WebSocket connected');
@@ -66,12 +66,14 @@ const Lobby = () => {
     };
 
   return (
+    
     <div>
 		<LoginState
 			profilePath="../ifm"
 			resetPasswordPath="../reg/resetpassword"
-			logoutPath="./"
+			logoutPath="/uchi"
 		/>
+    
 		<div className={Style.pagecontainer}>
       <button className={Style.repagebtn} onClick={()=>router.push('../uchi ')}>上一頁</button>
 			<form className={Style.textarea}>
@@ -79,7 +81,7 @@ const Lobby = () => {
 				{messages.map((data, index) => (
 					<div className={Style.chat_container} key={index}>
 						<div className={Style.uppercontainer}>
-							<img className={Style.headimg} src={`${nginxdomain}/ifm${data.headimg}`} alt="User Avatar" />
+							<img className={Style.headimg} src={`${backedUrl}/ifm${data.headimg}`} alt="User Avatar" />
 							<p className={Style.user_name}>{data.username}</p>
 						</div>
 						<div className={Style.lowercontainer}>
@@ -136,7 +138,7 @@ export default Lobby;
 //     const submit = async (e) => {
 //         e.preventDefault();
 
-//         await fetch('nginxdomain/onlinechat/api/message', {
+//         await fetch('backedUrl/onlinechat/api/message', {
 //             method: "POST",
 //             headers: {'Content-Type': 'application/json'},
 //             body: JSON.stringify({

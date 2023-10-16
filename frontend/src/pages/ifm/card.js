@@ -8,7 +8,7 @@ import style from '@/pages/ifm/css/card.module.css'
 
 
 function UserWordCard(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     // const [userWordcardURL, setUserWordcardURL] = useState([]);
     const [userWordcardURL2, setUserWordcardURL2] = useState({});
     const router = useRouter();
@@ -17,7 +17,7 @@ function UserWordCard(){
         const access_token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch(`${nginxdomain}/ifm/api/card`,{
+            const response = await fetch(`${backedUrl}/ifm/api/card`,{
                 method:"DELETE",
                 body:JSON.stringify(key),
                 headers:{
@@ -56,7 +56,7 @@ function UserWordCard(){
     const getWordcardInitial = async () => {
         const acccess_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/ifm/api/card`,{
+            const response = await fetch(`${backedUrl}/ifm/api/card`,{
                 method:"GET",
                 headers:{
                     'Authorization' : `Bearer ${acccess_token}`,

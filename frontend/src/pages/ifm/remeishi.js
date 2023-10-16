@@ -9,7 +9,7 @@ import style from '@/pages/ifm/css/remeishi.module.css'
 
 
 export default function ReMeishi(){
-    const nginxdomain = process.env.NEXT_PUBLIC_NGINX_DOMAIN;
+    const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [describe, setDescribe] = useState("");
@@ -47,7 +47,7 @@ export default function ReMeishi(){
     const getUserInformation = async() => {
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${nginxdomain}/ifm/api/userinformation`,{
+            const response = await fetch(`${backedUrl}/ifm/api/userinformation`,{
                 method:"GET",
                 headers:{
                     "Authorization" : `Bearer ${access_token}`,
@@ -125,7 +125,7 @@ export default function ReMeishi(){
 	const uploadImage = async () =>{
 		const access_token = localStorage.getItem('access_token');
 		try {
-			const response = await fetch(`${nginxdomain}/ifm/api/reMeishi`, {
+			const response = await fetch(`${backedUrl}/ifm/api/reMeishi`, {
 				method:'POST',
 				body:JSON.stringify({headimage}),
 				headers:{
@@ -170,7 +170,7 @@ export default function ReMeishi(){
 
         try {
             const access_token = localStorage.getItem('access_token');
-            const response = await fetch(`${nginxdomain}/ifm/api/reMeishi`,{
+            const response = await fetch(`${backedUrl}/ifm/api/reMeishi`,{
                 method:"POST",
                 body:JSON.stringify({username, birthday, describe, imageName, headimage}),
                 headers:{
