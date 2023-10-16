@@ -35,7 +35,7 @@ JWT_REFRESH_TOKEN_KEY = config('JWT_REFRESH_TOKEN_KEY')
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = [
-    '192.168.209.130',
+    '192.168.209.128',
     # 'localhost',
 ]
 
