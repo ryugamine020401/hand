@@ -21,6 +21,6 @@ module.exports = {
   images: {
     domains: ['127.0.0.1'],
     domains: [process.env.NGINX_DOMAIN_IP],
-    domains: ['192.168.209.128'],
+    // domains: ['192.168.209.130'],
   },
 }

@@ -35,8 +35,9 @@ JWT_REFRESH_TOKEN_KEY = config('JWT_REFRESH_TOKEN_KEY')
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = [
-    '192.168.209.128',
+    # '192.168.209.130',
     # 'localhost',
+    config('NGINX_IP')
 ]
 
 # 上傳圖片需要的網址
