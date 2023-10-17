@@ -1,339 +1,140 @@
-# hand
-# 環境建立
-透過pipenv管理虛擬環境，確認python版本3.8.10後安裝pipenv
+# 專案簡介
+        根據世界聾人聯合會的統計指出，世界上約有7000萬聽障人士，而其中又有大約5600萬人沒有機會接受任何教育。而隨著時代的改變，現代人有了更多的管道及資源可以自我學習，因此我們想要完成一個可以學習基本手語手勢的網站，且透過較為有趣的方式引導、吸引各種人學習，進而激發出人們對手語的了解並達成引人入勝的效果。
+# 開啟專案方式
+**開發環境**
+* Ucuntu20.04
+* Python 3.8.10
+* npm 10.2.0
+* node v18.17.1
+
+... 詳細套件內容至前後端目錄底下[開發環境]()查看
+
+## 前端
+1. 進入 **前端** 目錄
 ```
-pip install pipenv
+cd frontend
 ```
-安裝完成後在與pipnev檔案同目錄下輸入
+2. 安裝相關套件
+```
+npm install
+```
+> 待安裝完成後再進行下一步
+3. 設定 `.env.local`
+```
+NGINX_DOMAIN_IP=nginx的ip 處理next.config.js用的
+NEXT_PUBLIC_BACKEND_URL=    nginx開的port/api(根據後端路由方式)
+NEXT_PUBLIC_FRONTED_URL=    nginx開的port 前端
+```
+4. 設定完成後 即可開啟伺服器
+```
+npm run dev
+```
+## 後端
+1. 進入 **後端** 目錄
+```
+cd backend
+```
+2. 進入虛擬環境 *注:以下操作都需要在虛擬環境內*
 ```
 pipenv shell
 ```
-- 安裝相關套件
+> 進入成功後
+3. 安裝相關套件
 ```
 pipenv install
 ```
-- 檢查套件
+> 待安裝完成後
+4. 建立 `.env` 
 ```
-pipenv graph
+EMAIL_HOST_USER = example@yahoo.com 用於寄送驗證信
+ROOT_EMAIL = example@yahoo.com   用於驗證管理員全縣
+EMAIL_HOST_PASSWORD=paasword1
+DB_NAME=data
+DB_PASSWORD=paasword2
+DB_PORT=8006
+SECRET_KEY=secreatkey
+JWT_ACCRSS_TOKEN_KEY=secreatkey2
+JWT_REFRESH_TOKEN_KEY=secreatkey3
+DEBUG=True or FALSE
+NGINX_DOMAIN=nginx的domain
 ```
-# 設定.env 
-找到.env.example進去修改，根據內容修改成主機上的相關port跟其他內容。
+5. 設定完成後即可開啟伺服器
 ```
-EMAIL_HOST_USER = 發送驗證信的email
-ROOT_EMAIL = root帳號，開啟後需要註冊
-EMAIL_HOST_PASSWORD=[google用django寄信](https://www.youtube.com/watch?v=YQboCnlOb6Y)
-DB_NAME=主機內的mysql資料庫名稱
-DB_PASSWORD=資料庫密碼
-DB_PORT=資料庫開的port預設是3306
-SECRET_KEY=密鑰1
-JWT_ACCRSS_TOKEN_KEY=密鑰2
-JWT_REFRESH_TOKEN_KEY=密鑰3
-DEBUG=True
+python manager.py runserver
 ```
-
-# Django使用
-進入環境後到hand目錄底下(同manage.py)。
-- 開啟伺服器
+> 初次開啟專案，需要migrate，注意database的設定
+> ```
+> python manager.py migrate
+> ```
+## ngnix
+**nginx version: nginx/1.18.0 (Ubuntu)**
+1. 前往安裝目錄 
 ```
-python manage.py runserver <port>
+cd /etc/nginx/conf.d
 ```
->　先到manage.py同目錄輸入(虛擬環境) port可設可不設 預設是8000
->  - 正常開啟後可以看到，到瀏覽器輸入 [http://127.0.0.1:8000](http://127.0.0.1:8000) 可進入網站
->  - ![image](https://github.com/ryugamine020401/hand/assets/67624967/9f53d6ae-06d1-4a59-83ef-6358db22dca7)
->  <br> 在.env有設定好的情況下可以直接看到所有可用的url
-
-
-
-- 新增app
+2. 透過任意方式填寫文件，這邊用nano作為範例。
 ```
-python manage.py startapp <app name>
+sudo nano default.conf
 ```
-- 建立資料遷移
+3. 相關設定參考如下
+
 ```
-python manage.py makemigration
-```
-- 資料遷移
-```
-python manage.py migrate
-```
+upstream backend {
+    server 127.0.0.1:8000;
+}
+upstream frontend {
+    server localhost:3000;
+}
 
-## 官方文件
-- 檢索資料庫內的資料**Model.object.get()**、**Model.object.filter()** [https://docs.djangoproject.com/en/4.2/topics/db/queries/](官方文件)
-  - filter出來的結果是Queryset
-  - get是那個modles的實例。 
-- 可以直接寫SQL語法**Model.object.raw(sql)** [https://docs.djangoproject.com/en/4.2/topics/db/sql/](官方文件)
+server {
+    listen <your nginx port>;
+    listen [::]:<your nginx port>;
+    server_name <your sever name>;
 
-# 完成進度
-## 前端
+    location /api {
+        proxy_pass http://backend;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1;
+        
+    }
 
-## 後端
+    location /ws {
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-Ip $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Nginx-Proxy true;
+        proxy_redirect off;
+        client_max_body_size 10m;
 
-# 套件版本
-**channels-redis==4.1.0**
-  - asgiref [required: >=3.2.10,<4, installed: 3.7.2]
-    - typing-extensions [required: >=4, installed: 4.7.1]
-  - channels [required: Any, installed: 3.0.5]
-    - asgiref [required: >=3.5.0,<4, installed: 3.7.2]
-      - typing-extensions [required: >=4, installed: 4.7.1]
-    - daphne [required: >=3.0,<4, installed: 3.0.2]
-      - asgiref [required: >=3.2.10,<4, installed: 3.7.2]
-        - typing-extensions [required: >=4, installed: 4.7.1]
-      - autobahn [required: >=0.18, installed: 23.1.2]
-        - cryptography [required: >=3.4.6, installed: 41.0.3]
-          - cffi [required: >=1.12, installed: 1.15.1]
-            - pycparser [required: Any, installed: 2.21]
-        - hyperlink [required: >=21.0.0, installed: 21.0.0]
-          - idna [required: >=2.5, installed: 3.4]
-        - setuptools [required: Any, installed: 68.1.2]
-        - txaio [required: >=21.2.1, installed: 23.1.1]
-      - twisted [required: >=18.7, installed: 22.10.0]
-        - attrs [required: >=19.2.0, installed: 23.1.0]
-        - Automat [required: >=0.8.0, installed: 22.10.0]
-          - attrs [required: >=19.2.0, installed: 23.1.0]
-          - six [required: Any, installed: 1.16.0]
-        - constantly [required: >=15.1, installed: 15.1.0]
-        - hyperlink [required: >=17.1.1, installed: 21.0.0]
-          - idna [required: >=2.5, installed: 3.4]
-        - incremental [required: >=21.3.0, installed: 22.10.0]
-        - typing-extensions [required: >=3.6.5, installed: 4.7.1]
-        - zope.interface [required: >=4.4.2, installed: 6.0]
-          - setuptools [required: Any, installed: 68.1.2]
-    - Django [required: >=2.2, installed: 3.2]
-      - asgiref [required: >=3.3.2,<4, installed: 3.7.2]
-        - typing-extensions [required: >=4, installed: 4.7.1]
-      - pytz [required: Any, installed: 2023.3]
-      - sqlparse [required: >=0.2.2, installed: 0.4.4]
-  - msgpack [required: ~=1.0, installed: 1.0.5]
-  - redis [required: >=4.5.3, installed: 5.0.0]
-    - async-timeout [required: >=4.0.2, installed: 4.0.3]
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 300s;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+        
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+    }
 
-**djangorestframework==3.14.0**
-  - django [required: >=3.0, installed: 3.2]
-    - asgiref [required: >=3.3.2,<4, installed: 3.7.2]
-      - typing-extensions [required: >=4, installed: 4.7.1]
-    - pytz [required: Any, installed: 2023.3]
-    - sqlparse [required: >=0.2.2, installed: 0.4.4]
-  - pytz [required: Any, installed: 2023.3]
+    gzip on;
+    gzip_proxied any;
+    gzip_types application/javascript application/x-javascript text/css text/javascript;
+    gzip_comp_level 5;
+    gzip_buffers 16 8k;
+    gzip_min_length 256; 
 
-**mediapipe==0.9.3.0**
-  - absl-py [required: Any, installed: 1.4.0]
-  - attrs [required: >=19.1.0, installed: 23.1.0]
-  - flatbuffers [required: >=2.0, installed: 23.5.26]
-  - matplotlib [required: Any, installed: 3.7.2]
-    - contourpy [required: >=1.0.1, installed: 1.1.0]
-      - numpy [required: >=1.16, installed: 1.24.4]
-    - cycler [required: >=0.10, installed: 0.11.0]
-    - fonttools [required: >=4.22.0, installed: 4.42.0]
-    - importlib-resources [required: >=3.2.0, installed: 6.0.1]
-      - zipp [required: >=3.1.0, installed: 3.16.2]
-    - kiwisolver [required: >=1.0.1, installed: 1.4.4]
-    - numpy [required: >=1.20, installed: 1.24.4]
-    - packaging [required: >=20.0, installed: 23.1]
-    - pillow [required: >=6.2.0, installed: 10.0.0]
-    - pyparsing [required: >=2.3.1,<3.1, installed: 3.0.9]
-    - python-dateutil [required: >=2.7, installed: 2.8.2]
-      - six [required: >=1.5, installed: 1.16.0]
-  - numpy [required: Any, installed: 1.24.4]
-  - opencv-contrib-python [required: Any, installed: 4.8.0.76]
-    - numpy [required: >=1.17.3, installed: 1.24.4]
-    - numpy [required: >=1.17.0, installed: 1.24.4]
-  - protobuf [required: >=3.11,<4, installed: 3.20.3]
-  - sounddevice [required: >=0.4.4, installed: 0.4.6]
-    - CFFI [required: >=1.0, installed: 1.15.1]
-      - pycparser [required: Any, installed: 2.21]
+    location / {
+        proxy_pass http://frontend; 
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
 
-**PyJWT==2.8.0**
-
-**PyMySQL==1.1.0**
-
-**pyOpenSSL==23.2.0**
-  - cryptography [required: >=38.0.0,<42,!=40.0.1,!=40.0.0, installed: 41.0.3]
-    - cffi [required: >=1.12, installed: 1.15.1]
-      - pycparser [required: Any, installed: 2.21]
-
-**python-decouple==3.8**
-
-**service-identity==23.1.0**
-  - attrs [required: >=19.1.0, installed: 23.1.0]
-  - cryptography [required: Any, installed: 41.0.3]
-    - cffi [required: >=1.12, installed: 1.15.1]
-      - pycparser [required: Any, installed: 2.21]
-  - pyasn1 [required: Any, installed: 0.5.0]
-  - pyasn1-modules [required: Any, installed: 0.3.0]
-    - pyasn1 [required: >=0.4.6,<0.6.0, installed: 0.5.0]
-   
-**tensorflow==2.13.0**
-  - tensorflow-intel [required: ==2.13.0, installed: 2.13.0]
-    - absl-py [required: >=1.0.0, installed: 1.4.0]
-    - astunparse [required: >=1.6.0, installed: 1.6.3]
-      - six [required: >=1.6.1,<2.0, installed: 1.16.0]
-      - wheel [required: >=0.23.0,<1.0, installed: 0.41.2]
-    - flatbuffers [required: >=23.1.21, installed: 23.5.26]
-    - gast [required: >=0.2.1,<=0.4.0, installed: 0.4.0]
-    - google-pasta [required: >=0.1.1, installed: 0.2.0]
-      - six [required: Any, installed: 1.16.0]
-    - grpcio [required: >=1.24.3,<2.0, installed: 1.57.0]
-    - h5py [required: >=2.9.0, installed: 3.9.0]
-      - numpy [required: >=1.17.3, installed: 1.24.3]
-    - keras [required: >=2.13.1,<2.14, installed: 2.13.1]
-    - libclang [required: >=13.0.0, installed: 16.0.6]
-    - numpy [required: >=1.22,<=1.24.3, installed: 1.24.3]
-    - opt-einsum [required: >=2.3.2, installed: 3.3.0]
-      - numpy [required: >=1.7, installed: 1.24.3]
-    - packaging [required: Any, installed: 23.1]
-    - protobuf [required: >=3.20.3,<5.0.0dev,!=4.21.5,!=4.21.4,!=4.21.3,!=4.21.2,!=4.21.1,!=4.21.0, installed: 3.20.3]
-    - setuptools [required: Any, installed: 68.1.2]
-    - six [required: >=1.12.0, installed: 1.16.0]
-    - tensorboard [required: >=2.13,<2.14, installed: 2.13.0]
-      - absl-py [required: >=0.4, installed: 1.4.0]
-      - google-auth [required: >=1.6.3,<3, installed: 2.22.0]
-        - cachetools [required: >=2.0.0,<6.0, installed: 5.3.1]
-        - pyasn1-modules [required: >=0.2.1, installed: 0.3.0]
-          - pyasn1 [required: >=0.4.6,<0.6.0, installed: 0.5.0]
-        - rsa [required: >=3.1.4,<5, installed: 4.9]
-          - pyasn1 [required: >=0.1.3, installed: 0.5.0]
-        - six [required: >=1.9.0, installed: 1.16.0]
-        - urllib3 [required: <2.0, installed: 1.26.16]
-      - google-auth-oauthlib [required: >=0.5,<1.1, installed: 1.0.0]
-        - google-auth [required: >=2.15.0, installed: 2.22.0]
-          - cachetools [required: >=2.0.0,<6.0, installed: 5.3.1]
-          - pyasn1-modules [required: >=0.2.1, installed: 0.3.0]
-            - pyasn1 [required: >=0.4.6,<0.6.0, installed: 0.5.0]
-          - rsa [required: >=3.1.4,<5, installed: 4.9]
-            - pyasn1 [required: >=0.1.3, installed: 0.5.0]
-          - six [required: >=1.9.0, installed: 1.16.0]
-          - urllib3 [required: <2.0, installed: 1.26.16]
-        - requests-oauthlib [required: >=0.7.0, installed: 1.3.1]
-          - oauthlib [required: >=3.0.0, installed: 3.2.2]
-          - requests [required: >=2.0.0, installed: 2.31.0]
-            - certifi [required: >=2017.4.17, installed: 2023.7.22]
-            - charset-normalizer [required: >=2,<4, installed: 3.2.0]
-            - idna [required: >=2.5,<4, installed: 3.4]
-            - urllib3 [required: >=1.21.1,<3, installed: 1.26.16]
-      - grpcio [required: >=1.48.2, installed: 1.57.0]
-      - markdown [required: >=2.6.8, installed: 3.4.4]
-        - importlib-metadata [required: >=4.4, installed: 6.8.0]
-          - zipp [required: >=0.5, installed: 3.16.2]
-      - numpy [required: >=1.12.0, installed: 1.24.3]
-      - protobuf [required: >=3.19.6, installed: 3.20.3]
-      - requests [required: >=2.21.0,<3, installed: 2.31.0]
-        - certifi [required: >=2017.4.17, installed: 2023.7.22]
-        - charset-normalizer [required: >=2,<4, installed: 3.2.0]
-        - idna [required: >=2.5,<4, installed: 3.4]
-        - urllib3 [required: >=1.21.1,<3, installed: 1.26.16]
-      - setuptools [required: >=41.0.0, installed: 68.1.2]
-      - tensorboard-data-server [required: >=0.7.0,<0.8.0, installed: 0.7.1]
-      - werkzeug [required: >=1.0.1, installed: 2.3.7]
-        - MarkupSafe [required: >=2.1.1, installed: 2.1.3]
-      - wheel [required: >=0.26, installed: 0.41.2]
-    - tensorflow-estimator [required: >=2.13.0,<2.14, installed: 2.13.0]
-    - tensorflow-io-gcs-filesystem [required: >=0.23.1, installed: 0.31.0]
-    - termcolor [required: >=1.1.0, installed: 2.3.0]
-    - typing-extensions [required: >=3.6.6,<4.6.0, installed: 4.5.0]
-    - wrapt [required: >=1.11.0, installed: 1.15.0]
-    
-**cvzone==1.5.6**
-  - numpy [required: Any, installed: 1.24.3]
-  - opencv-python [required: Any, installed: 4.8.0.76]
-    - numpy [required: >=1.17.0, installed: 1.24.3]
-    - numpy [required: >=1.17.3, installed: 1.24.3]
-# 目錄架構
-```markdown
-hand
-|
-|---billboard
-|           |---__pycache__
-|           |---migrations
-|           |---templates
-|           |---__init__.py
-|           |---admin.py
-|           |---apps.py
-|           |---forms.py
-|           |---models.py
-|           |---tests.py
-|           |---urls.py
-|           |---views.py
-|---bugreport
-|           |---約同billboard
-|---forum
-|           |---約同billboard
-|---hand
-|           |---__pycache__
-|           |---__init__.py
-|           |---asgi.py
-|           |---settings.py
-|           |---urls.py
-|           |---wsgi.py
-|---ifm
-|           |---__pycache__
-|           |---migrations
-|           |---templates
-|           |---__init__.py
-|           |---admin.py
-|           |---apps.py
-|           |---forms.py
-|           |---models.py
-|           |---serializers.py
-|           |---tests.py
-|           |---urls.py
-|           |---views.py
-|---media
-|           |---headimage
-|           |           |---defaultimage.png
-|           |---studyimage
-|           |           |---english
-|           |           |          |---A.png
-|           |           |          |---B.png
-|           |           |          |---...
-|---onlinechat
-|           |---__pycache__
-|           |---migrations
-|           |---templates
-|           |---__init__.py
-|           |---admin.py
-|           |---apps.py
-|           |---consumers.py
-|           |---forms.py
-|           |---models.py
-|           |---routing.py
-|           |---serializers.py
-|           |---tests.py
-|           |---urls.py
-|           |---views.py
-|---reg
-|           |---__pycache__
-|           |---migrations
-|           |---templates
-|           |---__init__.py
-|           |---admin.py
-|           |---apps.py
-|           |---forms.py
-|           |---models.py
-|           |---serializers.py
-|           |---tests.py
-|           |---urls.py
-|           |---views.py
-|---static
-|           |---css
-|           |           |---lobby.css
-|---study
-|           |---__pycache__
-|           |---migrations
-|           |---templates
-|           |---__init__.py
-|           |---admin.py
-|           |---apps.py
-|           |---forms.py
-|           |---models.py
-|           |---serializers.py
-|           |---tests.py
-|           |---urls.py
-|           |---views.py
-|---.env
-|---.gitignore
-|---db.sqlite3
-|---manage.py
-Pipenv
-Pipenv.lock
-README.md
 ```
