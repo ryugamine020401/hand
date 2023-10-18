@@ -13,7 +13,7 @@ from study.views import TestOneGetResultAPIView, getAllresultAPIView
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
-    path('uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),    # 上傳圖片的api
+    path('api/uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),    # 上傳圖片的api
     # path('uploadteachtype', UploadTeachTypeView.as_view(), name='UploadTeachType'),
     path('api/', TeachingCenterView.as_view(), name='TeachCenterType'),
     path('api/english', TeachingCenterEnglishView.as_view(), name='TeachingCenterEnglish'),

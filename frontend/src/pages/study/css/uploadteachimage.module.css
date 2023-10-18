@@ -1,0 +1,69 @@
+.pagecontianer{
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to left, rgba(125, 255, 125, 0.689), rgb(133, 133, 255));;
+}
+
+.fromcontainer{
+    margin-top: 6rem;
+    display: flex;
+    flex-direction: column;
+    /* border: 3px solid red; */
+    width: 60rem;
+}
+
+.uppercontianer{
+    display: flex;
+    align-self: center;
+    margin: 2rem;
+    background-color: rgba(126, 255, 255, 0.624);
+    border-radius: 25px;
+    padding: 3rem 6rem;
+}
+
+.leftcontainer{
+    width: 6rem;
+    margin-right: 10rem;
+    color: black;
+    
+}
+
+.leftcontainer input{
+    width: 10rem;
+    height: 6rem;
+}
+
+.lowercontianer{
+    display: flex;
+    flex-direction: column;
+    /* height: 20rem; */
+    align-items: center;
+}
+
+.lowercontianer textarea{
+    width: 10rem;
+    height: 5rem;
+    resize: none;
+    background-color: rgba(127, 255, 212, 0.373);
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 6px;
+}
+
+
+.lowercontianer button{
+    background-color: rgba(210, 105, 30, 0.385);
+    border: none;
+    border-radius: 3px;
+    width: 6rem;
+    height: 3rem;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.lowercontianer button:hover{
+    cursor: pointer;
+    background-color: rgba(210, 105, 30, 0.7);
+}

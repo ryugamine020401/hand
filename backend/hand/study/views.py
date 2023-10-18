@@ -7,6 +7,7 @@ import random
 import numpy as np
 import mediapipe as mp
 import cv2
+from io import BytesIO
 from keras.models import load_model
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -14,6 +15,7 @@ from drf_yasg import openapi
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
@@ -184,31 +186,44 @@ class UploadStudyFileView(APIView):
             }
         )
     )
-    
     def post(self, request):
         """
         送出修改後的資料
         """
-        des = request.data.getlist('describe')
-        img = request.data.getlist('img')
-        print(des)
-        print(img)
-        # for i in range(len(des)):
-        #     print(type(i))
+        # des = request.data.getlist('describe')
+        # img = request.data.getlist('img')
+
+        encoded_image = request.data['img']
+        describe = request.data['describe']
+        image_binary = base64.b64decode(encoded_image.split(',')[1])
+        bytes_io = BytesIO(image_binary)
+        image_file = InMemoryUploadedFile(
+            file=bytes_io,
+            field_name=None,
+            name='techimg.png',  # 替換為實際的文件名
+            content_type= 'image/png',  # 替換為實際的 MIME 類型
+            size=len(image_binary),
+            charset=None,
+        )
+        instance = TeachWordCard()
+        instance.img = image_file
+        instance.describe = describe
+        instance.upload_date = str(datetime.date.today())
+        instance.save()
+        data = {
+            'message':'上傳成功',
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+
+        # for i, item in enumerate(img):
         #     database = TeachWordCard()
         #     database.img = img[i]
         #     database.describe = des[i]
         #     database.upload_date = '2023-08-11'
         #     database.save()
-        #     print(database)
-        for i, item in enumerate(img):
-            database = TeachWordCard()
-            database.img = img[i]
-            database.describe = des[i]
-            database.upload_date = '2023-08-11'
-            database.save()
-            print(database, f'已經儲存到第{i+1}筆資料。{item}')
-        return Response({"successful"})
+        #     print(database, f'已經儲存到第{i+1}筆資料。{item}')
+        # return Response({"successful"})
 # ----------------------------上傳教學圖片--------------------------------
 
 # ----------------------------上傳教學類別--------------暫時棄用-------------
@@ -312,7 +327,8 @@ class TeachingCenterEnglishView(APIView):
         """
         讓使用者得到可以選擇的英文學習資源
         """
-        english_alphabet = TeachWordCard.objects.all()
+                                            # 字母的id是 1~26 所以id<27
+        english_alphabet = TeachWordCard.objects.filter(id__lt=27)
         wordcard = {}
         for instance in english_alphabet:
             wordcard[instance.id] = f'{NGINX_DOMAIN}/api/study'+instance.img.url

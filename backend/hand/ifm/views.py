@@ -105,10 +105,6 @@ class ResetprofileView(APIView):
         """
         送出修改後的資料
         """
-        print(MEDIA_ROOT, MEDIA_URL)
-        # print(request.data['headimage'])
-        print(request.data.keys())
-
         auth = get_authorization_header(request).split()
         try:
             if auth[1] == b'null':
@@ -211,7 +207,7 @@ class ResetprofileView(APIView):
         change_userdefifm = UserDefIfmSerializer(data=ser1)
         change_userifm = RegisterSerializer(data=ser2)
         if (change_userdefifm.is_valid() and change_userifm.is_valid()):
-            print("和法")
+            print("合法")
             change_userdefifm.update(UserDefIfm.objects.get(user_id=user_id), ser1)
             change_userifm.update1(UserIfm.objects.get(id=user_id), ser2)
         else:
