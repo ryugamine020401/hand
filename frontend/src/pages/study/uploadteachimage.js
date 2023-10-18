@@ -57,7 +57,7 @@ export default function UploadTeachImage() {
         <div className={style.pagecontianer}>
             <LoginState
                     profilePath="../ifm"
-                    resetPasswordPath="./reg/resetpassword"
+                    resetPasswordPath="../reg/resetpassword"
                     logoutPath="./uchi"
             />
             <div className={style.fromcontainer}>

@@ -74,7 +74,7 @@ export default function SendBillboard() {
     <Head><title>發送公告</title></Head>
         <LoginState
             profilePath="../ifm"
-            resetPasswordPath="../reg/resetassword"
+            resetPasswordPath="../../reg/resetpassword"
             logoutPath="/uchi"
         />
         <div className={style.pagecomstainer}>
