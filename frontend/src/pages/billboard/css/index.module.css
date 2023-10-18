@@ -4,11 +4,11 @@
         #fcff49 -30%,
         #66ccff 50%,
         #08900e 140%);
-    padding-top: 3rem;
+    padding-top: 6rem;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
 }
 

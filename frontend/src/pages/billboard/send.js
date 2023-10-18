@@ -2,7 +2,7 @@ import LoginState from "@/components/loginstate";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-
+import style from '@/pages/billboard/css/send.module.css'
 
 
 export default function SendBillboard() {
@@ -77,22 +77,22 @@ export default function SendBillboard() {
             resetPasswordPath="../reg/resetassword"
             logoutPath="/uchi"
         />
-        <h1>發送公告頁面</h1>
-        <label>公告標題</label>
+        <div className={style.pagecomstainer}>
+            <div className={style.formcontainer}>
+                <input
+                    type="text"
+                    onChange={(e)=>setTitle(e.target.value)}
+                    placeholder="公告標題"
+                />
+                <textarea
+                    rows="4" 
+                    cols="50"
+                    onChange={(e)=>setContent(e.target.value)}
+                    placeholder="公告內容"
+                />
+                <button onClick={sendContentBunttonClick}>送出公告</button>
+            </div>
+        </div>
         
-        <input
-            type="text"
-            onChange={(e)=>setTitle(e.target.value)}
-        />
-        <br/>
-        <label>公告內容</label>
-        <textarea
-            rows="4" 
-            cols="50"
-            onChange={(e)=>setContent(e.target.value)}
-        />
-        <button onClick={sendContentBunttonClick}>送出公告</button>
-        
-    
     </>);
 } 
