@@ -839,21 +839,30 @@ class DeleteUserIfmView(APIView):
     @swagger_auto_schema(
         operation_summary='刪除使用者',
     )
-    @root_check
+    # @root_check
     def get(self, request):
         """
         獲得刪除的頁面，需要有root權限。
         """
-        all_inatance = UserIfm.objects.all()
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        form = DeleteForm()
-        payload = {
-            "form" : form,
-            "user_instance" : all_inatance
+        all_inatance = UserIfm.objects.exclude(email=ROOT_EMAIL)
+        alluserlist = {}
+        for i in all_inatance:
+            alluserlist[i.email] = i.id
+            print(i)
+        data = {
+            'message':'獲取所有使用者資訊',
+            'alluserlist':alluserlist
         }
-        html = render(request, 'delete_account.html', payload).content.decode('utf-8')
-        response.content = html
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
+        # form = DeleteForm()
+        # payload = {
+        #     "form" : form,
+        #     "user_instance" : all_inatance
+        # }
+        # html = render(request, 'delete_account.html', payload).content.decode('utf-8')
+        # response.content = html
+        # return response
     @swagger_auto_schema(
         operation_summary='root刪除使用者的功能',
         request_body=openapi.Schema(
@@ -866,22 +875,21 @@ class DeleteUserIfmView(APIView):
             }
         )
     )
-    @root_check
+    # @root_check
     def post(self, request):
         """
         刪除選定的使用者，需要有root權限。
         透過按鈕可以刪除該使用者的帳號
         """
         print(request.data)
-        for key in request.data:
-            req_list = str(key).rsplit('_', 1)
-        user_id = req_list[1]
+        print(request.data['userId'])
+        user_id = request.data['userId']
         UserIfm.objects.get(id = user_id).delete()
-        response = Response(status=status.HTTP_202_ACCEPTED)
-        response.data = {
-            "msg" : f'已刪除 {user_id} 。'
+        data = {
+            "message" : f'已刪除{request.data["userId"]}。'
         }
-        return redirect('/reg/deleteaccount')
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
 # ------------------------- 刪除使用者 ---------------------------------
 #------------------------- TOKEN create、decode func. ----------------------------
 def creat_access_token(user):

@@ -118,7 +118,7 @@ export default function Studyindex() {
                 <button className={style.repagebtn} onClick={()=>router.push('./ ')}>上一頁</button>
                 <div className={style.wordcardcontainer}>
                     {Object.keys(englishWordCard).map((key, index)=>(
-                    <div key={`wordcardImage_cotainer_${index}`} className={style.alphabetcontainer}>
+                        <div key={`wordcardImage_cotainer_${index}`} className={style.alphabetcontainer}>
                             <Image
                                 priority
                                 className={`word_alphabet_image_${index}`} 

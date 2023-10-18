@@ -24,7 +24,7 @@ export default function OverlayBox ({ profilePath, resetPasswordPath, logoutPath
     }
     const [sendbillboardURL, setSendbillboardURL] = useState();
     const [sendteachimageURL, setSendteachimageURL] = useState();
-    
+    const [deleteaccount, setDeleteaccountURL] = useState();
     const CheckAccessToken = async() => {
         try {
             const access_token = await localStorage.getItem('access_token');
@@ -39,6 +39,7 @@ export default function OverlayBox ({ profilePath, resetPasswordPath, logoutPath
                 console.log(responseData);
                 setSendbillboardURL(`${frontendURL}/billboard/send`);
                 setSendteachimageURL(`${frontendURL}/study/uploadteachimage`);
+                setDeleteaccountURL(`${frontendURL}/reg/deleteaccount`);
             } else {
                 const responseData = await response.json();
                 console.log(responseData);
@@ -74,6 +75,12 @@ export default function OverlayBox ({ profilePath, resetPasswordPath, logoutPath
                     <Image src="/images/overlay_billboard.png" width={20} height={20} alt="resetpwdicon"/>
                     <Link href= {sendteachimageURL}>上傳資源</Link>
                 </li>}
+                {deleteaccount &&   <li>
+                    <Image src="/images/overlay_deleteaccount.png" width={20} height={20} alt="resetpwdicon"/>
+                    <Link href= {deleteaccount}>刪除使用者</Link>
+                </li>
+
+                }
                 <li>
                     <Image src="/images/logout.png" width={20} height={20} alt="resetpwdicon"/>
                     <Link href= {logoutPath} onClick={logOut}>登出</Link>

@@ -1,5 +1,5 @@
 import style from '@/pages/study/css/uploadteachimage.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LoginState from '@/components/loginstate';
 import Image from 'next/image';
 
@@ -8,6 +8,29 @@ export default function UploadTeachImage() {
     const [describe, setDescribe] = useState('');
     const [img, setBase64img] = useState();
     console.log("載入");
+
+    const CheckAccessToken = async() => {
+        try {
+            const access_token = await localStorage.getItem('access_token');
+            const response = await fetch(`${backedUrl}/billboard/api/rootcheck`,{
+                method:'POST',
+                headers:{
+                    'Authorization':`Bearer ${access_token}`,
+                }
+
+            });
+            if (response.status === 200) {
+                const responseData = await response.json();
+                console.log(responseData);
+            } else {
+                const responseData = await response.json();
+                console.log(responseData);
+                router.push('../uchi')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0]; // 獲取選擇的文件
@@ -51,7 +74,9 @@ export default function UploadTeachImage() {
         }
     }
 
-    
+    useEffect(() => {
+        CheckAccessToken();
+    }, []);
 
     return (
         <div className={style.pagecontianer}>

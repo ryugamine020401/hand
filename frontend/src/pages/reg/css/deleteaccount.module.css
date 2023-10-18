@@ -1,0 +1,25 @@
+.pagecontainer{
+    background: linear-gradient(to right, rgba(19, 255, 255, 0.802), rgba(84, 255, 198, 0.66));
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.cardcontianer{
+    color: black;
+    border-radius: 6px;
+    border: 2px solid rgba(172, 255, 47, 0.474);
+    padding: 10px 20px;
+    margin-top: 10px;
+    width: 30rem;
+}
+
+.userlistcontianer{
+    margin-top: 6rem;
+    border: 1px solid rebeccapurple;
+    width: 60rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
