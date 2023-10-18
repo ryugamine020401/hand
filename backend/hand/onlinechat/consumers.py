@@ -90,15 +90,15 @@ class ChatConsumer(WebsocketConsumer):
         except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
             print(error_msg, "1")
             username = "匿名"
-            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
+            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
         except KeyError as error_msg:
             print(error_msg, "沒有登入。")
             username = "我沒有登入"
-            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
+            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
         except rest_framework.exceptions.AuthenticationFailed as error_msg:
             print(error_msg)
             username = "我沒有登入"
-            headimg = UserDefIfm.objects.get(user_id=80928899).headimg
+            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
 
         message = text_data_json['message']
         print(text_data_json)

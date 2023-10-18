@@ -36,7 +36,8 @@ DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = [
     # '192.168.209.130',
-    # 'localhost',
+    'localhost',
+    '127.0.0.1',
     config('NGINX_IP')
 ]
 

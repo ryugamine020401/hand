@@ -4,7 +4,8 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-# from study.views import UploadStudyFileView, UploadTeachTypeView
+from study.views import UploadStudyFileView
+# from .views import UploadTeachTypeView
 from study.views import TeachingCenterEnglishView, TeachingCenterView
 from study.views import UserWordCardButtonCheckView, TestOneViews
 from study.views import TestOneGetResultAPIView, getAllresultAPIView
@@ -12,7 +13,7 @@ from study.views import TestOneGetResultAPIView, getAllresultAPIView
 from hand.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
-    # path('uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),    # 暫時棄用
+    path('uploadimg', UploadStudyFileView.as_view(), name='UploadStudyImage'),    # 上傳圖片的api
     # path('uploadteachtype', UploadTeachTypeView.as_view(), name='UploadTeachType'),
     path('api/', TeachingCenterView.as_view(), name='TeachCenterType'),
     path('api/english', TeachingCenterEnglishView.as_view(), name='TeachingCenterEnglish'),

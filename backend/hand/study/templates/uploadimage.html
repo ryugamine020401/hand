@@ -5,8 +5,8 @@
 <body>
     <form action="{% url 'UploadStudyImage' %}" enctype="multipart/form-data" method="POST" >
         {% csrf_token %}
-        <!-- { for i in '12345678910111213141516126' %} -->
-        {% for i in '1' %}
+        {% for i in '2345678910111213141516126' %}
+        <!-- { for i in '1' %} -->
         {{form}}
         <br>
         {% endfor %}

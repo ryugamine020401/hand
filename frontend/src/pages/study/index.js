@@ -7,9 +7,7 @@ import { useRouter } from "next/router";
 
 export default function Studyindex() {
     const router = useRouter();
-    const [nowPage, setNowPage] = useState(1);
     console.log('default');
-    // const [page, setPage] = useState(1);
     const {page} = router.query;
     const pageNumber = page ? parseInt(page, 10) : 1;
     const resource = {
@@ -40,32 +38,7 @@ export default function Studyindex() {
     const buttonChickfunction = (index) =>{
         router.push(`${linklist[index]}`);
     }
-    const changePage = (cnt) => {
-        //console.log(nowPage, cnt, nowPage+cnt);
-        
-        if (cnt >= 1) {
-            /* 下一頁 */
-            if (Object.keys(resource).length > 6*(nowPage)){
-                const nextPage = nowPage + cnt;
-                setNowPage(nextPage);
-                
-            } else {
-
-            }
-        } else {
-            /* 上一頁 */
-            const nextPage = nowPage + cnt;
-            if (nextPage <= 0) {
-                setNowPage(1);
-            } else {
-                setNowPage(nextPage);
-            }
-        }
-    }
-    useEffect(()=>{
-        console.log('useEffect');
-        console.log(Object.keys(resource).length);
-    },[resource])
+    
     return(
     
         <>
@@ -79,17 +52,15 @@ export default function Studyindex() {
             <div className={style.studypagecontainer}>
                 <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>上一頁</button>
                 <div className={style.blackboardcontainer}>
-                    {Object.keys(resource).slice(6*(nowPage-1), nowPage*6).map((key, index)=>(
+                    {Object.keys(resource).slice(6*(pageNumber-1), pageNumber*6).map((key, index)=>(
                     <div key={`study_linkcontainer_${index}`} className={style.techtypecontainer} onClick={()=>buttonChickfunction(index)}>
                         <Link key={`study_link_${index}`} href={`./study/${key}`}>{resource[key]}</Link>
                     </div>
                     ))}
                     <div className={style.chanhepagecontainer}>
-                        <button onClick={()=>changePage(-1)}>上一頁</button>
                         <Link href={`./study?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</Link>
-                        <span>{nowPage}</span>
+                        <span>{pageNumber}</span>
                         <Link href={`./study?page=${linklist.length > pageNumber*6? pageNumber+1 : pageNumber}`}>下一頁</Link>
-                        <button onClick={()=>changePage(1)}>下一頁</button>
                     </div>
                     
                 </div>

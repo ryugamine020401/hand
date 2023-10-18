@@ -10,9 +10,10 @@ const Lobby = () => {
     const [newMessage, setNewMessage] = useState('');
     const [chatSocket, setChatSocket] = useState(null);
     const router = useRouter();
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 
   useEffect(() => {
-    let socket = new WebSocket(`ws://192.168.209.130:36514/ws/socket-server/`);
+    let socket = new WebSocket(`${socketUrl}/ws/socket-server/`);
 
     socket.onopen = () => {
       console.log('WebSocket connected');

@@ -12,7 +12,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-# from django.shortcuts import render
+from django.shortcuts import render
 from django.http import JsonResponse
 
 # from rest_framework.response import Response
@@ -144,69 +144,71 @@ def hand_predict(img, correct):
         return payload
 
 # ------------------------- 辨識 ------------------------------
+from study.forms import UploadEnglishForm
+from rest_framework.response import Response
 # --------------------------------上傳教學圖片------暫時棄用----------------------
-# class UploadStudyFileView(APIView):
-#     """
-#     上傳圖片用的
-#     """
-#     @swagger_auto_schema(
-#         operation_summary='上傳教學圖片 root',
-#     )
-#     @root_check
-#     def get(self, request):
-#         """
-#         獲得修改的頁面
-#         """
-#         form = UploadEnglishForm()
-#         context = {
-#             'form' : form,
-#         }
-#         response  = Response(status=status.HTTP_202_ACCEPTED)
-#         html =  render(request, './uploadimage.html', context=context)
-#         response.content = html
-#         return response
-#     @swagger_auto_schema(
-#         operation_summary='上傳教學圖片',
-#         # operation_description='我是說明',
-#         request_body=openapi.Schema(
-#             type=openapi.TYPE_OBJECT,
-#             properties={
-#                 'img': openapi.Schema(
-#                     type=openapi.TYPE_FILE,
-#                     description='教學圖片'
-#                 ),
-#                 'des': openapi.Schema(
-#                     type=openapi.TYPE_STRING,
-#                     description='該資源的描述'
-#                 ),
-#             }
-#         )
-#     )
-#     @root_check
-#     def post(self, request):
-#         """
-#         送出修改後的資料
-#         """
-#         des = request.data.getlist('describe')
-#         img = request.data.getlist('img')
-#         print(des)
-#         print(img)
-#         # for i in range(len(des)):
-#         #     print(type(i))
-#         #     database = TeachWordCard()
-#         #     database.img = img[i]
-#         #     database.describe = des[i]
-#         #     database.upload_date = '2023-08-11'
-#         #     database.save()
-#         #     print(database)
-#         for i, item in enumerate(img):
-#             database = TeachWordCard()
-#             database.img = img[i]
-#             database.describe = des[i]
-#             database.upload_date = '2023-08-11'
-#             database.save()
-#             print(database, f'已經儲存到第{i+1}筆資料。{item}')
-#         return Response({"successful"})
+class UploadStudyFileView(APIView):
+    """
+    上傳圖片用的
+    """
+    @swagger_auto_schema(
+        operation_summary='上傳教學圖片 root',
+    )
+    
+    def get(self, request):
+        """
+        獲得修改的頁面
+        """
+        form = UploadEnglishForm()
+        context = {
+            'form' : form,
+        }
+        response  = Response(status=status.HTTP_202_ACCEPTED)
+        html =  render(request, './uploadimage.html', context=context)
+        response.content = html
+        return response
+    @swagger_auto_schema(
+        operation_summary='上傳教學圖片',
+        # operation_description='我是說明',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'img': openapi.Schema(
+                    type=openapi.TYPE_FILE,
+                    description='教學圖片'
+                ),
+                'des': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='該資源的描述'
+                ),
+            }
+        )
+    )
+    
+    def post(self, request):
+        """
+        送出修改後的資料
+        """
+        des = request.data.getlist('describe')
+        img = request.data.getlist('img')
+        print(des)
+        print(img)
+        # for i in range(len(des)):
+        #     print(type(i))
+        #     database = TeachWordCard()
+        #     database.img = img[i]
+        #     database.describe = des[i]
+        #     database.upload_date = '2023-08-11'
+        #     database.save()
+        #     print(database)
+        for i, item in enumerate(img):
+            database = TeachWordCard()
+            database.img = img[i]
+            database.describe = des[i]
+            database.upload_date = '2023-08-11'
+            database.save()
+            print(database, f'已經儲存到第{i+1}筆資料。{item}')
+        return Response({"successful"})
 # ----------------------------上傳教學圖片--------------------------------
 
 # ----------------------------上傳教學類別--------------暫時棄用-------------

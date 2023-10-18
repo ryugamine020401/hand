@@ -5,7 +5,7 @@ import styles from '@/styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] })
 export const getServerSideProps = () =>{
-  console.log(process.env.NGINX_DOMAIN);
+  
   return{
     props:{
       env:'hello',

@@ -151,9 +151,6 @@ class ResetprofileView(APIView):
             # 權衡之下的結果 物件本身副檔名無所謂 但不固定檔名會導致錯誤
         else:
             print("頭像不存在")
-        file_path = os.path.join('/home/ymzk/桌面/HAND/backend', 'saved_gif.gif')
-        with open(file_path, 'wb') as headimage_file:
-            headimage_file.write(headimage_binary)
 
         # 使用 ContentFile 創建一個 BytesIO 對象
         bytes_io = BytesIO(headimage_binary)

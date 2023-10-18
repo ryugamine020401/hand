@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 export default function Billboard(){
     const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [title, setTitle] = useState({});
-    const [nowPage, setNowPage] = useState(1);
     const router = useRouter();
     const {page} = router.query;
     const pageNumber = page ? parseInt(page, 10) : 1;
@@ -45,28 +44,6 @@ export default function Billboard(){
         
     }
 
-    const changePage = (cnt) => {
-        //console.log(nowPage, cnt, nowPage+cnt);
-        
-        if (cnt >= 1) {
-            /* 下一頁 */
-            if (Object.keys(title).length > 5*(nowPage)){
-                const nextPage = nowPage + cnt;
-                setNowPage(nextPage);
-                
-            } else {
-
-            }
-        } else {
-            /* 上一頁 */
-            const nextPage = nowPage + cnt;
-            if (nextPage <= 0) {
-                setNowPage(1);
-            } else {
-                setNowPage(nextPage);
-            }
-        }
-    }
     useEffect(() => {
         initialSetPage();        
     }, []);
@@ -84,7 +61,7 @@ export default function Billboard(){
             <div className={style.forumindexpagecontainer}>
             <button className={style.repagebtn} onClick={()=>router.push('../uchi')}>回首頁</button>
                 <div className={style.formcontainer}>
-                    {Object.keys(title).slice(5*(nowPage-1), nowPage*5).map((key, index)=>(
+                    {Object.keys(title).slice(5*(pageNumber-1), pageNumber*5).map((key, index)=>(
                         <div key={`forumcontainer_${index}`} className={style.forumurlcontainer}
                             onClick={()=>buttonClick(key)}
                         >
@@ -100,12 +77,11 @@ export default function Billboard(){
                     </div>
                 </div>
                 <div className={style.chanhepagecontainer}>
-                    <button onClick={()=>changePage(-1)}>上一頁</button>
+                    
                     <a href={`./forum?page=${pageNumber-1 <= 0 ? 1: pageNumber-1}`}>上一頁</a>
-                    <span>{nowPage}</span>
+                    <span>{pageNumber}</span>
                     <a href={`./forum?page=${Object.keys(title).length > pageNumber*5? pageNumber+1 : pageNumber}`}>下一頁</a>
-                    <button onClick={()=>changePage(1)}>下一頁</button>
-                    {/* <a href={`./forum?page=${pageNumber+1}`}>下一頁</a> */}
+
                 </div>
                 
             </div>
