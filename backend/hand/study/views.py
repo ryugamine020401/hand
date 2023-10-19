@@ -4,10 +4,10 @@
 import datetime
 import base64
 import random
+from io import BytesIO
 import numpy as np
 import mediapipe as mp
 import cv2
-from io import BytesIO
 from keras.models import load_model
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -17,13 +17,14 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-# from rest_framework.response import Response
+from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
 
 from reg.views import decode_access_token
 from reg.models import UserIfm
+from study.forms import UploadEnglishForm
 # from reg.forms import LoginForm, EmailCheckForm
 from ifm.models import UseWordCard, UserDefIfm
 from study.models import TeachWordCard, Test1Ans
@@ -146,8 +147,7 @@ def hand_predict(img, correct):
         return payload
 
 # ------------------------- 辨識 ------------------------------
-from study.forms import UploadEnglishForm
-from rest_framework.response import Response
+
 # --------------------------------上傳教學圖片------暫時棄用----------------------
 class UploadStudyFileView(APIView):
     """
@@ -156,10 +156,9 @@ class UploadStudyFileView(APIView):
     @swagger_auto_schema(
         operation_summary='上傳教學圖片 root',
     )
-    
     def get(self, request):
         """
-        獲得修改的頁面
+        獲得修改的頁面，已棄用。
         """
         form = UploadEnglishForm()
         context = {
@@ -580,13 +579,12 @@ class TestOneViews(APIView):
                 response = JsonResponse(data, status=status.HTTP_302_FOUND)
                 return response
             else:
-                print('第五題')
-                
+                # 第五題
                 correct_cnt = 0
                 for value, key in enumerate(vars(test_instance).items()):
                     if 2 <= value <= 6:
                         tmp = key[1].upper()
-                        if(tmp[0] == tmp[1]):
+                        if tmp[0] == tmp[1]:
                             correct_cnt += 1
                     print(key, value)
                     if value == 8:
@@ -747,11 +745,14 @@ class TestOneGetResultAPIView(APIView):
 # ------------------------ 測驗_1 結算 -----------------------------
 
 # ------------------------ 測驗總結算 ------------------------------
-class getAllresultAPIView(APIView):
+class GetAllresultAPIView(APIView):
     """
     可以獲得使用者所有的測驗結果並統整。需要有Accesstoken
     """
     def get(self, request):
+        """
+        獲得所有測驗的api
+        """
         auth = get_authorization_header(request).split()
 
         try:
@@ -779,7 +780,7 @@ class getAllresultAPIView(APIView):
         for i in Test1Ans.objects.filter(user_id=token_payload['id']):
             if i.kotae_go != '':
                 cnt += 1
-                tmp += i.cor_rate    
+                tmp += i.cor_rate
         # print(tmp/cnt, int((tmp/cnt)/20+1))
         try:
             data = {

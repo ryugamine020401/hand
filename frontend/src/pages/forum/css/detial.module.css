@@ -182,5 +182,21 @@
     background-color: rgb(155, 155, 141); 
 }
 
+.deletebutton{
+    height: 3rem;
+    width: 6rem;
+    margin-top: 1.3rem;
+    margin-right: 15rem;
+    background-color: deepskyblue;
+    border: none;
+    border-radius: 10px;
+    color: black;
+    font-size: 18px;
+}
+
+.deletebutton:hover{
+    cursor: pointer;
+    background-color: rgb(0, 97, 129);
+}
 
 

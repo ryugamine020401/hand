@@ -21,7 +21,59 @@ function DynamicPage() {
 	const [response, setResponse] = useState();
 	const [logincheck, setLogincheck] = useState();
 	// console.log(1);
+	const [button, setButton] = useState(false);
 
+	const CheckAccessToken = async() => {
+        try {
+            const access_token = await localStorage.getItem('access_token');
+            const response = await fetch(`${backedUrl}/billboard/api/rootcheck`,{
+                method:'POST',
+                headers:{
+                    'Authorization':`Bearer ${access_token}`,
+                }
+
+            });
+            if (response.status === 200) {
+                // const responseData = await response.json();
+                // console.log(responseData);
+				setButton(true);
+            } else {
+				// 不顯示按刪除文章按鈕
+				setButton(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+	useEffect(()=>{
+        CheckAccessToken();
+    },[])
+
+	const deleteContent = async(contentId)=>{
+		console.log(contentId);
+		const access_token = localStorage.getItem('access_token');
+		const response = await fetch(`${backedUrl}/forum/api/${contentId}/`, {
+			method:'DELETE',
+			body:JSON.stringify(contentId),
+			headers:{
+				'Authorization':`Bearer ${access_token}`,
+				'Content-Type':'application/json'
+			}
+		});
+
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData.message);
+				router.push('/forum');
+			} else {
+				const responseData = await response.json();
+				console.log(responseData.message);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
 	const GetArticalcontent = async () => {
 		try {
 			const response = await fetch(`${backedUrl}/forum/api/${id}/`, {
@@ -37,6 +89,9 @@ function DynamicPage() {
 				setResponse(responseData.response);
 				setAuthorname(responseData.authorname);
 				console.log(responseData.response);
+			} else if(response.status === 302) {
+				const responseData = await response.json();
+				router.push(responseData.redirect);
 			} else {
 				const responseData = await response.json();
 				console.log(responseData);
@@ -102,6 +157,7 @@ function DynamicPage() {
 							<h1>{title}</h1>
 						</div>
 						<div className={style.leftcontainer}>
+						{button && <button className={style.deletebutton} onClick={()=>deleteContent(id)}>刪除文章</button>}
 						<Image
 							alt = "發文者頭像"
 							src = {articalheadimage}

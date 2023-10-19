@@ -139,12 +139,20 @@ class ForumArticalAPIView(APIView):
     @swagger_auto_schema(
         operation_summary='列出討論區詳細內容',
     )
-
     def get(self, request, artical_id):
         """
         獲得發送的頁面。
         """
-        instance = Discuss.objects.get(id=artical_id)
+        try:
+            instance = Discuss.objects.get(id=artical_id)
+        except Discuss.DoesNotExist as error_msg:   # pylint: disable=E1101
+            print(error_msg)
+            data = {
+                'message':'無此資源',
+                'redirect':'/forum',
+            }
+            response = JsonResponse(data, status=status.HTTP_302_FOUND)
+            return response
         author = instance.user.id   # 獲得該文章使用者的 userid
         author_name = UserIfm.objects.get(id=author).username
         user_instance = UserDefIfm.objects.get(user_id = author)
@@ -236,4 +244,30 @@ class ForumArticalAPIView(APIView):
         }
         response = JsonResponse(data, status=status.HTTP_200_OK)
 
+        return response
+    def delete(self, request, artical_id):
+        """
+        root權限刪除文章。
+        """
+        try:
+            auth = get_authorization_header(request).split()
+            print(auth[1])
+            if decode_access_token(auth[1])['email'] != ROOT_EMAIL:
+                data = {
+                "message" : '刪除失敗，權限不足',
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg)
+            data = {
+                "message" : '刪除失敗，權限不足',
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response
+        data = {
+            "message" : '刪除成功',
+        }
+        Discuss.objects.get(id=artical_id).delete()
+        response = JsonResponse(data, status=status.HTTP_200_OK)
         return response

@@ -15,7 +15,6 @@ function DynamicPage() {
 	const [content, setContent] = useState();
 	const [date, setDate] = useState();
 	const [button, setButton] = useState(false);
-	// console.log(1);
 
 	const CheckAccessToken = async() => {
         try {
