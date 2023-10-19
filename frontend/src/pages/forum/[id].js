@@ -74,6 +74,32 @@ function DynamicPage() {
 			console.error(error);
 		}
 	}
+	const deleteResponseBtnClick = async(responseId) =>{
+		console.log(responseId);
+		const access_token = localStorage.getItem('access_token');
+		const response = await fetch(`${backedUrl}/forum/api/deleteresponse`, {
+			method:'DELETE',
+			body:JSON.stringify(responseId),
+			headers:{
+				'Authorization':`Bearer ${access_token}`,
+				'Content-Type':'application/json'
+			}
+		});
+
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData.message);
+				router.reload();
+			} else {
+				const responseData = await response.json();
+				console.log(responseData.message);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
 	const GetArticalcontent = async () => {
 		try {
 			const response = await fetch(`${backedUrl}/forum/api/${id}/`, {
@@ -191,6 +217,8 @@ function DynamicPage() {
 										/>
 										<p key={`response_name_${index}`}>{response[id].username}  </p>
 										<span key={`response_date_${index}`}>{response[id].upload_date}</span>
+										{button && 
+										<button className={style.deleteresponsebutton} onClick={()=>deleteResponseBtnClick(id)}>刪除留言</button>}
 									</div>
 									<div className={style.responselowercontainer}>
 										<p key={`response_content_${index}`}>{response[id].response}</p>

@@ -215,7 +215,7 @@ class BillboardArticalView(APIView):
                 "message" : '刪除失敗，權限不足',
             }
             response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
-            return response 
+            return response
         data = {
             "message" : '刪除成功',
         }

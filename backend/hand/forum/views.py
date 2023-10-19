@@ -271,3 +271,36 @@ class ForumArticalAPIView(APIView):
         Discuss.objects.get(id=artical_id).delete()
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response
+
+class DeleteResponseapiView(APIView):
+    """
+    root可以刪除某篇文章的某個留言。
+    """
+    def delete(self, request):
+        """
+        刪除使用者留言
+        """
+        print(request.data)
+        try:
+            auth = get_authorization_header(request).split()
+            print(auth[1])
+            if decode_access_token(auth[1])['email'] != ROOT_EMAIL:
+                data = {
+                "message" : '刪除失敗，權限不足',
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg)
+            data = {
+                "message" : '刪除失敗，權限不足',
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response
+        print(request)              # request.data 會拿到該留言的id
+        DiscussResponse.objects.get(id=request.data).delete()
+        data = {
+            'message':'成功刪除留言',
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
