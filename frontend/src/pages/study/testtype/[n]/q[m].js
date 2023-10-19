@@ -32,7 +32,6 @@ function TestPage() {
 			ctx.drawImage(video, (video.videoWidth - 300) / 2, (video.videoHeight - 300) / 2, 300, 300, 0, 0, 300, 300);
 			const imageDataURL = canvas.toDataURL('image/png');
 			setImageBase64(imageDataURL);
-			
 			// postImagetoBackend();
 		} else {
 			console.error('Webcam video not available.');
@@ -66,10 +65,9 @@ function TestPage() {
 	}
 
 	const StartTestButtonClick = async() => {
-		router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`)
 		const access_token = localStorage.getItem('access_token');
 		try {
-			const response = await fetch(`${backedUrl}/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)}/`,{
+			const response = await fetch(`${backedUrl}/study/api/test/${n}/${parseInt(m.replace("q", ""), 10)+1}/`,{
 				method:'GET',
 				headers:{
 					'Authorization':`Bearer ${access_token}`,
@@ -80,6 +78,7 @@ function TestPage() {
 				const responseData = await response.json();
 				console.log(responseData);
 				setCheckQuestion(true);
+				router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`);
 			} else {
 				const responseData = await response.json();
 				console.log(responseData);

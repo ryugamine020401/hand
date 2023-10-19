@@ -477,13 +477,6 @@ class TestOneViews(APIView):
         """
         獲得頁面。
         """
-        # if (param2>6):
-        #         data = {
-        #             'message' : '不正確的管道連入網站',
-        #             'push' : '/study/testtype/1/q0'
-        #         }
-        #         response = JsonResponse(data, status=status.HTTP_302_FOUND)
-        #         return response
         auth = get_authorization_header(request).split()
 
         try:
@@ -503,28 +496,28 @@ class TestOneViews(APIView):
             return response
         token = auth[1]
         token_payload = decode_access_token(token)
-        if param2 == 0:
+
+        if param2 == 0: # 進到說明頁面
             try:
                 test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-                print(test_instance)
-                if test_instance.kotae_go == '':
-                    print("沒有東西")
-                    test_instance.delete()
-                    data = {
-                        'message' : '準備開始測驗...。'
-                    }
-                else:
-                    data = {
-                        'message' : '準備開始測驗...。'
-                    }
+                data = {
+                    'message' : '準備開始測驗...。'
+                }
                 instance = Test1Ans()
                 instance.user_id = UserIfm.objects.get(id=token_payload['id'])
-                print(instance)
-                instance.save()
-                response = JsonResponse(data, status = status.HTTP_200_OK)
-                return response
+                if test_instance.kotae_go == '':    # 第五題是空白的代表上次作答沒完成
+                    print('上次作答未完成。')
+                    test_instance.delete()
+                    response = JsonResponse(data, status = status.HTTP_200_OK)
+                    return response
+                else:
+                    print('已有上次作答，且已完成。開啟新的表格。')
+                    instance.save()
+                    response = JsonResponse(data, status = status.HTTP_200_OK)
+                    return response
             except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
                 print(error_msg)
+                print("進入第0頁 且 從來沒有測驗過。")
                 data = {
                     'message' : '準備開始測驗...。'
                 }
@@ -535,7 +528,7 @@ class TestOneViews(APIView):
                 instance.save()
                 response = JsonResponse(data, status = status.HTTP_200_OK)
                 return response
-
+        # 1 以後
         random_int = random.randint(1, 26)
         alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
         while 1:
@@ -546,6 +539,7 @@ class TestOneViews(APIView):
                 break
         try:
             test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            print(test_instance)
         except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
             print(error_msg)
             data = {
