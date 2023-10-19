@@ -173,7 +173,7 @@ class ForumArticalAPIView(APIView):
                 response_person['username'] = i.user_id.username
             except AttributeError as error_msg:
                 print(error_msg, 'ForumArticalAPIView')
-                userdef_instance = UserDefIfm.objects.get(user_id = 80928899)   # 預設頭貼
+                userdef_instance = UserDefIfm.objects.get(user_id = 47743479)   # 預設頭貼
                 response_person['headimagUrl'] = f'{NGINX_DOMAIN}/api/ifm{userdef_instance.headimg.url}'
                 response_person['username'] = '帳戶已刪除'
 
