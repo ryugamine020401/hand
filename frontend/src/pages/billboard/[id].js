@@ -14,7 +14,34 @@ function DynamicPage() {
 	const [title, setTitle] = useState();
 	const [content, setContent] = useState();
 	const [date, setDate] = useState();
+	const [button, setButton] = useState(false);
 	// console.log(1);
+
+	const CheckAccessToken = async() => {
+        try {
+            const access_token = await localStorage.getItem('access_token');
+            const response = await fetch(`${backedUrl}/billboard/api/rootcheck`,{
+                method:'POST',
+                headers:{
+                    'Authorization':`Bearer ${access_token}`,
+                }
+
+            });
+            if (response.status === 200) {
+                // const responseData = await response.json();
+                // console.log(responseData);
+				setButton(true);
+            } else {
+				// 不顯示按刪除文章按鈕
+				setButton(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+	useEffect(()=>{
+        CheckAccessToken();
+    },[])
 
 	const GetBillboardcontent = async () => {
 		try {
@@ -92,7 +119,10 @@ function DynamicPage() {
 						disabled
 						/>
 					</div>
-					<button className={style.deletebutton} onClick={()=>deleteContent(id)}>刪除文章</button>
+					{button &&
+						<button className={style.deletebutton} onClick={()=>deleteContent(id)}>刪除文章</button>
+					}
+					
 				</div>
 			</div>
 			
