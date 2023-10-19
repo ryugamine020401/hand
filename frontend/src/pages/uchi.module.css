@@ -84,6 +84,11 @@
 }
 .lowercontainer div.discusscontainer img.discusslock{
     opacity: 0;
+    position: absolute;
+    z-index: 6;
+    width: 150px;
+    height: 100px;
+    bottom:50px;
 }
 
 .studycontainer{
@@ -98,7 +103,13 @@
 }
 .lowercontainer div.studycontainer img.studylock{
     opacity: 0;
+    position: absolute;
+    z-index: 6;
+    width: 150px;
+    height: 100px;
+    bottom:50px;
 }
+
 .informationcontainer{
     
     display: flex;
