@@ -41,6 +41,8 @@ ALLOWED_HOSTS = [
     config('NGINX_IP')
 ]
 
+ROOT_ID=config('ROOT_ID')
+
 # 上傳圖片需要的網址
 MEDIA_URL = '/getmedia/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

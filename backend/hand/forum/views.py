@@ -18,7 +18,7 @@ from reg.views import decode_access_token
 from ifm.models import UserDefIfm
 from forum.models import Discuss, DiscussResponse
 
-from hand.settings import ROOT_EMAIL, NGINX_DOMAIN
+from hand.settings import ROOT_EMAIL, NGINX_DOMAIN, ROOT_ID
 
 # Create your views here.
 # ------------------------- root驗證裝飾器 ------------------------------
@@ -173,7 +173,7 @@ class ForumArticalAPIView(APIView):
                 response_person['username'] = i.user_id.username
             except AttributeError as error_msg:
                 print(error_msg, 'ForumArticalAPIView')
-                userdef_instance = UserDefIfm.objects.get(user_id = 47743479)   # 預設頭貼
+                userdef_instance = UserDefIfm.objects.get(user_id = ROOT_ID)   # 預設頭貼
                 response_person['headimagUrl'] = f'{NGINX_DOMAIN}/api/ifm{userdef_instance.headimg.url}'
                 response_person['username'] = '帳戶已刪除'
 

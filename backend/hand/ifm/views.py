@@ -257,7 +257,7 @@ class UserWordCardAPIView(APIView):
         wordcard_db = UseWordCard.objects.filter(user_id=user_id)
 
         ## ###################### test ######################
-        # wordcard_db = UseWordCard.objects.filter(user_id=80928899)
+        # wordcard_db = UseWordCard.objects.filter(user_id=ROOT_ID)
         ## ###################### test ######################
         card_url_list = []
         card_url_diec = {}

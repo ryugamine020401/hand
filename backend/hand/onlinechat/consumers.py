@@ -14,7 +14,7 @@ from reg.forms import LoginForm, EmailCheckForm
 from reg.models import UserIfm
 from reg.views import decode_access_token
 from ifm.models import UserDefIfm
-
+from hand.settings import ROOT_ID
 
 from asgiref.sync import async_to_sync
 # ------------------------- 登入驗證裝飾器 ------------------------------
@@ -90,15 +90,15 @@ class ChatConsumer(WebsocketConsumer):
         except UserDefIfm.DoesNotExist as error_msg:    # pylint: disable=E1101
             print(error_msg, "1")
             username = "匿名"
-            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
+            headimg = UserDefIfm.objects.get(user_id=ROOT_ID).headimg
         except KeyError as error_msg:
             print(error_msg, "沒有登入。")
             username = "我沒有登入"
-            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
+            headimg = UserDefIfm.objects.get(user_id=ROOT_ID).headimg
         except rest_framework.exceptions.AuthenticationFailed as error_msg:
             print(error_msg)
             username = "我沒有登入"
-            headimg = UserDefIfm.objects.get(user_id=47743479).headimg
+            headimg = UserDefIfm.objects.get(user_id=ROOT_ID).headimg
 
         message = text_data_json['message']
         print(text_data_json)
