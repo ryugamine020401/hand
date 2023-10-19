@@ -70,3 +70,19 @@
     cursor: pointer;
     background-color: rgb(155, 155, 141); 
 }
+
+.deletebutton{
+    position: absolute;
+    margin-left: 16rem;
+    background-color: #0e91ae;
+    border: none;
+    width: 5rem;
+    height: 2rem;
+    border-radius: 30px;
+    z-index: 999;
+}
+
+.deletebutton:hover{
+    cursor: pointer;
+    background-color: #09677c;
+}

@@ -177,12 +177,48 @@ class BillboardArticalView(APIView):
         獲得發送的頁面。
         """
         print(artical_id)
-        instance = Billboard.objects.get(id=artical_id)
+        try:
+            instance = Billboard.objects.get(id=artical_id)
+        except Billboard.DoesNotExist as errer_msg: # pylint: disable=E1101
+            print(errer_msg, request)
+            data = {
+                "message" : '無此資源',
+                "redirect" : '/billboard'
+            }
+            response = JsonResponse(data, status=status.HTTP_302_FOUND)
+            return response
         data = {
             "message" : '成功獲取',
             "title" : instance.title,
             "content" : instance.content,
             "date" : instance.upload_date,
         }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+
+    def delete(self, request, artical_id):
+        """
+        root權限刪除文章。
+        """
+        try:
+            auth = get_authorization_header(request).split()
+            print(auth[1])
+            if decode_access_token(auth[1])['email'] != ROOT_EMAIL:
+                data = {
+                "message" : '刪除失敗，權限不足',
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg)
+            data = {
+                "message" : '刪除失敗，權限不足',
+            }
+            response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            return response 
+        data = {
+            "message" : '刪除成功',
+        }
+        Billboard.objects.get(id=artical_id).delete()
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response

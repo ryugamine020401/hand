@@ -27,6 +27,9 @@ function DynamicPage() {
 				setTitle(responseData.title);
 				setDate(responseData.date);
 				setContent(responseData.content);
+			} else if(response.status === 302) {
+				const responseData = await response.json();
+				router.push(responseData.redirect);
 			} else {
 				const responseData = await response.json();
 				console.log(responseData);
@@ -35,7 +38,31 @@ function DynamicPage() {
 			console.error(error);
 		}
 	}
+	const deleteContent = async(contentId)=>{
+		console.log(contentId);
+		const access_token = localStorage.getItem('access_token');
+		const response = await fetch(`${backedUrl}/billboard/api/${contentId}/`, {
+			method:'DELETE',
+			body:JSON.stringify(contentId),
+			headers:{
+				'Authorization':`Bearer ${access_token}`,
+				'Content-Type':'application/json'
+			}
+		});
 
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData.message);
+				router.push('/billboard');
+			} else {
+				const responseData = await response.json();
+				console.log(responseData.message);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
     useEffect(()=>{
 		GetBillboardcontent();
@@ -65,6 +92,7 @@ function DynamicPage() {
 						disabled
 						/>
 					</div>
+					<button className={style.deletebutton} onClick={()=>deleteContent(id)}>刪除文章</button>
 				</div>
 			</div>
 			

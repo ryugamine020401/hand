@@ -24,11 +24,13 @@
     justify-content: center;
     color: black;
     background-color: rgba(234, 236, 238, 0.466);
+    position: relative;
 }
 
 .Billboardlinkcontainer:hover {
     
     background-color: rgba(137, 137, 138, 0.466);
+    
 }
 
 .button {
