@@ -2,11 +2,13 @@ import style from '@/pages/study/css/uploadteachimage.module.css';
 import { useEffect, useState } from 'react';
 import LoginState from '@/components/loginstate';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 export default function UploadTeachImage() {
     const backendurl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [describe, setDescribe] = useState('');
     const [img, setBase64img] = useState();
+    const router = useRouter();
     console.log("載入");
 
     const CheckAccessToken = async() => {
@@ -65,6 +67,8 @@ export default function UploadTeachImage() {
             if (response.status === 200) {
                 const responseData = await response.json();
                 console.log(responseData.message);
+                router.reload();
+                
             } else {
                 const responseData = await response.json();
                 console.log(responseData.message);

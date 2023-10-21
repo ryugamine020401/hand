@@ -23,6 +23,43 @@ function DynamicPage() {
 	// console.log(1);
 	const [button, setButton] = useState(false);
 
+	// 使用者點擊回覆的頭像，可以看到其他使用者的profile
+	const [headiImageURL, setHeadiImageURL] = useState("");
+    const [describe, setDescribe] = useState("");
+    const [username, setUsername] = useState("");
+	const [anotherUserClick, setAnotherUserClick] = useState(false);
+
+	const GetAnotherUserProfile = async(username) => {
+		const response = await fetch(`${backedUrl}/ifm/api/getanothoruserprofile`, {
+			method:'POST',
+			body:JSON.stringify(username),
+			headers:{
+				'Content-Type':'application/json',
+			}
+		});
+
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData);
+				setHeadiImageURL(responseData.headiImageURL);
+				setDescribe(responseData.describe);
+				setUsername(responseData.username);
+				setAnotherUserClick(true);
+			} else {
+				const responseData = await response.json();
+				console.log(responseData);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	const closeProfile = () =>{
+		setAnotherUserClick(false);
+	} 
+
+
 	const CheckAccessToken = async() => {
         try {
             const access_token = await localStorage.getItem('access_token');
@@ -189,6 +226,7 @@ function DynamicPage() {
 							src = {articalheadimage}
 							width={80}
 							height={80}
+							onClick={()=>GetAnotherUserProfile(authorname)}
 						/>
 						<p>{authorname}</p>
 						<h6>{date}</h6>
@@ -203,6 +241,24 @@ function DynamicPage() {
 						/>
 					</div>
 				</div>
+				{anotherUserClick && <div className={style.mask} onClick={()=>closeProfile()}></div>}
+				{anotherUserClick &&
+				<div className={style.profilecard}>
+                    <div className={style.imagecontainer}>
+                        <img
+                            src={ headiImageURL }
+                            alt="頭圖"
+                            height={45}
+                            width={45}
+                            priority
+                        />
+                    </div>
+                    <div className={style.textcontainer}>
+                        <div className={style.username}><span style={{fontSize:'30px'}}>{ username }</span></div>
+                        <div className={style.describe}><textarea defaultValue={describe} disabled/></div>
+                    </div>
+                </div>}
+
 				<div className={style.responseArea}>
 					{response && 
 						<div className='response'>
@@ -214,6 +270,7 @@ function DynamicPage() {
 											width = {50}
 											height = {50}
 											src = {response[id].headimagUrl}
+											onClick={()=>GetAnotherUserProfile(response[id].username)}
 										/>
 										<p key={`response_name_${index}`}>{response[id].username}  </p>
 										<span key={`response_date_${index}`}>{response[id].upload_date}</span>

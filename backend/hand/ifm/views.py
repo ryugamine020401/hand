@@ -308,3 +308,28 @@ class UserWordCardAPIView(APIView):
 
 
 # -------------------------- 獲得使用者個人字卡API -----------------------
+
+# -------------------------- 獲得其他使用者資訊的API -----------------------
+class GetAnotherUserProfileAPIView(APIView):
+    """
+    可以獲得其他使用者的個人資訊
+    """
+    def post(self, request):
+        """
+        只要使用者點擊，就可以獲得其他使用者的資訊。
+        """
+        username = request.data
+        print(username)
+        user_id = UserIfm.objects.get(username=username).id
+        instance = UserDefIfm.objects.get(user_id=user_id)
+        headimageurl = f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
+        data = {
+            'message':'成功獲得其他使用者的資訊。',
+            'headiImageURL':headimageurl,
+            'username':username,
+            'describe':instance.describe
+        }
+
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+# -------------------------- 獲得其他使用者資訊的API -----------------------
