@@ -9,7 +9,7 @@ class UserIfm(models.Model):
     使用者基本的資料，驗證狀況。
     """
     email = models.EmailField(blank=False, max_length=100, primary_key=True)
-    username = models.CharField(max_length=30)
+    username = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=256)
     id = models.IntegerField(default=0, unique=True)
     validation = models.BooleanField(default=False)

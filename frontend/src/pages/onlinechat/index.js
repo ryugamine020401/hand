@@ -3,6 +3,7 @@ import Style from '@/pages/onlinechat/css/index.module.css';
 import LoginState from '@/components/loginstate';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import Image from 'next/image';
 
 const Lobby = () => {
     const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -123,7 +124,7 @@ const Lobby = () => {
 			{anotherUserClick &&
 			<div className={Style.profilecard}>
 				<div className={Style.imagecontainer}>
-					<img
+					<Image
 						src={ headiImageURL }
 						alt="頭圖"
 						height={45}

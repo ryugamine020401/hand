@@ -211,6 +211,11 @@ class RegisterView(APIView):
                 'message' : '帳號已經存在'
             }
             return JsonResponse(data, status=status.HTTP_409_CONFLICT)
+        if UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`username`="{request.data["username"]}");'):
+            data = {
+                'message' : '使用者名稱已經存在'
+            }
+            return JsonResponse(data, status=status.HTTP_409_CONFLICT)
         while True:   # 生成一個8位不重複的id
             tmp = int("".join(random.choices("0123456789", k=8)))   # 生成一個8位的數字
             if UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{tmp}");'):
