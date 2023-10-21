@@ -13,12 +13,52 @@ const Lobby = () => {
     const router = useRouter();
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 
-  useEffect(() => {
-    let socket = new WebSocket(`${socketUrl}/ws/socket-server/`);
+	// 使用者點擊回覆的頭像，可以看到其他使用者的profile
+	const [headiImageURL, setHeadiImageURL] = useState("");
+    const [describe, setDescribe] = useState("");
+    const [username, setUsername] = useState("");
+	const [anotherUserClick, setAnotherUserClick] = useState(false);
 
-    socket.onopen = () => {
-      console.log('WebSocket connected');
-    };
+	const GetAnotherUserProfile = async(username) => {
+		if (username === '我沒有登入') {
+			return;
+		}
+		const response = await fetch(`${backedUrl}/ifm/api/getanothoruserprofile`, {
+			method:'POST',
+			body:JSON.stringify(username),
+			headers:{
+				'Content-Type':'application/json',
+			}
+		});
+
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData);
+				setHeadiImageURL(responseData.headiImageURL);
+				setDescribe(responseData.describe);
+				setUsername(responseData.username);
+				setAnotherUserClick(true);
+			} else {
+				const responseData = await response.json();
+				console.log(responseData);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	const closeProfile = () =>{
+		setAnotherUserClick(false);
+	} 
+
+
+    useEffect(() => {
+      let socket = new WebSocket(`${socketUrl}/ws/socket-server/`);
+
+      socket.onopen = () => {
+        console.log('WebSocket connected');
+      };
 
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data);
@@ -78,13 +118,32 @@ const Lobby = () => {
 		/>
     
 		<div className={Style.pagecontainer}>
-      <button className={Style.repagebtn} onClick={()=>router.push('../uchi ')}>上一頁</button>
+      	<button className={Style.repagebtn} onClick={()=>router.push('../uchi ')}>上一頁</button>
+		  	{anotherUserClick && <div className={Style.mask} onClick={()=>closeProfile()}></div>}
+			{anotherUserClick &&
+			<div className={Style.profilecard}>
+				<div className={Style.imagecontainer}>
+					<img
+						src={ headiImageURL }
+						alt="頭圖"
+						height={45}
+						width={45}
+						priority
+					/>
+				</div>
+				<div className={Style.textcontainer}>
+					<div className={Style.username}><span style={{fontSize:'30px'}}>{ username }</span></div>
+					<div className={Style.describe}><textarea defaultValue={describe} disabled/></div>
+				</div>
+			</div>}
 			<form className={Style.textarea}>
 				<div className={Style.messages} ref={messagesRef}>
 				{messages.map((data, index) => (
 					<div className={Style.chat_container} key={index}>
 						<div className={Style.uppercontainer}>
-							<img className={Style.headimg} src={`${backedUrl}/ifm${data.headimg}`} alt="User Avatar" />
+							<img className={Style.headimg} src={`${backedUrl}/ifm${data.headimg}`} alt="User Avatar" 
+								onClick={()=>GetAnotherUserProfile(data.username)}
+							/>
 							<p className={Style.user_name}>{data.username}</p>
 						</div>
 						<div className={Style.lowercontainer}>
