@@ -45,18 +45,18 @@ export default function Home(){
         './study':'學習中心', 
         './ifm':'個人資訊'}
     
-    // console.log('Data >>', {resource})
+    // // console.log('Data >>', {resource})
 
     const redirectDivClick = (url) =>{
         router.push(url);
-        console.log(url);
+        // console.log(url);
     }
     useEffect(()=>{
         const access_token = localStorage.getItem('access_token');
         if (access_token === null) {
-            console.log('沒登入');
+            // console.log('沒登入');
         } else {
-            console.log('有登入');
+            // console.log('有登入');
             setLoginCheck(true);
         }
 

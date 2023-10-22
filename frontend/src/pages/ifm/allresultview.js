@@ -25,13 +25,13 @@ export default function AllResultView(){
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 setHeaderImageUrl(responseData.headimageurl);
                 setResult(responseData.resultScore1);
                 setStart1(responseData.start1);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error);

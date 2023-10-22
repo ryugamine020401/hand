@@ -22,14 +22,14 @@ export default function SendBillboard() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 router.push('../uchi')
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
@@ -38,7 +38,7 @@ export default function SendBillboard() {
         try {
             const access_token = localStorage.getItem('access_token');
             if (!content.trim() || !title.trim()) {
-                console.log('不能發送空白的公告.');
+                // console.log('不能發送空白的公告.');
                 return;
             }
             const response = await fetch(`${backedUrl}/billboard/api/send`,{
@@ -51,12 +51,12 @@ export default function SendBillboard() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 router.push('./');
                 
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error);

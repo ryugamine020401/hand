@@ -28,7 +28,7 @@ function UserWordCard(){
             if(response.status === 200){
                 const responseData = await response.json();
                 router.reload();
-                console.log(responseData);
+                // console.log(responseData);
             } else if(response.status === 403) {
                 localStorage.clear('access_token');
                 localStorage.clear('refresh_token');
@@ -36,12 +36,12 @@ function UserWordCard(){
                 router.push('/reg/login');
             }else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
-        console.log(key);
+        // console.log(key);
     }
 
     const checkAcccesstoken = () => {
@@ -65,18 +65,18 @@ function UserWordCard(){
             });
             if (response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData);
-                console.log(responseData.image_url_array);
-                console.log(responseData.image_url_json);
+                // console.log(responseData);
+                // console.log(responseData.image_url_array);
+                // console.log(responseData.image_url_json);
                 // setUserWordcardURL(responseData.image_url_array);
                 setUserWordcardURL2(responseData.image_url_json);
                 
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
     useEffect(()=>{
@@ -89,7 +89,7 @@ function UserWordCard(){
         //     if (isMounted) {
         //         // 確保元件仍然掛載
         //         await getWordcardInitial();
-        //         await console.log(userWordcardURL2);
+        //         await // console.log(userWordcardURL2);
         //     }
         // };
 

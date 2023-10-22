@@ -42,13 +42,13 @@ export default function Valemail({email}){
             });
             if( response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 router.push('../uchi');
                 // localStorage.clear('access_token');
                 // localStorage.clear('refresh_token');
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 setErrorMessage(responseData.message);
                 if (response.status === 403){
                     localStorage.clear('access_token');
@@ -57,7 +57,7 @@ export default function Valemail({email}){
                 }
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
 
     }
@@ -81,11 +81,11 @@ export default function Valemail({email}){
 
             if(response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 if (response.status === 401) {
                     router.push('./login');
                 }

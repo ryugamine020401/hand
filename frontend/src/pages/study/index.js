@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 
 export default function Studyindex() {
     const router = useRouter();
-    console.log('default');
+    // console.log('default');
     const {page} = router.query;
     const pageNumber = page ? parseInt(page, 10) : 1;
     const resource = {
@@ -42,7 +42,6 @@ export default function Studyindex() {
     return(
     
         <>
-        {console.log('return')}
             <Head><title>學習資源</title></Head>
             <LoginState
                     profilePath="../ifm"

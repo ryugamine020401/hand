@@ -36,17 +36,17 @@ export default function OverlayBox ({ profilePath, resetPasswordPath, logoutPath
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 setSendbillboardURL(`${frontendURL}/billboard/send`);
                 setSendteachimageURL(`${frontendURL}/study/uploadteachimage`);
                 setDeleteaccountURL(`${frontendURL}/reg/deleteaccount`);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
 
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
     useEffect(()=>{

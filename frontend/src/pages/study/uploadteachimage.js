@@ -9,7 +9,7 @@ export default function UploadTeachImage() {
     const [describe, setDescribe] = useState('');
     const [img, setBase64img] = useState();
     const router = useRouter();
-    console.log("載入");
+    // console.log("載入");
 
     const CheckAccessToken = async() => {
         try {
@@ -23,14 +23,14 @@ export default function UploadTeachImage() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 router.push('../uchi')
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
@@ -41,8 +41,8 @@ export default function UploadTeachImage() {
             reader.onload = (event) => {
                 const base64Image = event.target.result; // 獲取Base64圖像數據
                 setBase64img(base64Image);
-                console.log("Base64圖像：", base64Image);
-                console.log("描述",describe);
+                // console.log("Base64圖像：", base64Image);
+                // console.log("描述",describe);
             };
             reader.readAsDataURL(file); // 開始讀取文件並觸發onload事件
         }
@@ -66,12 +66,12 @@ export default function UploadTeachImage() {
         try {
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 router.reload();
                 
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
         } catch (error) {
            console.error(error);

@@ -21,13 +21,13 @@ export default function Testresult(){
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
-                console.log(responseData['point']);
+                // console.log(responseData);
+                // console.log(responseData['point']);
                 setCorrectNum(responseData.point);
                 setDetial(responseData.detial);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error);

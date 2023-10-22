@@ -31,8 +31,8 @@ export default function CropPage() {
 		const img = new Image();
 		img.src = dataURL;
 		img.onload = () => {
-			console.log('高度：', img.height);
-			console.log('寬度：', img.width);
+			// console.log('高度：', img.height);
+			// console.log('寬度：', img.width);
 			// setOriginImageWidth(img.width);
 			// setOriginImageHeigth(img.height);
 		};
@@ -51,14 +51,14 @@ export default function CropPage() {
 		setcroppedImageDatasrc(croppedImageData);
 		setHeadimage(croppedImageData);
 		setCropEnable(false);
-		// console.log(croppedImageData);
+		// // console.log(croppedImageData);
 		
 	};
 	const uploadImage = async () =>{
 		const access_token = localStorage.getItem('access_token');
 		try {
 			// setHeadimage(croppedImageDatasrc);
-			// console.log(croppedImageDatasrc);
+			// // console.log(croppedImageDatasrc);
 			const response = await fetch(`${backedUrl}/ifm/api/reMeishi`, {
 				method:'POST',
 				body:JSON.stringify({headimage}),
@@ -69,11 +69,11 @@ export default function CropPage() {
 			});
 			if(response.status === 200){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);

@@ -40,15 +40,15 @@ export default function ForgetPassword() {
 			});
 			if(response.status === 200){
 				const responceData = await response.json();
-				console.log(responceData.message);
+				// console.log(responceData.message);
 				router.push(responceData.redirect);
 			} else {
 				/* 應該不會發生 */
 				const responceData = await response.json();
-				console.log(responceData.message);
+				// console.log(responceData.message);
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 		}
 		
 	}
@@ -111,14 +111,14 @@ export default function ForgetPassword() {
 
 		if (response.status === 200){
 			const responseData = await response.json();
-			console.log(`${responseData.message}`);
+			// console.log(`${responseData.message}`);
 			setValSuccess(true);
 		} else {
 			const responseData = await response.json();
 			setErrorMessage(responseData.message);
 		}
 	} catch (error){
-		console.log(error);
+		// console.log(error);
 	}
 
   };
@@ -146,11 +146,11 @@ export default function ForgetPassword() {
 
 		if (response.status === 200){
 			const responseData = await response.json();
-			console.log(responseData);
+			// console.log(responseData);
 
 		} else {
 			const responseData = await response.json();
-			console.log(responseData.message);
+			// console.log(responseData.message);
 			setErrorMessage(responseData.message)
 		}
     } catch (error){

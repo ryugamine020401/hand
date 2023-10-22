@@ -35,14 +35,14 @@ const Lobby = () => {
 		try {
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setHeadiImageURL(responseData.headiImageURL);
 				setDescribe(responseData.describe);
 				setUsername(responseData.username);
 				setAnotherUserClick(true);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);
@@ -58,13 +58,13 @@ const Lobby = () => {
       let socket = new WebSocket(`${socketUrl}/ws/socket-server/`);
 
       socket.onopen = () => {
-        console.log('WebSocket connected');
+        // console.log('WebSocket connected');
       };
 
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.redirect) {
-        console.log(data.redirect);
+        // console.log(data.redirect);
         window.location.href = data.redirect;
       } else if (data.type === 'chat') {
         setMessages([...messages, data]);

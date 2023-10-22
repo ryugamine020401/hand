@@ -56,13 +56,13 @@ export default function ReMeishi(){
 
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log("有");
+                // console.log("有");
                 setHeadiImageURL(responseData.headimageurl);
                 setUsername(responseData.username);
                 setDescribe(responseData.describe);
                 fetchImageAndConvertToBase64(responseData.headimageurl);
-                console.log(responseData.message);
-                console.log('預設',headimage);
+                // console.log(responseData.message);
+                // console.log('預設',headimage);
             } else if(response.status === 403){
                 
                 localStorage.clear('access_token');
@@ -70,10 +70,10 @@ export default function ReMeishi(){
                 router.push('../uchi');
             } else {
                 const responseData = await response.json();
-                console.log(responseData)
+                // console.log(responseData)
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
@@ -98,8 +98,8 @@ export default function ReMeishi(){
             const img = new Image();
             img.src = dataURL;
             img.onload = () => {
-                console.log('高度：', img.height);
-                console.log('寬度：', img.width);
+                // console.log('高度：', img.height);
+                // console.log('寬度：', img.width);
             }
 		}
 
@@ -135,11 +135,11 @@ export default function ReMeishi(){
 			});
 			if(response.status === 200){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);
@@ -151,7 +151,7 @@ export default function ReMeishi(){
         if (access_token === null){
             router.push('../uchi');
         }
-        console.log(access_token);
+        // console.log(access_token);
         getUserInformation();
     },[]);
     
@@ -159,14 +159,14 @@ export default function ReMeishi(){
     const uploadButtonClick = async () =>{
 
         if(username != "" && birthday != "" && describe != ""){
-            console.log("都有東西");
+            // console.log("都有東西");
         } else {
             alert('欄位不得為空')
-            console.log("沒有足夠的東西");
+            // console.log("沒有足夠的東西");
             return;
         }
 
-        // console.log(imageName);
+        // // console.log(imageName);
 
         try {
             const access_token = localStorage.getItem('access_token');
@@ -181,11 +181,11 @@ export default function ReMeishi(){
             });
             if(response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 router.push('./');
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
             
         } catch (error) {

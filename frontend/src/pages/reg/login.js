@@ -79,7 +79,7 @@ const handleSubmit = async (e) => {
     if (response.status === 200) {
       // 提交成功，執行你的成功操作
       const responceData = await response.json();
-      console.log(responceData['resource'])
+      // console.log(responceData['resource'])
       router.push({
         pathname: "../uchi",
         // query: { resource: JSON.stringify(responceData['resource']) }, // 通過query参數傳遞數據
@@ -91,11 +91,11 @@ const handleSubmit = async (e) => {
       // router.push("/error"); // 失敗後跳轉到 "/error" 頁面
       const errorData = await response.json();
       setErrorMessage(errorData.message); // 假設後端返回了一個包含錯誤消息的 JSON
-      console.log(data)
+      // console.log(data)
     }
   } catch (error) {
     // 處理錯誤情況
-    console.log(error)
+    // console.log(error)
   }
 
 };

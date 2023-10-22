@@ -20,7 +20,7 @@ function DynamicPage() {
 	const [articalheadimage, setArticalHeadimage] = useState();
 	const [response, setResponse] = useState();
 	const [logincheck, setLogincheck] = useState();
-	// console.log(1);
+	// // console.log(1);
 	const [button, setButton] = useState(false);
 
 	// 使用者點擊回覆的頭像，可以看到其他使用者的profile
@@ -41,14 +41,14 @@ function DynamicPage() {
 		try {
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setHeadiImageURL(responseData.headiImageURL);
 				setDescribe(responseData.describe);
 				setUsername(responseData.username);
 				setAnotherUserClick(true);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);
@@ -72,14 +72,14 @@ function DynamicPage() {
             });
             if (response.status === 200) {
                 // const responseData = await response.json();
-                // console.log(responseData);
+                // // console.log(responseData);
 				setButton(true);
             } else {
 				// 不顯示按刪除文章按鈕
 				setButton(false);
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 	useEffect(()=>{
@@ -87,7 +87,7 @@ function DynamicPage() {
     },[])
 
 	const deleteContent = async(contentId)=>{
-		console.log(contentId);
+		// console.log(contentId);
 		const access_token = localStorage.getItem('access_token');
 		const response = await fetch(`${backedUrl}/forum/api/${contentId}/`, {
 			method:'DELETE',
@@ -101,18 +101,18 @@ function DynamicPage() {
 		try {
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData.message);
+				// console.log(responseData.message);
 				router.push('/forum');
 			} else {
 				const responseData = await response.json();
-				console.log(responseData.message);
+				// console.log(responseData.message);
 			}
 		} catch (error) {
 			console.error(error);
 		}
 	}
 	const deleteResponseBtnClick = async(responseId) =>{
-		console.log(responseId);
+		// console.log(responseId);
 		const access_token = localStorage.getItem('access_token');
 		const response = await fetch(`${backedUrl}/forum/api/deleteresponse`, {
 			method:'DELETE',
@@ -126,11 +126,11 @@ function DynamicPage() {
 		try {
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData.message);
+				// console.log(responseData.message);
 				router.reload();
 			} else {
 				const responseData = await response.json();
-				console.log(responseData.message);
+				// console.log(responseData.message);
 			}
 		} catch (error) {
 			console.error(error);
@@ -144,20 +144,20 @@ function DynamicPage() {
             });
 			if (response.status === 200){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setTitle(responseData.articalTitle);
 				setDate(responseData.uploadDate);
 				setContent(responseData.articalContent);
 				setArticalHeadimage(responseData.authorImageUrl);
 				setResponse(responseData.response);
 				setAuthorname(responseData.authorname);
-				console.log(responseData.response);
+				// console.log(responseData.response);
 			} else if(response.status === 302) {
 				const responseData = await response.json();
 				router.push(responseData.redirect);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);
@@ -176,11 +176,11 @@ function DynamicPage() {
 			});
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				router.reload();
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 
 		} catch (error) {
@@ -200,7 +200,7 @@ function DynamicPage() {
     useEffect(()=>{
 		checklogin();
 		GetArticalcontent();
-		// console.log(2);
+		// // console.log(2);
     },[])
   // 根據不同的 id 值渲染不同的內容
   	return (
@@ -316,7 +316,7 @@ export default DynamicPage;
 export async function getServerSideProps(context) {
 	const { params } = context;
 	const id = params.id; // 從路由參數中獲取 id
-	// console.log(4);
+	// // console.log(4);
 	// 在伺服器端發送 GET 請求以獲取數據，然後將 id 和數據傳遞給組件
 	// 注意：這部分代碼只在伺服器端運行，而不在客戶端運行
 	return {

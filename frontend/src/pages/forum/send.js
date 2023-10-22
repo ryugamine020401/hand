@@ -18,7 +18,7 @@ export default function ReMeishi(){
         if (access_token === null){
             router.push('../uchi');
         }
-        console.log(access_token);
+        // console.log(access_token);
         
     },[]);
     
@@ -34,7 +34,7 @@ export default function ReMeishi(){
                 const allowFileType = ['.jpg', '.jpeg', '.png', '.gif', ];
                 
                 if(filenameExtension && allowFileType.includes(filenameExtension[0])){
-                    console.log('允許', filenameExtension, file.name);
+                    // console.log('允許', filenameExtension, file.name);
                     setImageName(file.name);
                     reader.onload = (Event) => {
                         const Base64Data = Event.target.result;
@@ -43,7 +43,7 @@ export default function ReMeishi(){
                 } else {
                     e.target.value = '';
                     e.preventDefault();
-                    console.log('不符合規範的副檔名', filenameExtension, filenameExtension[0]);
+                    // console.log('不符合規範的副檔名', filenameExtension, filenameExtension[0]);
                     alert('不符合規範的副檔名');
                     return;
                 }
@@ -60,14 +60,14 @@ export default function ReMeishi(){
     const uploadButtonClick = async () =>{
 
         if(contentTitle != "" && content != ""){
-            console.log("都有東西");
+            // console.log("都有東西");
         } else {
             alert('欄位不得為空')
-            console.log("沒有足夠的東西");
+            // console.log("沒有足夠的東西");
             return;
         }
 
-        console.log(imageName);
+        // console.log(imageName);
 
         try {
             const access_token = localStorage.getItem('access_token');
@@ -82,11 +82,11 @@ export default function ReMeishi(){
             });
             if(response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 router.push(responseData.push);
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
             
         } catch (error) {

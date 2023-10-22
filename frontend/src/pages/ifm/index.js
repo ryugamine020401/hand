@@ -33,7 +33,7 @@ export default function Ifm () {
             './ifm/card',
             './ifm/allresultview'
         ]
-        console.log(redirectlist[index]);
+        // console.log(redirectlist[index]);
         router.push(redirectlist[index]);
     }
 
@@ -49,11 +49,11 @@ export default function Ifm () {
 
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log("有");
+                // console.log("有");
                 setHeadiImageURL(responseData.headimageurl);
                 setUsername(responseData.username);
                 setDescribe(responseData.describe);
-                console.log(responseData.message);
+                // console.log(responseData.message);
             } else if(response.status === 403){
                 
                 localStorage.clear('access_token');
@@ -61,10 +61,10 @@ export default function Ifm () {
                 router.push('./uchi');
             } else {
                 const responseData = await response.json();
-                console.log(responseData)
+                // console.log(responseData)
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 

@@ -72,14 +72,14 @@ export default function ResetPassword(){
                 localStorage.clear('access_token');
                 localStorage.clear('refresh_token');
                 router.push('./login')
-                console.log(responceData);
+                // console.log(responceData);
             } else {
                 const responceData = await response.json();
-                console.log(responceData);
+                // console.log(responceData);
                 setErrorMessage(responceData.message);
             }
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
     return(

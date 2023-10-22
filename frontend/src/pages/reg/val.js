@@ -32,10 +32,10 @@ export default function CountdownTimer() {
             // 執行POST請求到指定的網址
             let validation_token = localStorage.getItem('validation_token');
             if (validation_token === null){
-                console.log('沒有token');
-                console.log(router.query);
+                // console.log('沒有token');
+                // console.log(router.query);
                 validation_token = router.query['valdation_token'];
-                console.log(validation_token);
+                // console.log(validation_token);
             }
             const response = await fetch(`${backedUrl}/reg/api/val`, {
                 
@@ -70,7 +70,7 @@ export default function CountdownTimer() {
                 // POST請求失敗，處理錯誤情況
                 const responseData = await response.json();
                 setMessage(`POST請求失敗！${responseData.message}`);
-                // console.log(responseData.message)
+                // // console.log(responseData.message)
             }
         } catch (error) {
         // 處理錯誤情況

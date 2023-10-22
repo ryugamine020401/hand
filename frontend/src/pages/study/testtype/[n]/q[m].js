@@ -51,16 +51,16 @@ function TestPage() {
 			});
 			if (response.status === 200) {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setImageBase64('');
 				router.push(`/study/testtype/${n}/q${parseInt(m.replace("q", ""), 10)+1}`);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setErrorMsg(responseData.message);	
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 		}
 	}
 
@@ -76,12 +76,12 @@ function TestPage() {
 			});
 			if (response.status === 200){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setCheckQuestion(true);
 				router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);
@@ -108,15 +108,15 @@ function TestPage() {
 		});
 		if (response.status === 200) {
 			const responseData = await response.json();
-			console.log(responseData);
+			// console.log(responseData);
 			setAns(responseData.mondai);
-			console.log(ans);
+			// console.log(ans);
 		} else {
 			const responseData = await response.json();
-			console.log(responseData);
+			// console.log(responseData);
 			if (response.status === 302) {
 				setCheckQuestion(false);
-				console.log(responseData.message);
+				// console.log(responseData.message);
 				router.push(responseData.push);
 			} else {
 				
@@ -127,12 +127,12 @@ function TestPage() {
 
 	useEffect(()=>{
 		loginstatetest();
-		console.log('一')
-		// console.log(parseInt(m.replace("q", ""), 10));
+		// console.log('一')
+		// // console.log(parseInt(m.replace("q", ""), 10));
 		if (n && m) {
 			getQueation();
-			console.log(`n: ${n}, m: ${m}`);
-			console.log(parseInt(m.replace("q", ""), 10));
+			// console.log(`n: ${n}, m: ${m}`);
+			// console.log(parseInt(m.replace("q", ""), 10));
 			setQuestionNum(parseInt(m.replace("q", ""), 10));
 		}
 		// isAllowedTransition();
@@ -177,9 +177,9 @@ function TestPage() {
 				{/* <h1>{ans}</h1> */}
 				<div className={style.illustratecontainer}>
 					<h1>測驗說明</h1>
-					<p>畫面上會出現有的字母，使用者需要開啟相機並比出相應的手勢，</p>
-					<p>比出正確手勢後，點擊 完成作答 後進入下一題。</p>
-					<p>若作答一半退出頁面會算未完成作答，無法繼續此次測驗，下次測驗會重製。</p>
+					<p>畫面上會出現有的小寫字母，使用者需要開啟相機並比出相應的手勢，</p>
+					<p>比出正確手勢後，點擊<b>完成作答</b>或<b>按下Enter鍵</b>後進入下一題。</p>
+					<p>若作答一半退出頁面視為未完成作答，此次測驗作廢，下次測驗會重置。</p>
 					<p>考試隨機出題，一共五題。</p>
 					<p>開始測驗後，系統會提示是否開啟相機，請選擇開啟。</p>
 					<p></p>

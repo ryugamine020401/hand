@@ -28,22 +28,22 @@ export default function Studyindex() {
             });
             if (response.status === 200){
                 const responseData = await response.json();
-                // console.log(responseData);
+                // // console.log(responseData);
                 setEnglishWordCard(responseData.wordcard);
-                // console.log(responseData.wordcard);
+                // // console.log(responseData.wordcard);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 setEnglishWordCard(responseData.wordcard);
             }
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
     const addUserWordCardButtonClick = async(key) =>{
-        console.log(key);
+        // console.log(key);
         const access_token = localStorage.getItem('access_token');
         try {
             const response = await fetch(`${backedUrl}/study/api/english`, {
@@ -56,7 +56,7 @@ export default function Studyindex() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 buttonenablecheck();
             } else if(response.status === 403){
                 alert('登入狀態過期。')
@@ -68,7 +68,7 @@ export default function Studyindex() {
                 setEnableCuttunClick(false);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error)
@@ -89,11 +89,11 @@ export default function Studyindex() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 setLoginButtonEnable(responseData.enablelist);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error);

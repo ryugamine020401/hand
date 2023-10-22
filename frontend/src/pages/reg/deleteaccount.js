@@ -20,19 +20,19 @@ export default function DeleaccountPage() {
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 router.push('../uchi')
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
     const deleteAccountButtonClick = async (userId) => {
-        console.log(userId);
+        // console.log(userId);
         const access_token = localStorage.getItem('access_token');
         const response = await fetch(`${backedUrl}/reg/api/deleteaccount`,{
             method:"POST",
@@ -45,11 +45,11 @@ export default function DeleaccountPage() {
         try {
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
                 router.reload();
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
         } catch (error) {
             console.error(error);
@@ -67,12 +67,12 @@ export default function DeleaccountPage() {
         try {
             if (response.status === 200) {
                 const responseData = await response.json();
-                console.log(responseData.message);
-                console.log(responseData.alluserlist);
+                // console.log(responseData.message);
+                // console.log(responseData.alluserlist);
                 setUserinstance(responseData.alluserlist);
             } else {
                 const responseData = await response.json();
-                console.log(responseData.message);
+                // console.log(responseData.message);
             }
         } catch (error) {
             console.error(error);

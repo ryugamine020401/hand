@@ -20,11 +20,11 @@ export default function Billboard(){
 
             if (response.status === 200){
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
                 setTitle(responseData.title);
             } else {
                 const responseData = await response.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error)

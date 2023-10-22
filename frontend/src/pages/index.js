@@ -14,7 +14,7 @@ export const getServerSideProps = () =>{
 }
 export default function Home() {
   const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  console.log(backedUrl);
+  // console.log(backedUrl);
   return (
     <>
       <Head>

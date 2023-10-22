@@ -29,7 +29,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
         
     }
     const jumpMenu = () => {
-        console.log(showOverlay)
+        // console.log(showOverlay)
         setShowOverlay(!showOverlay)
     }
     const sendPostRequest = async () => {  
@@ -47,8 +47,8 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
             if (response.status === 200){
                 // 驗證成功，具有登入狀態。
                 const responseData = await response.json();
-                //console.log(responseData.loginstatus);
-                //console.log(responseData.headimgurl);
+                //// console.log(responseData.loginstatus);
+                //// console.log(responseData.headimgurl);
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
                 setHeadImgURL(responseData.headimgurl);
@@ -56,18 +56,18 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                 // 驗證失敗，無登入狀態或過期。
                 const responseData = await response.json();
                 if (response.status === 403){
-                    console.log(responseData.detail);
+                    // console.log(responseData.detail);
                     setButtommsg("登入");
                     const currentURL = window.location.href;
-                    console.log('網址是:', currentURL);
+                    // console.log('網址是:', currentURL);
                     localStorage.clear('access_token');
                     localStorage.clear('refresh_token');
                     
                     
                 } else if (response.status === 401) {
-                    console.log(responseData.message, '帳號沒有驗證');
+                    // console.log(responseData.message, '帳號沒有驗證');
                     const nowUrlpath = router.pathname;
-                    console.log(nowUrlpath);
+                    // console.log(nowUrlpath);
                     if (nowUrlpath === '/reg/valemail') {
                         
                     } else {
@@ -76,7 +76,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
                     
                     
                 } else {
-                    console.log(responseData.message)
+                    // console.log(responseData.message)
                 }
                 setLogincheck(responseData.loginstatus);
                 setButtommsg(responseData.buttom_word);
@@ -85,8 +85,8 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
             }
         } catch(error) {
             
-            console.log('有錯');
-            console.log(error);
+            // console.log('有錯');
+            // console.log(error);
             
         }
 
@@ -94,7 +94,7 @@ export default function LoginState({children, profilePath, resetPasswordPath, lo
 
     const goHomeFunvrion = () =>{
         const nowUrlpath = router.pathname;
-        console.log(nowUrlpath);
+        // console.log(nowUrlpath);
         if (nowUrlpath === '/uchi') {
             
         } else {
