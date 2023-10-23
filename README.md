@@ -8,13 +8,59 @@
     並達成引人入勝的效果。
 ```
 # 開啟專案方式
-**開發環境**
+**開發環境版本**
 * Ucuntu20.04
 * Python 3.8.10
 * npm 10.2.0
 * node v18.17.1
-
+* MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
 ... 詳細套件內容至前後端目錄底下[開發環境]()查看
+
+# 畫面預覽
+## 未登入
+![未登入主頁](Previewpage/homepage.png)
+![未登入學習中心字卡頁](Previewpage/image.png)
+![未登入討論區](Previewpage/image-1.png)
+![未登入聊天室](Previewpage/image-2.png)
+![未登入登入頁](Previewpage/image-3.png)
+![未登入註冊](Previewpage/image-4.png)
+![未登入忘記密碼](Previewpage/image-5.png)
+![未登入忘記密碼1](Previewpage/image-6.png)
+![未登入忘記密碼2](Previewpage/image-7.png)
+![未登入驗證1](Previewpage/image-8.png)
+![未登入驗證2](Previewpage/image-9.png)
+
+
+## 已登入
+![主頁](Previewpage/image-12.png)
+![選單](Previewpage/image-19.png)
+![學習中心_字卡](Previewpage/image-13.png)
+![修改密碼](Previewpage/image-20.png)
+![個人資訊](Previewpage/image-21.png)
+![修改個資](Previewpage/image-22.png)
+![個人字卡](Previewpage/image-23.png)
+![成績總覽](Previewpage/image-24.png)
+![Alt text](Previewpage/study.png)
+![測驗](Previewpage/image-14.png)
+![測驗內](Previewpage/image-16.png)
+![測驗結果](Previewpage/image-15.png)
+![討論區](Previewpage/image-17.png)
+![討論區內文](Previewpage/image-11.png)
+![討論區發表](Previewpage/image-18.png)
+![線上聊天](Previewpage/image-25.png)
+![線上聊天其他使用者資訊](Previewpage/image-26.png)
+> 討論區、線上聊天室都有可以查看其他使用者個人字卡的功能
+
+![布告欄](Previewpage/image-27.png)
+![布告欄內容](Previewpage/image-28.png)
+
+## 管理員才有的頁面
+![可刪除文章](Previewpage/image-29.png)
+![可刪除回覆](Previewpage/image-30.png)
+![特殊的選單](Previewpage/image-31.png)
+![發布公告](Previewpage/image-32.png)
+![上船學習資源](Previewpage/image-33.png)
+![刪除使用者](Previewpage/image-34.png)
 
 ## 前端
 1. 進入 **前端** 目錄
