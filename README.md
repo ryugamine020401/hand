@@ -68,12 +68,21 @@
         sudo docker run -it -p <host port>:3000 nextjs
         ```
         > 檢查看有沒有正常開啟
-4. 啟動phpmyadmin容器
+5. 啟動phpmyadmin容器
     ```
     sudo docker run --name phpmyadmin -it --link <contianer name>:db -p <host port>:80 phpmyadmin
     ```
     > 不用加入相同的後端網路就可以，只要設定好mysql容器的名稱
-5. 設定nginx
+6. 安裝redis
+    * 先讓redis的容器跑起來
+        ```
+        sudo docker run -it --name redis -p 9999:6379 redis
+        ```
+    * 設定redis的網路，把他加到自己設定的docker網路中
+        ```
+        sudo docker network connect backend-net redis
+        ```
+7. 設定nginx
     * 更新
         ```
         sudo apt update
@@ -159,8 +168,8 @@ server {
 }
 
 ```
-6. 安裝redis
-待補...
+
+
 
 # 畫面預覽
 ## 未登入
