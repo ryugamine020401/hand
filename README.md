@@ -15,6 +15,146 @@
 * node v18.17.1
 * MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
 ... 詳細套件內容至前後端目錄底下[開發環境]()查看
+## 透過Docker
+先下載相對應的image
+1. 先建立一個自己的Docker網路
+    ```
+    sudo docker network create --driver backend-net 
+    ```
+    > backend-net 可替換成自己設定的網路名稱
+
+2. 啟動MySQL的容器
+    * 拉取官方的images
+        ```
+        sudo docker pull mysql:8.0.34
+        ```
+    * 容器啟動
+        ```
+        docker run -d -p <本機 port>:3306 --name <contianer name> -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34
+        ```
+    > 可以直接在這邊加入 --network
+    * 進入容器
+        ```
+        sudo docker exec -it <container name> bash
+        ```
+    * 設定相關database資料
+        ```
+        mysql -u root -p
+        ```
+        > 需要輸入剛剛開啟容器的密碼
+    * 連接剛剛建立的網路
+        ```
+        sudo docker network connect <net name> <contianer name>
+        ```
+        > 如果啟動容器已經加入過就不用了
+3. 啟動後端的容器
+    * 先在本地建立images
+        ```
+        sudo docker build -t django .
+        ```
+        > 需要設定好.env
+    * 啟動容器
+        ```
+        sudo docker run -it -p <host port>:8000 django --net backend-net
+        ```
+        > 檢查看有沒有正常開啟
+4. 啟動phpmyadmin容器
+    ```
+    sudo docker run --name phpmyadmin -it --link <contianer name>:db -p <host port>:80 phpmyadmin
+    ```
+    > 不用加入相同的後端網路就可以，只要設定好mysql容器的名稱
+5. 設定nginx
+    * 更新
+        ```
+        sudo apt update
+        ```
+    * 安裝nginx
+        ```
+        sudo apt install nginx
+        ```
+    * 前往安裝路徑
+        ```
+        cd /etc/nginx/conf.d
+        ```
+    * 建立一個存放SSL憑證的地方
+        ```
+        mkdir SSL
+        ```
+    * 建立設定檔
+        ```
+        sudo nano default.conf
+        ```
+* 根據需求使用以下格式設定
+
+```nginx=
+upstream backend {
+    server localhost:<your backend port>;
+}
+upstream frontend {
+    server localhost:<your frontend port>;
+}
+
+server {
+    listen <your nginx port> ssl;
+    listen [::]:<your nginx port> ssl;
+    server_name <server domain name>;
+
+    ssl_certificate /etc/nginx/conf.d/SSL/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/nginx/conf.d/SSL/nginx-selfsigned.key;
+    
+    location /api {
+        proxy_pass http://backend;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1; 
+    }
+
+    location /ws {
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-Ip $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Nginx-Proxy true;
+        proxy_redirect off;
+        client_max_body_size 10m;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 300s;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+        
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    gzip on;
+    gzip_proxied any;
+    gzip_types application/javascript application/x-javascript text/css text/javascript;
+    gzip_comp_level 5;
+    gzip_buffers 16 8k;
+    gzip_min_length 256; 
+    location / {
+        proxy_pass http://frontend; 
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_redirect http:// https://;
+    }
+}
+
+```
+6. 安裝redis
+待補...
+
+
+
+
 
 # 畫面預覽
 ## 未登入
