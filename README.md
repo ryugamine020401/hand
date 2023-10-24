@@ -18,7 +18,7 @@
 ## 透過Docker
 1. 先建立一個自己的Docker網路
     ```
-    sudo docker network create --driver backend-net 
+    sudo docker network create --driver bridge backend-net 
     ```
     > backend-net 可替換成自己設定的網路名稱
 
@@ -29,12 +29,14 @@
         ```
     * 容器啟動
         ```
-        docker run -d -p <本機 port>:3306 --name <contianer name> -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34
+        docker run -d -p <本機 port>:3306 --name mysql -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34
         ```
-    > 可以直接在這邊加入 --network
+        >
+        >   ```docker run -d -p <本機 port>:3306 --name <容器name> -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34```
+        >
     * 進入容器
         ```
-        sudo docker exec -it <container name> bash
+        sudo docker exec -it mysql bash
         ```
     * 設定相關database資料
         ```
@@ -43,9 +45,9 @@
         > 需要輸入剛剛開啟容器的密碼
     * 連接剛剛建立的網路
         ```
-        sudo docker network connect <net name> <contianer name>
+        sudo docker network connect backend-net mysql
         ```
-        > 如果啟動容器已經加入過就不用了
+        > ```sudo docker network connect <net name> <contianer name>```
 3. 啟動後端的容器
     * 先在本地建立images
         ```
@@ -54,9 +56,14 @@
         > 需要設定好.env
     * 啟動容器
         ```
-        sudo docker run -it -p <host port>:8000 django --net backend-net
+        sudo docker run -it -p <host port>:8000 django --name backend
         ```
         > 檢查看有沒有正常開啟
+    * 連接剛剛建立的網路
+        ```
+        sudo docker network connect backend-net backend
+        ```
+        > ```sudo docker network connect <net name> <contianer name>```
 4. 啟動前端容器
     * 先在本地建立images
         ```
