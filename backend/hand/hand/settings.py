@@ -138,7 +138,7 @@ DATABASES = {
         'NAME': config('DB_NAME'),                         #資料庫名稱               
         'USER': 'root',                       #這裡用最高權限管理員
         'PASSWORD': config('DB_PASSWORD'),            #你的密碼
-        'HOST': '',                           #空白預設為localhost
+        'HOST': config('DB_HOST'),                           #空白預設為localhost
         'PORT': config('DB_PORT'),            #空白預設為DB port
     }
 }
@@ -205,7 +205,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(config('REDIS_HOST'), config('REDIS_PORT'))],
         },
     },
 }
