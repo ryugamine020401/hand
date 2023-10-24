@@ -16,7 +16,6 @@
 * MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
 ... 詳細套件內容至前後端目錄底下[開發環境]()查看
 ## 透過Docker
-先下載相對應的image
 1. 先建立一個自己的Docker網路
     ```
     sudo docker network create --driver backend-net 
@@ -151,10 +150,6 @@ server {
 ```
 6. 安裝redis
 待補...
-
-
-
-
 
 # 畫面預覽
 ## 未登入
