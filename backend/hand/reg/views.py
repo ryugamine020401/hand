@@ -803,11 +803,23 @@ class EmailReSendView(APIView):
             }
             response = JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
             return response
-
+        user = UserIfm.objects.raw(f'SELECT * FROM `reg_userifm`WHERE(`id`="{user_id}");')[0]
+        payload = {
+            'email' : user.email,
+            'val1' : user.validation_num,   # 驗證6碼
+            'val2' : user.validation,       # 狀態
+            'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=7),
+            'iat' : datetime.datetime.utcnow(),
+        }
+        validaton_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         email_template = render_to_string(
             './signup_success_email.html',
-            {'username': instance.username,
-                'validation_num' : instance.validation_num}
+            {
+                'username': user.username,
+                'validation_num' : user.validation_num,
+                'validaton_token': validaton_token,
+                'nginx_domain' : NGINX_DOMAIN
+            }
         )
         email = EmailMessage(
             '註冊成功通知信',  # 電子郵件標題
@@ -817,6 +829,19 @@ class EmailReSendView(APIView):
         )
         email.content_subtype = "html"
         email.fail_silently = False
+        # email_template = render_to_string(
+        #     './signup_success_email.html',
+        #     {'username': instance.username,
+        #         'validation_num' : instance.validation_num}
+        # )
+        # email = EmailMessage(
+        #     '註冊成功通知信',  # 電子郵件標題
+        #     email_template,  # 電子郵件內容
+        #     settings.EMAIL_HOST_USER,  # 寄件者
+        #     [instance.email]  # 收件者
+        # )
+        # email.content_subtype = "html"
+        # email.fail_silently = False
         try:
             email.send()
         except OSError as error_msg:

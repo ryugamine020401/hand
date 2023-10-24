@@ -88,12 +88,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    config('FONTEND_ORIGIN'),  # 允許的前端源頭
-    config('FONTEND_ORIGIN2'),  # 允許的前端源頭
-    config('FONTEND_ORIGIN3'),  # 允許的前端源頭
-]
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
