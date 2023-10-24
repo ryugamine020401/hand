@@ -8,10 +8,11 @@ class OlineChatroom(models.Model):
     """
     英文測驗的題目，
     """
-    id = models.IntegerField(primary_key=True)
-    context = models.TextField()
-    user = models.ForeignKey('reg.UserIfm', to_field='id', on_delete=models.CASCADE, related_name='onlinechat_user')
-    context_img = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
+    message = models.TextField()
+    username = models.CharField(max_length=100, default='我沒有登入')
+    message_img = models.CharField(max_length=100)
+    objects = models.Manager()
 
     class META:
         """

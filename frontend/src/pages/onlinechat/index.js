@@ -20,7 +20,34 @@ const Lobby = () => {
     const [username, setUsername] = useState("");
 	const [anotherUserClick, setAnotherUserClick] = useState(false);
 
+	const GetLastchat = async () => {
+		const response = await fetch(`${backedUrl}/onlinechat/api/getmessage`, {
+			method:'GET',
+		});
+		try {
+			if (response.status === 200) {
+				const responseData = await response.json();
+				console.log(responseData.content)
+				setMessages([...messages, ...responseData.content]);
+				// setMessages([...messages, responseData.content[0]]);
+				// setMessages([...messages, responseData.content[1]]);
+				// setMessages([...messages, responseData.content[2]]);
+				// setMessages([...messages, responseData.content[3]]);
+				// setMessages([...messages, responseData.content[4]]);
+			} else {
+				const responseData = await response.json();
+				// console.log(responseData);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	useEffect(()=>{
+		GetLastchat();
+	},[]);
+
 	const GetAnotherUserProfile = async(username) => {
+		/* 獲得已註冊的使用者字卡 */
 		if (username === '我沒有登入') {
 			return;
 		}
@@ -55,6 +82,7 @@ const Lobby = () => {
 
 
     useEffect(() => {
+		
       let socket = new WebSocket(`${socketUrl}/ws/socket-server/`);
 
       socket.onopen = () => {
@@ -68,6 +96,7 @@ const Lobby = () => {
         window.location.href = data.redirect;
       } else if (data.type === 'chat') {
         setMessages([...messages, data]);
+		
       }
     };
 

@@ -14,6 +14,7 @@ from reg.forms import LoginForm, EmailCheckForm
 from reg.models import UserIfm
 from reg.views import decode_access_token
 from ifm.models import UserDefIfm
+from onlinechat.models import OlineChatroom
 from hand.settings import ROOT_ID
 
 from asgiref.sync import async_to_sync
@@ -101,6 +102,11 @@ class ChatConsumer(WebsocketConsumer):
             headimg = UserDefIfm.objects.get(user_id=ROOT_ID).headimg
 
         message = text_data_json['message']
+        instance = OlineChatroom()
+        instance.message = text_data_json['message']
+        instance.username = username
+        instance.message_img = headimg
+        instance.save()
         print(text_data_json)
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,

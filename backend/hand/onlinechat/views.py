@@ -7,8 +7,7 @@
 # import cv2
 
 from django.shortcuts import render
-
-from rest_framework.response import Response
+from django.http import JsonResponse
 # from rest_framework.authentication import get_authorization_header
 from rest_framework.views import APIView
 from rest_framework import status
@@ -16,63 +15,34 @@ from rest_framework import status
 
 from reg.views import decode_access_token
 # from reg.models import UserIfm
+from onlinechat.models import OlineChatroom
 from reg.forms import LoginForm, EmailCheckForm
-
-
-# ------------------------- 登入驗證裝飾器 ------------------------------
-def loging_check(func):
-    """
-    登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-    """
-    def wrapper(req, request):
-        token = request.COOKIES.get('access_token')
-        if not token:
-            form = LoginForm()
-            payload = {
-                "form" : form,
-                "msg" : "請先登入後再執行該操作。"
-            }
-            response = Response(status=status.HTTP_200_OK)
-            html = render(request, 'login.html', payload).content.decode('utf-8')
-            response.content = html
-            return response
-        else:
-            valdation = decode_access_token(token)['val']
-            if valdation:
-                # 驗證成功，代表使用信箱已經驗證了
-                print("valdation success.")
-            else:
-                # 驗證失敗，代表使用信箱沒有驗證
-                print()
-                form = EmailCheckForm()
-                payload = {
-                    "form" : form,
-                }
-                response = Response(status=status.HTTP_200_OK)
-                html = render(request, 'valdation_email.html', payload).content.decode('utf-8')
-                response.content = html
-                return response
-
-            result = func(req, request)
-        return result
-    return wrapper
-# ------------------------- 登入驗證裝飾器 ------------------------------
 
 # -------------- 聊天室 ---------------
 def lobby(request):
     return render(request, 'lobby.html', {})
 # -------------- 聊天室 ---------------
-# -------------- 聊天室 ---------------
-# class MessagePostAPIView(APIView):
-#     """
-#     聊天室的API 
-#     """
-#     def post(self, request):
-#         pusher_client.trigger('chat', 'message', {
-#             'username':request.data['username'],
-#             'message':request.data['message']
-#         })
-#         return Response([])
 
+# -------------- 聊天室獲取前幾筆聊天紀錄 ---------------
+class GetLeastChatAPIView(APIView):
+    def get(self, request):
 
-# -------------- 聊天室 ---------------
+        last_record = OlineChatroom.objects.order_by('-id').last()
+        records = OlineChatroom.objects.order_by('id').reverse()[:5]
+        print(records)
+        messagelist = []
+        for i in records[::-1]:
+            data = {
+                'message' : i.message,
+                'headimg' : f'/getmedia/{i.message_img}',
+                'username' : i.username,
+            }
+            messagelist.append(data)
+
+        data = {
+            'message':'成功獲得資料。',
+            'content':messagelist
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+# -------------- 聊天室獲取前幾筆聊天紀錄 ---------------
