@@ -9,6 +9,8 @@
     align-items: flex-start;
 }
 
+
+
 .forumpagecontainer button{
     width: 6rem;
     height: 3rem;
@@ -38,7 +40,32 @@
     display: flex;
     flex-direction: column;
 }
-
+@media (max-width:600px) {
+    .formcontainer{
+        margin: 0 !important;
+        width: 25rem;
+        margin-top: 10rem !important;
+        height: 25rem;
+        background-color: rgba(240, 248, 255, 0.619);
+        backdrop-filter: blur(8px);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+    .formcontainer div.titlecontainer input{
+        width: 100% !important;
+    }
+    
+    .formcontainer div.contentcontainer textarea{
+        width: 100% !important;
+    }
+    .forumpagecontainer button{
+        margin: 0 !important;
+        position: relative;
+        margin-top: 30px !important;
+        left: 150%;
+    }
+}
 .formcontainer div.titlecontainer input{
     margin-top: 1rem;
     width: 26rem;
