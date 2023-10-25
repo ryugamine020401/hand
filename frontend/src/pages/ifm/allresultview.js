@@ -30,7 +30,7 @@ export default function AllResultView(){
                 const responseData = await response.json();
                 // console.log(responseData);
                 setHeaderImageUrl(responseData.headimageurl);
-                setResult(responseData.resultScore1);
+                setResult(responseData.resultScore1.toFixed(2));
                 setStart1(responseData.start1);
             } else {
                 const responseData = await response.json();
