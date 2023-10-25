@@ -11,6 +11,9 @@ export default function AllResultView(){
     const [result, setResult] = useState([]);
     const [start1Url, setStart1] = useState(5);
     const router = useRouter();
+    const gobackbuttonClick = () =>{
+        router.push('/ifm');
+    }
     const initialsetup = async() =>{
         const access_token = localStorage.getItem('access_token');
         if (access_token === null) {
@@ -98,7 +101,9 @@ export default function AllResultView(){
                         />
                     </div>
                 </div>
+                <button className={style.gobackbutton} onClick={()=>gobackbuttonClick()}>上一頁</button>
             </div>
+            
         </>
     )
 }
