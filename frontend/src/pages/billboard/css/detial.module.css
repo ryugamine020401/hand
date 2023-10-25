@@ -9,6 +9,22 @@
     padding-top: 6rem;
 }
 
+@media (max-width:600px) {
+    .detailpagecontainer {
+        
+        padding-top: 10rem  !important;
+    }
+    .lowercontainer{
+        overflow:inherit;
+        min-height: 20rem;
+        width: 20rem;
+        /* height: auto; */
+    }
+    .lowercontainer textarea{
+        width: 15rem !important;
+    }
+}
+
 .mainareacontainer {
 
 }
