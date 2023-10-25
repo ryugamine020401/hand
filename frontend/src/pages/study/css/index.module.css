@@ -8,6 +8,29 @@
     justify-content: center; */
     /* margin-top: 3.8rem; */
 }
+@media (max-width:600px) {
+    .studypagecontainer {
+        background-position: -38.6rem 0;
+    }
+    .blackboardcontainer {
+        padding-top: 3rem !important;
+        margin-left: 60px !important;
+        max-width: 30rem !important;
+    }
+    .repagebtn{
+        position: fixed;
+        left: 36% !important; 
+        top: 80% !important;
+    }
+    .blackboardcontainer div.chanhepagecontainer {
+        /* background-color: red; */
+        display: flex;
+        justify-content: flex-start !important;
+        width: 100%;
+        margin-top: 18px;
+        margin-left: 50px;
+    }
+}
 
 .blackboardcontainer {
     display: flex;
