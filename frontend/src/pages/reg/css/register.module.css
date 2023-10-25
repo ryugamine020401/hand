@@ -25,6 +25,36 @@
     border-radius: 50px;
     padding-top: 2rem;
 }
+@media (max-width:600px) {
+    .registerformcontainer {
+        border: 1px solid #000000;
+        height: 25rem;
+        width: 100vh;
+        background-color: rgba(245, 245, 245, 0.732);
+        backdrop-filter: blur(15px);
+        margin: 30;
+        border-radius: 50px;
+        padding-top: 2rem;
+    }
+    .registerformcontainer div{
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        width: 60%;
+        height: 60px;
+        margin-left: 12rem;
+        position: relative;
+    }
+    .registerformcontainer div label{   
+        margin-left: 0px !important;
+        padding: 0 !important;
+    }
+    .registerformcontainer div img{
+        position: absolute;
+        margin-top: 3px;
+        left: -20px !important;
+    }
+}
 
 .registerformcontainer div{
     display: flex;
