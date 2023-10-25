@@ -22,19 +22,91 @@
     align-items: center;
     overflow: auto;
 }
-@media(max-width:600){
+@media(max-width:600px){
     .uchipagecontainer {
         background-image: url('/images/BACKGROUND2.png');
-        /* background-size: cover; */
-        background-size: cover;
-        margin: 0;
-        padding: 0;
-    
-        height: 100vh;
+        background-position: -20rem 0 !important;
+        /* background-size: auto; */
+        /* background: linear-gradient( to bottom, rgb(74, 201, 255), rgb(0, 224, 0) ); */
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        height: 100%;
+    }
+    .uppercontainer{
+        width: 60%;
+        padding-bottom: 0px !important;
+        margin-top: 6rem;
+        margin-bottom: 0px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .lowercontainer{
+        position: static !important;;
+        /* margin-top: 60rem !important; */
+        width: 80%;
+        padding-top: 10px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center !important;
+    }
+    .discusscontainer {
+        /* display: flex;
+        flex-direction: column;
+        align-items: center; */
+    }
+    .lowercontainer div.discusscontainer img{
+        width: 150px;
+        height: 150px;
+    }
+    
+    .studycontainer{
+        display: flex;
+        flex-direction: column;
         align-items: center;
+    }
+    .lowercontainer div.studycontainer img{
+        width: 300px !important;
+        height: 257px !important;
+        z-index: 1;
+    }
+    
+    .informationcontainer{
+        position: relative !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .lowercontainer div.informationcontainer img{
+        /* position: absolute !important; */
+        /* opacity: 0 !important; */
+        z-index: 6;
+        width: 150px;
+        height: 100px;
+        bottom:10px;
+    }
+    
+    /* 未登入的 */
+    .informationcontainernologin{
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .lowercontainer div.informationcontainernologin img{
+        width: 200px;
+        height: 158.5px;
+        opacity: 0.5;
+    }
+    .lowercontainer div.informationcontainernologin img.informationlock{
+        opacity: 1;
+        position: absolute;
+        z-index: 6;
+        width: 150px;
+        height: 100px;
+        bottom:-17.6rem !important;
     }
 }
 /* 上排圖片樣式 */
