@@ -24,13 +24,52 @@
 
 .wordcardcontainer{
     display: flex;
-    display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+}
+@media (max-width:600px) {
+    .pagetitle{
+        padding: 0;
+        padding-top: 80px;
+        padding-left: 10rem;
+    }
+    .wordcard {
+        width: 20rem !important;
+    }
+    
+    .wordcardright div.describecontainer{
+        margin-bottom: 10%;
+        margin-left: 2.5rem;
+        font-weight: 900;
+        font-size: 26px;
+        color: black;
+    }
+    
+    .wordcardright div.buttoncontainer{
+        width: 6rem;
+        height: 3rem;
+        margin-left: 3rem !important;
+    }
+    
+    .wordcardright div.buttoncontainer button{
+        width: 6rem;
+        height: 3rem;
+        border-radius: 5px;
+        border: none;
+        background-color: rgb(171, 42, 42);
+    }
+    .leftpic {
+        opacity: 0;
+        z-index: -1; 
+    }
+    .rightpic {
+        width: 13rem;
+        height: 11.5rem;
+        right: -100px !important; 
+    }
     
 }
-
 .wordcard {
     width: 30rem;
     border : 3px solid rgb(210, 166, 166);
