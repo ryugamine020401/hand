@@ -12,8 +12,6 @@
     background-image: url('/images/BACKGROUND2.png');
     /* background-size: cover; */
     background-size: cover;
-    /* background-repeat: no-repeat;
-    background-attachment: fixed; */
     margin: 0;
     padding: 0;
 
@@ -22,15 +20,22 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-
+    overflow: auto;
+}
+@media(max-width:600){
+    .uchipagecontainer {
+        background-image: url('/images/BACKGROUND2.png');
+        /* background-size: cover; */
+        background-size: cover;
+        margin: 0;
+        padding: 0;
     
-    /*zoom: 150%;     /* 100% */
-    /*zoom: 140%;     /* 110% */
-    /*zoom: 125%;     /* 125% */
-    /*zoom: 100%;     /* 150% */
-    
-    
-    
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
 }
 /* 上排圖片樣式 */
 .uppercontainer{
