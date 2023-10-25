@@ -37,6 +37,49 @@
     margin-top: 4rem;
 }
 
+@media (max-width:600px) {
+    .profilecard {
+        width: 20rem;
+        height: 20rem;
+        border-radius: 10px;
+        border:3px solid rgb(208, 183, 183);
+        background-color: rgb(194, 203, 211);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        margin-top: 4rem;
+    }
+    .profilecard div.textcontainer div.username{
+        
+        align-self: center;
+        margin-left: 1.1rem !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px;
+        color: black;
+        font-weight: bold;
+    }
+    .profilecard div.textcontainer div.describe{
+        margin: 0px;
+        color: black;
+        width: 15rem !important;
+        height: 6rem !important;
+        overflow: auto;
+    }
+    .profilecard div.textcontainer div.describe textarea{
+        margin: 0px;
+        color: black;
+        /* width: 15rem !important; */
+        height: 20rem;
+        overflow: auto;
+        border: none;
+        border-radius: 5px;
+        background-color: #f0f0f0; 
+        resize: none;
+        padding: 5px 10px;
+    }
+}
+
 .profilecard div {
     display: flex;
     flex-direction: column;
@@ -84,7 +127,6 @@
     background-color: #f0f0f0; 
     resize: none;
     padding: 5px 10px;
-
 }
 .profilecard div.textcontainer div.describe textarea::-webkit-scrollbar-track{
     background-color: #e80b0b; 
