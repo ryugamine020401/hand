@@ -29,7 +29,8 @@
         ```
     * 容器啟動
         ```
-        docker run -d -p <本機 port>:3306 --name mysql -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34
+        sudo docker run -d -p <本機 port>:3306 --name mysql -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34
+        sudo docker run -d -p 38557:3306 --name mysql -e MYSQL_ROOT_PASSWORD='12345' mysql:8.0.34
         ```
         >
         >   ```docker run -d -p <本機 port>:3306 --name <容器name> -e MYSQL_ROOT_PASSWORD='your_password' mysql:8.0.34```
