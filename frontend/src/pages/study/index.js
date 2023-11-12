@@ -13,9 +13,9 @@ export default function Studyindex() {
     const resource = {
         'english' : '英文字母',
         'testtype/1/q0' : '測試1',
+        'testtype/2/q0' : '測試2',
         '../ifm/card' : '個人字卡',
-        // 'testtype/3/q0' : '測試3',
-        // 'testtype/4/q0' : '測試4',
+        'SignLanguage' : '手語',
         // 'testtype/5/q0' : '測試5',
         // 'testtype/6/q0' : '測試6',
         // 'testtype/7/q0' : '測試7',
@@ -27,7 +27,11 @@ export default function Studyindex() {
         // 'testtype/13/q0' : '測試13',  
     };
     const linklist = [
-        'study/english', 'study/testtype/1/q0', 'ifm/card',
+        'study/english', 
+        'study/testtype/1/q0', 
+        'study/testtype/2/q0', 
+        'ifm/card',
+        'study/SignLanguage',
         // 'study/english', 'study/testtype/1/q0', 'ifm/card',
         // 'study/english', 'study/testtype/1/q0', 'ifm/card',
         // 'study/english', 'study/testtype/1/q0', 'ifm/card',

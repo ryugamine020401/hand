@@ -26,45 +26,135 @@ from reg.views import decode_access_token
 from reg.models import UserIfm
 from study.forms import UploadEnglishForm
 # from reg.forms import LoginForm, EmailCheckForm
-from ifm.models import UseWordCard, UserDefIfm
-from study.models import TeachWordCard, Test1Ans
+from ifm.models import UseWordCard, UserDefIfm, UserSignLanguageCard
+from study.models import TeachWordCard, Test1Ans, Test2
 from study.serializers import UseWordCardSerializer
 from hand.settings import NGINX_DOMAIN
-# from .hand.prediction import num2alphabet, predict
-# def root_check(func):
-#     """
-#     登入確認，如果沒有找到登入的COOKIES會自度跳轉到登入的頁面。
-#     """
-#     def wrapper(req, request):
-#         print("\n",request, req)
-#         token = request.COOKIES.get('access_token')
 
-#         if not token:
-#             form = LoginForm()
-#             payload = {
-#                 "form" : form,
-#                 "msg" : "請先登入後再執行該操作。"
-#             }
-#             response = Response(status=status.HTTP_202_ACCEPTED)
-#             html = render(request, 'login.html', payload).content.decode('utf-8')
-#             response.content = html
-#             return response
-#         user = decode_access_token(token)['id']
-#         instance = UserIfm.objects.get(email=ROOT_EMAIL)
-#         root_id = instance.id
-#         if user == root_id:
-#             result = func(req, request)
-#         else:
-#             return Response(status=status.HTTP_403_FORBIDDEN, data = "權限不足")
-#         return result
-#     return wrapper
-# ------------------------- 辨識 ------------------------------
+import base64
+import numpy as np
+import cv2
+import tempfile
+import os
+import mediapipe as mp
+import tensorflow as tf
+
+# 推理結果轉換的字典
+ORD2SIGN = {25: 'blow', 232: 'wait', 48: 'cloud', 23: 'bird', 164: 'owie', 67: 'duck', 143: 'minemy', 134: 'lips', 86: 'flower', 220: 'time', 231: 'vacuum', 8: 'apple', 180: 'puzzle', 144: 'mitten', 216: 'there', 65: 'dry', 195: 'shirt', 165: 'owl', 243: 'yellow', 156: 'not', 249: 'zipper', 45: 'clean', 47: 'closet', 181: 'quiet', 108: 'have', 30: 'brother', 49: 'clown', 41: 'cheek', 54: 'cute', 207: 'store', 196: 'shoe', 235: 'wet', 193: 'see', 70: 'empty', 74: 'fall', 14: 'balloon', 89: 'frenchfries', 80: 'finger', 190: 'same', 52: 'cry', 121: 'hungry', 162: 'orange', 142: 'milk', 97: 'go', 62: 'drawer', 0: 'TV', 6: 'another', 93: 'giraffe', 233: 'wake', 19: 'bee', 13: 'bad', 35: 'can', 191: 'say', 34: 'callonphone', 81: 'finish', 159: 'old', 12: 'backyard', 198: 'sick', 136: 'look', 215: 'that', 24: 'black', 246: 'yourself', 161: 'open', 4: 'alligator', 146: 'moon', 78: 'find', 172: 'pizza', 194: 'shhh', 76: 'fast', 125: 'jacket', 192: 'scissors', 157: 'now', 140: 'man', 206: 'sticky', 127: 'jump', 199: 'sleep', 210: 'sun', 83: 'first', 101: 'grass', 228: 'uncle', 84: 'fish', 51: 'cowboy', 203: 'snow', 66: 'dryer', 102: 'green', 32: 'bug', 150: 'nap', 77: 'feet', 247: 'yucky', 147: 'morning', 189: 'sad', 73: 'face', 169: 'penny', 92: 'gift', 152: 'night', 104: 'hair', 239: 'who', 217: 'think', 31: 'brown', 138: 'mad', 17: 'bed', 63: 'drink', 205: 'stay', 85: 'flag', 223: 'tooth', 11: 'awake', 214: 'thankyou', 120: 'hot', 132: 'like', 237: 'where', 115: 'hesheit', 176: 'potty', 61: 'down', 209: 'stuck', 153: 'no', 110: 'head', 87: 'food', 178: 'pretty', 158: 'nuts', 5: 'animal', 90: 'frog', 21: 'beside', 154: 'noisy', 234: 'water', 236: 'weus', 105: 'happy', 238: 'white', 33: 'bye', 117: 'high', 79: 'fine', 27: 'boat', 3: 'all', 219: 'tiger', 168: 'pencil', 200: 'sleepy', 99: 'grandma', 44: 'chocolate', 109: 'haveto', 182: 'radio', 75: 'farm', 7: 'any', 248: 'zebra', 183: 'rain', 226: 'toy', 60: 'donkey', 133: 'lion', 64: 'drop', 141: 'many', 15: 'bath', 10: 'aunt', 241: 'will', 107: 'hate', 160: 'on', 177: 'pretend', 129: 'kitty', 82: 'fireman', 20: 'before', 59: 'doll', 204: 'stairs', 128: 'kiss', 137: 'loud', 114: 'hen', 135: 'listen', 95: 'give', 242: 'wolf', 55: 'dad', 103: 'gum', 111: 'hear', 186: 'refrigerator', 163: 'outside', 53: 'cut', 229: 'underwear', 173: 'please', 42: 'child', 201: 'smile', 167: 'pen', 245: 'yesterday', 119: 'horse', 171: 'pig', 211: 'table', 72: 'eye', 202: 'snack', 208: 'story', 174: 'police', 9: 'arm', 212: 'talk', 100: 'grandpa', 222: 'tongue', 175: 'pool', 94: 'girl', 230: 'up', 22: 'better', 227: 'tree', 56: 'dance', 46: 'close', 213: 'taste', 43: 'chin', 187: 'ride', 16: 'because', 123: 'if', 38: 'cat', 240: 'why', 37: 'carrot', 58: 'dog', 148: 'mouse', 126: 'jeans', 197: 'shower', 131: 'later', 145: 'mom', 155: 'nose', 244: 'yes', 2: 'airplane', 28: 'book', 26: 'blue', 122: 'icecream', 91: 'garbage', 221: 'tomorrow', 185: 'red', 50: 'cow', 170: 'person', 179: 'puppy', 39: 'cereal', 225: 'touch', 149: 'mouth', 29: 'boy', 218: 'thirsty', 139: 'make', 88: 'for', 96: 'glasswindow', 124: 'into', 184: 'read', 71: 'every', 18: 'bedroom', 151: 'napkin', 68: 'ear', 224: 'toothbrush', 118: 'home', 166: 'pajamas', 113: 'hello', 112: 'helicopter', 130: 'lamp', 188: 'room', 57: 'dirty', 40: 'chair', 106: 'hat', 69: 'elephant', 1: 'after', 36: 'car', 116: 'hide', 98: 'goose'}
+
+
+mp_holistic = mp.solutions.holistic
+
+holistic = mp_holistic.Holistic(
+min_detection_confidence=0.5, min_tracking_confidence=0.5)   # mediapipe全身
+
+def inference(base64_data):
+    """
+    辨識手語
+    """
+    # 1. 從Base64字串中解碼數據
+    video_data = base64.b64decode(base64_data)
+
+    # 2. 創建一個臨時影片檔案
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+    temp_file.write(video_data)
+    temp_file.close()
+
+    # 3. 使用OpenCV讀取影片
+    cap = cv2.VideoCapture(temp_file.name) # pylint: disable=E1101
+
+    # 4. 逐幀顯示影片
+    all_frame = []
+    start = 0
+    while cap.isOpened():
+        ret, image = cap.read()
+        if not ret:
+            break
+        else:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # pylint: disable=E1101
+            results = holistic.process(image)  # mediapipe holistic運算
+
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) # pylint: disable=E1101
+
+            frame = []
+
+            if results.face_landmarks and results.pose_landmarks:  # 確認人是否在畫面中
+                for a in results.face_landmarks.landmark:  # 臉
+                    arr = []
+                    arr.append(a.x)
+                    arr.append(a.y)
+                    arr.append(a.z)
+                    frame.append(arr)
+                if results.left_hand_landmarks:
+                    print('left')
+                    start = 1
+                    for a in results.left_hand_landmarks.landmark:  # 左手
+                        arr = []
+                        arr.append(a.x)
+                        arr.append(a.y)
+                        arr.append(a.z)
+                        frame.append(arr)
+                else:  # 畫面中沒有左手，座標補-1
+                    for i in range(21):
+                        frame.append([-1, -1, -1])
+                for a in results.pose_landmarks.landmark:  # 姿勢
+                    arr = []
+                    arr.append(a.x)
+                    arr.append(a.y)
+                    arr.append(a.z)
+                    frame.append(arr)
+                if results.right_hand_landmarks:
+                    start = 1
+                    for a in results.right_hand_landmarks.landmark:  # 右手
+                        arr = []
+                        arr.append(a.x)
+                        arr.append(a.y)
+                        arr.append(a.z)
+                        frame.append(arr)
+                else:  # 畫面中沒有右手，補-1
+                    for i in range(21):
+                        frame.append([-1, -1, -1])
+                if start == 1:
+                    all_frame.append(frame)  # 存放這一幀的資料
+                    np_all_frame = np.array(all_frame)
+                    np_all_frame = np.where(np_all_frame == -1, np.nan, np_all_frame)
+                    # print(np_all_frame.shape)
+                else:
+                    print("start !== 1")
+            del frame
+
+    # 讀取模型
+    interpreter = tf.lite.Interpreter("study/model.tflite")
+    # 獲取輸入輸出資料
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    # 輸入資料
+    input_data = np_all_frame
+    input_data = input_data.astype(np.float32)
+
+    interpreter.resize_tensor_input(input_details[0]['index'], input_data.shape)  # 定義輸入資料大小
+    interpreter.allocate_tensors()
+
+    # 輸入資料
+    interpreter.set_tensor(input_details[0]['index'], input_data)
+
+    # 推理
+    interpreter.invoke()
+
+    # 獲得输出數據
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+
+    # 處理輸出數據
+    sign = np.argmax(output_data)
+    cap.release()
+    cv2.destroyAllWindows() # pylint: disable=E1101
+    # 刪除臨時影片
+    os.remove(temp_file.name)
+    # 回傳推理結果
+    return ORD2SIGN.get(sign)
+
 
 model = load_model("study/signDot_with_z.h5")
-
-                # 正解
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# MODEL_FILE_PATH = os.path.join(BASE_DIR, 'static', 'models', 'signDot.h5')
 
 def num2alphabet(text):
     """
@@ -464,6 +554,120 @@ class UserWordCardButtonCheckView(APIView):
 
 # ------------------------ 學習中心_英文_字卡按鈕 -------------------------
 
+# ------------------------學習中心_手語------------------------------------
+class SignLanguageAPIViews(APIView):
+    """
+    獲得手語的教學
+    包含中英、手語等
+    """
+    def post(self, request):
+        """
+        包含數字1 ~ 5 決定一次回傳多少資源 
+        """
+        print(request.data['pageNum'])
+        num = request.data['pageNum']
+        resource = Test2.objects.filter(id__range=((num-1)*50+1, 50*num))
+        resoyrce_data = {}
+        for i in resource:
+            # print(i.chinese)
+            resoyrce_data[i.vocabularie] = [i.chinese, i.videourl, i.picurl]
+        # print(resoyrce_data)
+        data = {
+            'message' : '獲得資源成功',
+            'resource' : resoyrce_data,
+        }
+        print((num-1)*50+1, 50*num)
+        response = JsonResponse(data=data, status=status.HTTP_200_OK)
+        return response
+# ------------------------學習中心_手語------------------------------------
+# ----------------------- 學習中心_手語_加入字卡 --------------------------
+class SignLanguageAddCardAPIViews(APIView):
+    """
+    加入字卡的API Views
+    """
+    def post(self, request):
+        """
+        使用者會傳送相關參數
+        pic video 的 url
+        chinese
+        """
+        print(request.data)
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        
+        token_payload = decode_access_token(auth[1])
+        print(token_payload['id'])
+        user_id = token_payload['id']
+        instance = UserSignLanguageCard()
+        instance.user_id = UserIfm.objects.get(id=user_id)
+        instance.chinese = request.data['chinese']
+        instance.videourl = request.data['videourl']
+        instance.picurl = request.data['picurl']
+        instance.vocabularie = request.data['vocabularie']
+        instance.save()
+        
+        data = {
+            'message' : '加入字卡成功',
+        }
+        response = JsonResponse(data=data, status=status.HTTP_200_OK)
+        return response
+
+# ----------------------- 學習中心_手語_加入字卡 --------------------------
+# ------------------------ 學習中心_手語_字卡按鈕 -------------------------
+class SignLanguageButtonCheckView(APIView):
+    """
+    可以讓使用者已加入字卡的字卡按鈕disable
+    """
+    def get(self, request):
+        """
+        需要登入狀態，jwt的id可用來辨別使用者
+        可以讓使用者已加入字卡的字卡按鈕disable
+        """
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(auth[1])
+        wordarray = UserSignLanguageCard.objects.filter(user_id=token_payload['id'])
+        no_add_wordcard_buttonenable_list = []
+        for word in wordarray:
+            no_add_wordcard_buttonenable_list.append(word.vocabularie)
+        print(wordarray, no_add_wordcard_buttonenable_list)
+
+        data= {
+            'message':'成功獲取已加入字卡的單字名稱',
+            'enablelist': no_add_wordcard_buttonenable_list,
+        }
+        response = JsonResponse(data=data, status=status.HTTP_200_OK)
+        return response
+
+# ------------------------ 學習中心_手語_字卡按鈕 -------------------------
 
 # ------------------------測驗_1-------------------------------------------
 class TestOneViews(APIView):
@@ -496,116 +700,136 @@ class TestOneViews(APIView):
             return response
         token = auth[1]
         token_payload = decode_access_token(token)
+        # -------------------- 測驗1 GET -----------------
+        if param1 == 1:
+            if param2 == 0: # 進到說明頁面
+                try:
+                    test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
+                    instance = Test1Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    if test_instance.kotae_go == '':    # 第五題是空白的代表上次作答沒完成
+                        print('上次作答未完成。')
+                        test_instance.delete()
+                        response = JsonResponse(data, status = status.HTTP_200_OK)
+                        return response
+                    else:
+                        print('已有上次作答，且已完成。開啟新的表格。')
+                        instance.save()
+                        response = JsonResponse(data, status = status.HTTP_200_OK)
+                        return response
+                except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
+                    print(error_msg)
+                    print("進入第0頁 且 從來沒有測驗過。")
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
 
-        if param2 == 0: # 進到說明頁面
-            try:
-                test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-                data = {
-                    'message' : '準備開始測驗...。'
-                }
-                instance = Test1Ans()
-                instance.user_id = UserIfm.objects.get(id=token_payload['id'])
-                if test_instance.kotae_go == '':    # 第五題是空白的代表上次作答沒完成
-                    print('上次作答未完成。')
-                    test_instance.delete()
-                    response = JsonResponse(data, status = status.HTTP_200_OK)
-                    return response
-                else:
-                    print('已有上次作答，且已完成。開啟新的表格。')
+                    instance = Test1Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    print(instance)
                     instance.save()
                     response = JsonResponse(data, status = status.HTTP_200_OK)
                     return response
+            # 1 以後
+            random_int = random.randint(1, 26)
+            alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
+            while 1:
+                if (alphabet == 'z' or alphabet == 'j'):
+                    random_int = random.randint(1, 26)
+                    alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
+                else:
+                    break
+            try:
+                test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                print(test_instance)
             except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
                 print(error_msg)
-                print("進入第0頁 且 從來沒有測驗過。")
                 data = {
-                    'message' : '準備開始測驗...。'
+                    'message' : '不正確的管道連入網站',
+                    'push' : '/study/testtype/1/q0'
                 }
-
-                instance = Test1Ans()
-                instance.user_id = UserIfm.objects.get(id=token_payload['id'])
-                print(instance)
-                instance.save()
-                response = JsonResponse(data, status = status.HTTP_200_OK)
+                response = JsonResponse(data, status=status.HTTP_302_FOUND)
                 return response
-        # 1 以後
-        random_int = random.randint(1, 26)
-        alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
-        while 1:
-            if (alphabet == 'z' or alphabet == 'j'):
-                random_int = random.randint(1, 26)
-                alphabet = chr(TeachWordCard.objects.get(id=random_int).id+96)
-            else:
-                break
-        try:
-            test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-            print(test_instance)
-        except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
-            print(error_msg)
+
+            instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+            if param2 > 1:
+                if len(getattr(test_instance, instance_list[param2-1])) == 1:
+                    print('沒有，跳回普通頁面.')
+                    Test1Ans.objects.filter(user_id=token_payload['id']).latest('id').delete()
+
+                    data = {
+                        'message' : '不正確的管道連入網站',
+                        'push' : '/study/testtype/1/q0'
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
+            if param2 > 5:
+                test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                if test_instance.kotae_go == '':
+                    print("沒有東西")
+                    test_instance.delete()
+                    data = {
+                        'message' : '不正確的管道連入網站',
+                        'push' : '/study/testtype/1/q0'
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
+                else:
+                    # 第五題
+                    correct_cnt = 0
+                    for value, key in enumerate(vars(test_instance).items()):
+                        if 2 <= value <= 6:
+                            tmp = key[1].upper()
+                            if tmp[0] == tmp[1]:
+                                correct_cnt += 1
+                        print(key, value)
+                        if value == 8:
+                            test_instance.cor_rate = correct_cnt*20
+                            print(test_instance.cor_rate, correct_cnt*20)
+                            test_instance.save()
+                    data = {
+                        "message :" : '已完成測驗，跳轉至測驗結束畫面。',
+                        "push" : "/study/testtype/result",
+                        "point": correct_cnt,
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
+            elif param1 == 2:
+                data = {
+                    'message':'獲取試驗',
+                }
+                response = JsonResponse(data=data, status=status.HTTP_200_OK)
+                return response
             data = {
-                'message' : '不正確的管道連入網站',
-                'push' : '/study/testtype/1/q0'
+                "para1": param1,
+                "para2": param2,
+                "message :" : 'test',
+                "num" : param2+1,
+                "mondai" : alphabet,
+                # "nextPage" : ,
             }
-            response = JsonResponse(data, status=status.HTTP_302_FOUND)
+            instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            setattr(instance, instance_list[param2], alphabet)
+            instance.save()
+            response = JsonResponse(data, status=status.HTTP_200_OK)
             return response
+        # -------------------- 測驗1 GET -----------------
+        # -------------------- 測驗2 GET -----------------
+        elif param1 == 2:
+            print('打到2/n')
 
-        instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
-        if param2 > 1:
-            if len(getattr(test_instance, instance_list[param2-1])) == 1:
-                print('沒有，跳回普通頁面.')
-                Test1Ans.objects.filter(user_id=token_payload['id']).latest('id').delete()
-
-                data = {
-                    'message' : '不正確的管道連入網站',
-                    'push' : '/study/testtype/1/q0'
-                }
-                response = JsonResponse(data, status=status.HTTP_302_FOUND)
-                return response
-        if param2 > 5:
-            test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-            if test_instance.kotae_go == '':
-                print("沒有東西")
-                test_instance.delete()
-                data = {
-                    'message' : '不正確的管道連入網站',
-                    'push' : '/study/testtype/1/q0'
-                }
-                response = JsonResponse(data, status=status.HTTP_302_FOUND)
-                return response
-            else:
-                # 第五題
-                correct_cnt = 0
-                for value, key in enumerate(vars(test_instance).items()):
-                    if 2 <= value <= 6:
-                        tmp = key[1].upper()
-                        if tmp[0] == tmp[1]:
-                            correct_cnt += 1
-                    print(key, value)
-                    if value == 8:
-                        test_instance.cor_rate = correct_cnt*20
-                        print(test_instance.cor_rate, correct_cnt*20)
-                        test_instance.save()
-                data = {
-                    "message :" : '已完成測驗，跳轉至測驗結束畫面。',
-                    "push" : "/study/testtype/result",
-                    "point": correct_cnt,
-                }
-                response = JsonResponse(data, status=status.HTTP_302_FOUND)
-                return response
-        data = {
-            "para1": param1,
-            "para2": param2,
-            "message :" : 'test',
-            "num" : param2+1,
-            "mondai" : alphabet,
-            # "nextPage" : ,
-        }
-        instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-        setattr(instance, instance_list[param2], alphabet)
-        instance.save()
-        response = JsonResponse(data, status=status.HTTP_200_OK)
-        return response
-
+            data = {
+                "para1": param1,
+                "para2": param2,
+                "message :" : '測驗2',
+                "num" : param2+1,
+            }
+            response = JsonResponse(data, status=status.HTTP_200_OK)
+            return response
+        # -------------------- 測驗2 GET -----------------
     @swagger_auto_schema(
         operation_summary='加入個人字卡',
         request_body=openapi.Schema(
@@ -647,49 +871,63 @@ class TestOneViews(APIView):
                 }
             response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
             return response
-        token = auth[1]
-        token_payload = decode_access_token(token)
-        encoded_image = request.data['imageBase64']
-        # print(request.data.keys(),' 這')
-        # print(encoded_image.split(',')[0],' 這')
-        # 從 Base64 編碼的字符串中解碼圖片數據
-        decoded_image = base64.b64decode(encoded_image.split(',')[1])
-        # 將二進制圖片數據轉換為 NumPy 數組
-        image_array = np.frombuffer(decoded_image, dtype=np.uint8)
-        image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
-        # image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
-        cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
-        print(request.data['ans'])
-        result = hand_predict(img=image_array, correct=request.data['ans'])
-        try:
-            if result['result_score'] == result['correct_score']:
-                print("手勢正確", result['result'])
-            else:
-                print(request.data['ans'])
-            print(result)
-            # 檢索當前的 ichi 值
+        
+        if param1 == 1:
+            token = auth[1]
+            token_payload = decode_access_token(token)
+            encoded_image = request.data['imageBase64']
+            # print(request.data.keys(),' 這')
+            # print(encoded_image.split(',')[0],' 這')
+            # 從 Base64 編碼的字符串中解碼圖片數據
+            decoded_image = base64.b64decode(encoded_image.split(',')[1])
+            # 將二進制圖片數據轉換為 NumPy 數組
+            image_array = np.frombuffer(decoded_image, dtype=np.uint8)
+            image_array = cv2.imdecode(image_array, cv2.IMREAD_COLOR) # pylint: disable=E1101
+            # image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB) # pylint: disable=E1101
+            cv2.imwrite("./img.png", image_array) # pylint: disable=E1101
+            print(request.data['ans'])
+            result = hand_predict(img=image_array, correct=request.data['ans'])
+            try:
+                if result['result_score'] == result['correct_score']:
+                    print("手勢正確", result['result'])
+                else:
+                    print(request.data['ans'])
+                print(result)
+                # 檢索當前的 ichi 值
 
-            instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
-            instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
-            current_value = getattr(instance, instance_list[param2], '')  # 使用getattr，並提供默認值
-            # 串聯 'a' 到當前值
-            new_value = current_value + result['result']
-            # getattr(instance, instance_list[param2]) = result['result']
-            setattr(instance, instance_list[param2], new_value)
-            instance.save()
+                instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+                instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                current_value = getattr(instance, instance_list[param2], '')  # 使用getattr，並提供默認值
+                # 串聯 'a' 到當前值
+                new_value = current_value + result['result']
+                # getattr(instance, instance_list[param2]) = result['result']
+                setattr(instance, instance_list[param2], new_value)
+                instance.save()
 
-        except KeyError as error_msg:
-            print(error_msg, '沒有偵測到手會KeyError')
-            data = {
-                'message':'沒有偵測到手',
+            except KeyError as error_msg:
+                print(error_msg, '沒有偵測到手會KeyError')
+                data = {
+                    'message':'沒有偵測到手',
+                }
+                response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+                return response
+            payload = {
+                'redirect_url' : f'./{param1}/q{param2+1}',
+                'detected':result['hand_exist'],
             }
-            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
-            return response
-        payload = {
-            'redirect_url' : f'./{param1}/q{param2+1}',
-            'detected':result['hand_exist'],
-        }
-        return JsonResponse(payload)
+            return JsonResponse(payload, status=status.HTTP_200_OK)
+        # ------------------------ 測驗2 POST ---------------------------------------------
+        elif param1 == 2:
+            # print('POST到測驗2', request.data['recordedVideo'])
+            video_base64 = request.data['recordedVideo'].split(",")[1]
+            
+            print('POST到測驗2', inference(video_base64))
+            payload = {
+                'redirect_url' : f'./{param1}/q{param2+1}',
+                # 'detected':result['hand_exist'],
+            }
+            return JsonResponse(payload, status=status.HTTP_200_OK)
+        # ------------------------ 測驗2 ---------------------------------------------
 # ------------------------測驗_1------------------------------------
 
 # ------------------------ 測驗_1 結算 -----------------------------

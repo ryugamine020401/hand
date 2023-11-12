@@ -51,8 +51,12 @@ class Test2(models.Model):
     """
     中文測驗的題目，
     """
-    id = models.AutoField(primary_key=True)
-    mondai = models.CharField(max_length=50)
+    id = models.IntegerField(primary_key=True)
+    vocabularie = models.CharField(max_length=50 ,default='')   # 單字
+    chinese = models.CharField(max_length=255, default='')       # 翻譯
+    describe = models.TextField(null=True)                      # 備註
+    videourl = models.TextField(null=True)                      # 影片網址
+    picurl = models.TextField(null=True)                        # 圖片網址
     objects = models.Manager()
 
     class META:

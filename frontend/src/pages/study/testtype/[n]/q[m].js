@@ -1,14 +1,66 @@
 // pages/test/testtype/[n]/q[m].js
 
 import LoginState from '@/components/loginstate';
-import { parse } from 'cookie';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import style from '@/pages/study/css/q.module.css'
+// import RecordRTC from 'recordrtc';
+import dynamic from 'next/dynamic'
+
+const VideoRecordingDialog = dynamic(() => import('./VideoRecordingDialog'), { ssr: false });
+
 
 function TestPage() {
+	/* ------------------------------------------- 測驗二 --------------------------------------------- */
+	
+	const [recording, setRecording] = useState(false);
+	const [recordedVideo, setRecordedVideo] = useState(null);
+	let recordRTC = null;
+	const startRecording = () => {
+		setRecording(true);
+		recordRTC = RecordRTC(webcamRef.current.stream, {
+			type: 'video',
+		});
+		recordRTC.startRecording();
+		
+		setTimeout(() => {
+			stopRecording();
+		}, 5000);
+	};
+
+	const stopRecording = () => {
+		setRecording(false);
+		if (recordRTC) {
+			recordRTC.stopRecording(() => {
+				const blob = recordRTC.getBlob();
+				const reader = new FileReader();
+		
+				reader.onload = () => {
+				const base64Video = reader.result;
+				setRecordedVideo(base64Video);
+				};
+		
+				reader.readAsDataURL(blob);
+			});
+		}
+	};
+	useEffect(() => {
+		if (recording) {
+		  const recordingTimeout = setTimeout(() => {
+			stopRecording();
+		  }, 5000);
+	
+		  return () => {
+			clearTimeout(recordingTimeout);
+		  };
+		}
+	  }, [recording]);
+
+	/* ------------------------------------------- 測驗二 --------------------------------------------- */
+
+	/* ------------------------------------------- 測驗一 --------------------------------------------- */
 	const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   	const router = useRouter();
   	const { n, m } = router.query;
@@ -147,7 +199,10 @@ function TestPage() {
 
 	useEffect(() => {
 		// 設定焦點在按鈕上
-		btnRef.current.focus();
+		if (n == 1) {
+			btnRef.current.focus();
+		}
+		
 	
 		// 監聽鍵盤事件，當按下 Enter 鍵時觸發點擊按鈕
 		const handleKeyPress = (event) => {
@@ -162,7 +217,7 @@ function TestPage() {
 		  };
 		
 	  }, []);
-  
+  /* ------------------------------------------- 測驗一 --------------------------------------------- */
   return (
     <div>
       	<Head><title>測驗</title></Head>
@@ -171,7 +226,8 @@ function TestPage() {
 			resetPasswordPath="../../../reg/resetpassword"
 			logoutPath="../../../uchi"
 		/>
-		{!checkquestion&&
+		 
+		{!checkquestion&& n == 1 &&
 			<div className={style.testillustratepagecontainer}>
 				<button className={style.repagebtn} onClick={()=>router.push('../../')}>上一頁</button>
 				{/* <h1>{ans}</h1> */}
@@ -188,7 +244,7 @@ function TestPage() {
 				
 			</div>
 		}
-		{checkquestion&&
+		{checkquestion&& n == 1 &&
 			<div className={style.queationpagecontainer}>
 				
 				<h1>第 {questionNum} 題 : 請比出 {ans} 的手勢!</h1>
@@ -217,7 +273,10 @@ function TestPage() {
 				{imageBase64 && <p style={{"color":"red"}}>{errormsg}</p>}
 			</div>
 		}
-		</div>
+		{n == 2 &&
+			<VideoRecordingDialog/>
+		}
+	</div>
   );
 }
 
