@@ -122,36 +122,42 @@ def inference(base64_data):
                 else:
                     print("start !== 1")
             del frame
+    if start == 1:
+        # 讀取模型
+        interpreter = tf.lite.Interpreter("study/model.tflite")
+        # 獲取輸入輸出資料
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        # 輸入資料
+        input_data = np_all_frame
+        input_data = input_data.astype(np.float32)
 
-    # 讀取模型
-    interpreter = tf.lite.Interpreter("study/model.tflite")
-    # 獲取輸入輸出資料
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-    # 輸入資料
-    input_data = np_all_frame
-    input_data = input_data.astype(np.float32)
+        interpreter.resize_tensor_input(input_details[0]['index'], input_data.shape)  # 定義輸入資料大小
+        interpreter.allocate_tensors()
 
-    interpreter.resize_tensor_input(input_details[0]['index'], input_data.shape)  # 定義輸入資料大小
-    interpreter.allocate_tensors()
+        # 輸入資料
+        interpreter.set_tensor(input_details[0]['index'], input_data)
 
-    # 輸入資料
-    interpreter.set_tensor(input_details[0]['index'], input_data)
+        # 推理
+        interpreter.invoke()
 
-    # 推理
-    interpreter.invoke()
+        # 獲得输出數據
+        output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    # 獲得输出數據
-    output_data = interpreter.get_tensor(output_details[0]['index'])
+        # 處理輸出數據
+        sign = np.argmax(output_data)
+        # print(output_data)
+        # print(sign)
+        # print("inference_result : ", ORD2SIGN.get(sign), f'[{sign}]')
 
-    # 處理輸出數據
-    sign = np.argmax(output_data)
-    cap.release()
-    cv2.destroyAllWindows() # pylint: disable=E1101
-    # 刪除臨時影片
-    os.remove(temp_file.name)
-    # 回傳推理結果
-    return ORD2SIGN.get(sign)
+        cap.release()
+        cv2.destroyAllWindows() # pylint: disable=E1101
+        # 刪除臨時影片
+        os.remove(temp_file.name)
+        # 回傳推理結果
+        return ORD2SIGN.get(sign)
+    else:
+        print('invalid video')
 
 
 model = load_model("study/signDot_with_z.h5")
@@ -920,13 +926,20 @@ class TestOneViews(APIView):
         elif param1 == 2:
             # print('POST到測驗2', request.data['recordedVideo'])
             video_base64 = request.data['recordedVideo'].split(",")[1]
-            
             print('POST到測驗2', inference(video_base64))
-            payload = {
-                'redirect_url' : f'./{param1}/q{param2+1}',
-                # 'detected':result['hand_exist'],
-            }
-            return JsonResponse(payload, status=status.HTTP_200_OK)
+            result = inference(video_base64)
+            if result is None:
+                payload = {
+                    'message':'沒有偵測到手'
+                    # 'detected':result['hand_exist'],
+                }
+                return JsonResponse(payload, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                payload = {
+                    'redirect_url' : f'./{param1}/q{param2+1}',
+                    # 'detected':result['hand_exist'],
+                }
+                return JsonResponse(payload, status=status.HTTP_200_OK)
         # ------------------------ 測驗2 ---------------------------------------------
 # ------------------------測驗_1------------------------------------
 

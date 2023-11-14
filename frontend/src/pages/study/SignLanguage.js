@@ -131,9 +131,9 @@ export default function SignLanguage(){
         }
     }
 
-    useEffect(()=>{
-        getButtonEnable();
-    },[loginButtonEnable]);
+    // useEffect(()=>{
+    //     getButtonEnable();
+    // },[loginButtonEnable]);
     /* ---------------------- 加入字卡且刷新按鈕  --------------------- */
 
     return(
@@ -143,14 +143,9 @@ export default function SignLanguage(){
                 <LoginState
                         profilePath="../ifm"
                         resetPasswordPath="./reg/resetpassword"
-                        logoutPath="./uchi"
+                        logoutPath="../uchi"
                 />
-                {/* <div className={style.leftcontianer}>
-
-                </div>
-                <div className={style.rightcontianer}>
-                    
-                </div> */}
+                
                 <div className={style.ALLcardcontainer}>
                     {Object.keys(wordCardData).map((key, index)=>(
                         <div key={`signlanguage_${index}`} className={style.cardcontainer}>
@@ -171,14 +166,17 @@ export default function SignLanguage(){
 
                                     {enableCuttunClick ? (
                                         loginButtonEnable.includes(key) ? (
-                                            <button disabled={false}>已加入</button>
+                                            <button disabled={true}
+                                                className={style.noneloginbutton}
+                                                
+                                            >已加入</button>
                                         ):(
                                             <button onClick={()=>addSignLanguageCard(
                                                 key, wordCardData[key][0], wordCardData[key][2], wordCardData[key][1]
                                             )}>加入字卡</button>
                                         )
                                     ):(
-                                        <button disabled={false}>請先登入</button>
+                                        <button disabled={true} className={style.noneloginbutton}>請先登入</button>
                                     )}
 
 
@@ -191,7 +189,7 @@ export default function SignLanguage(){
                 </div>
                 <div className={style.changepagecontainer}>
                     <button onClick={()=>ChangePageDown(pageNum)} className={style.button}>上一頁</button>
-                    <p>{pageNum}</p>
+                    <p className={style.pagenumber}>{pageNum}</p>
                     <button onClick={()=>ChangePageUP(pageNum)} className={style.button}>下一頁</button>
                 </div>
                 

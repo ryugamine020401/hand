@@ -13,10 +13,12 @@
 }
 
 .cardcontainer{
-    border: 2px solid red;
+    border: 2px solid rgb(255, 208, 151);
     margin: 5px;
     display: flex;
     flex-direction: row;
+    border-radius: 30px;
+    background-color: rgb(223, 183, 142);;
 }
 .leftcardcontainer {
     padding: 8px;
@@ -24,6 +26,8 @@
 .leftcardcontainer img{
     width: 150px;
     height: 150px;
+    border-radius: 30px;
+    margin-left: 20px;
 }
 
 .rightcardcontainer{    /* 單一字卡右邊 連結、國語、英文、按鈕*/
@@ -56,12 +60,54 @@
 }
 .rCdowncontainer button{    /* 單一字卡 下面 按鈕*/
     margin: 0px 20px;
+    background-color: rgb(255, 195, 66);
+    color: black;
+    width: 7rem;
+    height: 3rem;
+    border-radius: 6px;
+    font-weight: 600;
+    
+}
+.rCdowncontainer button:hover{    /* 單一字卡 下面 按鈕*/
+    cursor: pointer;
+    background-color: rgb(170, 130, 45);
+    
+}
+
+.noneloginbutton{
+    background-color: rgb(170, 130, 45) !important;
+}
+.noneloginbutton:hover{
+    cursor:not-allowed !important;
+    
 }
 
 .changepagecontainer{
+    align-self: center;
     display: flex;
     position: fixed;
-    margin: 0px;
+    margin-top: 2rem;
     z-index: 999;
-    margin: 0px 36rem;
+    /* margin: 0px 36rem; */
+    color: rgb(255, 255, 255);
+    
+}
+
+.pagenumber{
+    margin: 0px 20px;
+}
+
+.changepagecontainer button{
+    margin: 0px 20px;
+    background-color: rgb(255, 195, 66);
+    color: black;
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 6px;
+    border: 0;
+    font-weight: 600;   
+}
+
+.changepagecontainer button:hover{
+    cursor: pointer;
 }

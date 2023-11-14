@@ -5,13 +5,48 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import React, { useCallback } from 'react';
 import style from '@/pages/ifm/css/card.module.css'
+import WordCardStyle from '@/pages/study/css/SingLanguage.module.css';
 
 
 function UserWordCard(){
     const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     // const [userWordcardURL, setUserWordcardURL] = useState([]);
     const [userWordcardURL2, setUserWordcardURL2] = useState({});
+    
+    const [wordCardData, setWordCardData] = useState({});
     const router = useRouter();
+    const DeleteUserSignCardButtonCheck = async (vocabularie) =>{
+        /* 刪除手語 */
+        const access_token = localStorage.getItem('access_token');
+
+        try {
+            const response = await fetch(`${backedUrl}/ifm/api/getusersignlanguage`,{
+                method:"DELETE",
+                body:JSON.stringify(vocabularie),
+                headers:{
+                    'Authorization':`Bearer ${access_token}`,
+                    'Content-Type':'application/json',
+                }
+            });
+            if(response.status === 200){
+                const responseData = await response.json();
+                const newWordCardData = { ...wordCardData };
+                delete newWordCardData[vocabularie];
+                setWordCardData(newWordCardData);
+                // console.log(responseData);
+            } else if(response.status === 403) {
+                localStorage.clear('access_token');
+                localStorage.clear('refresh_token');
+                alert('登入過期，請重新登入。');
+                router.push('/reg/login');
+            }else {
+                const responseData = await response.json();
+                // console.log(responseData);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const DeleteUserWordCardButtonCheck = async (key) =>{
         const access_token = localStorage.getItem('access_token');
@@ -27,7 +62,10 @@ function UserWordCard(){
             });
             if(response.status === 200){
                 const responseData = await response.json();
-                router.reload();
+                // router.reload();
+                const newGestureCardData = {...userWordcardURL2};
+                delete newGestureCardData[key];
+                setUserWordcardURL2(newGestureCardData);
                 // console.log(responseData);
             } else if(response.status === 403) {
                 localStorage.clear('access_token');
@@ -65,10 +103,6 @@ function UserWordCard(){
             });
             if (response.status === 200){
                 const responseData = await response.json();
-                // console.log(responseData);
-                // console.log(responseData.image_url_array);
-                // console.log(responseData.image_url_json);
-                // setUserWordcardURL(responseData.image_url_array);
                 setUserWordcardURL2(responseData.image_url_json);
                 
             } else {
@@ -82,25 +116,43 @@ function UserWordCard(){
     useEffect(()=>{
         checkAcccesstoken();
         getWordcardInitial();
-        // let isMounted = true;
+    }, [])
 
-        // const fetchData = async () => {
-        //     // 非同步操作
-        //     if (isMounted) {
-        //         // 確保元件仍然掛載
-        //         await getWordcardInitial();
-        //         await // console.log(userWordcardURL2);
-        //     }
-        // };
+    /*---------------------- 獲得手語字卡 -------------------------------- */
+    const getWordCard = async() => {
+        const access_token = localStorage.getItem('access_token');
+        if (access_token === null){
+            router.push('/');
+            return
+        }
+        const responst = await fetch(`${backedUrl}/ifm/api/getusersignlanguage`,{
+            method:'GET',
+            headers:{
+                'Authorization' : `Bearer ${access_token}`,
+                'Content-Type':'application/json',
+            }
+        });
 
-        // fetchData();
+        try {
+            if (responst.status === 200) {
+                const responseData = await responst.json();
+                console.log(responseData.resource);
+                setWordCardData(responseData.resource);
 
-        // return () => {
-        //     isMounted = false;
-        //     // 在元件卸載時取消非同步操作
-        // };
-        }, [])
+            } else {
+                const responseData = responst.json();
+                console.log(responseData);
+            }
+        } catch (error) {
+            console.error(error);
+        }
 
+    }
+    useEffect(()=>{
+        getWordCard();
+    },[])
+
+    /*---------------------- 獲得手語字卡 -------------------------------- */
     return(
         <>
             <Head>
@@ -135,6 +187,28 @@ function UserWordCard(){
                             <div className={style.buttoncontainer}>
                                 <button key={`DeleteWordCardbutton_${index}`} onClick={() => DeleteUserWordCardButtonCheck(key)}>刪除字卡</button>
                             </div>
+                        </div>
+                    </div>
+                ))}
+
+                {Object.keys(wordCardData).map((key, index)=>(
+                    <div key={`signlanguage_${index}`} className={WordCardStyle.cardcontainer}>
+                        <div className={WordCardStyle.leftcardcontainer}>
+                            <img src={wordCardData[key][2]}/>
+                        </div>
+                        <div className={WordCardStyle.rightcardcontainer}>
+                            <div className={WordCardStyle.rCtopcontainer}>
+                                <p>{key}</p>
+                            </div>
+                            <div className={WordCardStyle.rCdowncontainer}>
+                                <a href={wordCardData[key][1]}>影片教學</a>
+                                <p>{wordCardData[key][0]}</p>
+                                
+                                <button
+                                onClick={() => DeleteUserSignCardButtonCheck(key)}
+                                >刪除字卡</button>
+                            </div>
+                            
                         </div>
                     </div>
                 ))}

@@ -22,7 +22,7 @@ class UseWordCard(models.Model):
 
 class UserSignLanguageCard(models.Model):
     """
-    使用者基本的資料，驗證狀況。
+    使用者的手語字卡
     """
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey('reg.UserIfm', to_field='id', on_delete=models.CASCADE)

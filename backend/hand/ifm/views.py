@@ -20,7 +20,7 @@ from reg.views import decode_access_token
 from reg.serializers import RegisterSerializer
 from reg.models import UserIfm
 from ifm.serializers import UserDefIfmSerializer
-from ifm.models import UserDefIfm, UseWordCard
+from ifm.models import UserDefIfm, UseWordCard, UserSignLanguageCard
 
 from hand.settings import NGINX_DOMAIN
 from hand.settings import MEDIA_ROOT, MEDIA_URL
@@ -233,7 +233,7 @@ class UserWordCardAPIView(APIView):
         需要身分驗證
         """
         auth = get_authorization_header(request).split()
-        print(request.META)
+        # print(request.META)
         try:
             token = auth[1]
             if token == b'null':
@@ -266,8 +266,8 @@ class UserWordCardAPIView(APIView):
             key = instance.word
             value = NGINX_DOMAIN+'/api/study'+instance.img.url
             card_url_diec[key] = value
-        print(card_url_diec)
-        print(card_url_list)
+        # print(card_url_diec)
+        # print(card_url_list)
         data = {
             'message' : '成功獲取字卡',
             'image_url_array' : card_url_list,
@@ -308,6 +308,79 @@ class UserWordCardAPIView(APIView):
 
 
 # -------------------------- 獲得使用者個人字卡API -----------------------
+# -------------------------- 獲得手語字卡 API ----------------------------
+class UserSignLanguageAPIViews(APIView):
+    """
+    處理手語字卡頁面的API
+    """
+
+    def get(self, request):
+        """
+        獲得手語字卡的API
+        """
+        auth = get_authorization_header(request).split()
+        # print(request.META)
+        try:
+            token = auth[1]
+            if token == b'null':
+                data = {
+                    'message' : "沒有token",
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+                return response
+        except IndexError as error_msg:
+            print(error_msg, 'GETCardAPIView')
+            data = {
+                'message' : '沒有Authorization.',
+            }
+            response =JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+
+        token_payload = decode_access_token(token)
+        user_id = token_payload['id']
+        resource = UserSignLanguageCard.objects.filter(user_id=user_id)
+        resoyrce_data = {}
+        for i in resource:
+            # print(i.chinese)
+            resoyrce_data[i.vocabularie] = [i.chinese, i.videourl, i.picurl]
+        # print(resoyrce_data)
+        data = {
+            'message' : '成功獲取字卡',
+            'resource' : resoyrce_data,
+        }
+
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+    def delete(self, request):  # 回傳的是英文
+        """
+        使用者刪除自己的手語字卡。
+        """
+        auth = get_authorization_header(request).split()
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有TOKEN',
+                }
+                response = JsonResponse(data, status=status.HTTP_403_FORBIDDEN)
+            print(request.data)
+
+        except IndexError as error_msg:
+            print(error_msg, 'UserWordCardAPIView')
+            data = {
+                'message':'沒有Authorization.'
+            }
+            response = JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+            return response
+        token_payload = decode_access_token(auth[1])
+        user_id = token_payload['id']
+        # 選擇出符合使用者選項 與 該使用者的字卡刪除      body只有要刪除的單字
+
+        UserSignLanguageCard.objects.filter(user_id=user_id, vocabularie=request.data).delete()
+        data = {
+            'message' : '成功刪除',
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
+# -------------------------- 獲得手語字卡 API ----------------------------
 
 # -------------------------- 獲得其他使用者資訊的API -----------------------
 class GetAnotherUserProfileAPIView(APIView):
