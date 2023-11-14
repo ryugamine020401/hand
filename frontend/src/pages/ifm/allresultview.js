@@ -9,7 +9,9 @@ export default function AllResultView(){
     const backedUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [headerImageUrl, setHeaderImageUrl] = useState('');
     const [result, setResult] = useState([]);
-    const [start1Url, setStart1] = useState(5);
+    const [result2, setResult2] = useState([]);
+    const [starUrl1, setStar1] = useState(5);
+    const [starUrl2, setStar2] = useState(5);     // 錯字 star
     const router = useRouter();
     const gobackbuttonClick = () =>{
         router.push('/ifm');
@@ -31,7 +33,9 @@ export default function AllResultView(){
                 // console.log(responseData);
                 setHeaderImageUrl(responseData.headimageurl);
                 setResult(responseData.resultScore1.toFixed(2));
-                setStart1(responseData.start1);
+                setResult2(responseData.resultScore2.toFixed(2));
+                setStar1(responseData.star1);
+                setStar2(responseData.star2);
             } else {
                 const responseData = await response.json();
                 // console.log(responseData);
@@ -74,7 +78,7 @@ export default function AllResultView(){
                             alt="使用者評級圖像"
                             width={100}
                             height={130}
-                            src={`/images/study_test_start${start1Url}_boy.png`}
+                            src={`/images/study_test_start${starUrl1}_boy.png`}
                             />
                             <p>您在測驗一的準確率為 {result} %</p>
                         </div>
@@ -86,9 +90,9 @@ export default function AllResultView(){
                             alt="使用者評級圖像"
                             width={100}
                             height={130}
-                            src={`/images/study_test_start${start1Url}_boy.png`}
+                            src={`/images/study_test_start${starUrl2}_boy.png`}
                             />
-                            <p>您在測驗二的準確率為 ? %</p>
+                            <p>您在測驗二的準確率為 {result2} %</p>
                         </div>
                     </div>
                     <div className={style.contianerfour}>
@@ -97,7 +101,7 @@ export default function AllResultView(){
                             alt="使用者評級圖像"
                             width={300}
                             height={380}
-                            src={`/images/study_test_start${(start1Url+start1Url)/2}_boy.png`}
+                            src={`/images/study_test_start${(starUrl1+starUrl2)/2}_boy.png`}
                         />
                     </div>
                 </div>

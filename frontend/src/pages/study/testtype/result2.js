@@ -13,7 +13,7 @@ export default function Testresult(){
     const getscore = async() =>{
         const access_token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`${backedUrl}/study/api/testoneegetresult`,{
+            const response = await fetch(`${backedUrl}/study/api/testoneegetresult2`,{
                 method:"GET",
                 headers:{
                     'Authorization':`Bearer ${access_token}`
@@ -56,16 +56,16 @@ export default function Testresult(){
                     </div>
                     <div className={style.lowercontainer}>
                         
-                        <div className={style.leftcontainer}>
+                        <div className={style.leftcontainer2}>
                             <p className={style.fixtext}>您此次測驗的回答狀況</p>
                             {detial.map((index, cnt)=>(
-                                (index[0].toUpperCase() === index[1])?(
+                                (index[0] === index[1])?(
                                     <p key={`text_${index}`} >
-                                    第{cnt+1}題 題目是 <span style={{"color":"blue"}}>{index[0].toUpperCase()}</span> 您的回答是 <span style={{"color":"blue"}}>{index[1]}</span>
+                                    第{cnt+1}題 題目是 <span style={{"color":"blue"}}>{index[0]}</span> 您的回答是 <span style={{"color":"blue"}}>{index[1]}</span>
                                     </p>
                                 ):(
                                     <p key={`text_${index}`}>
-                                    第{cnt+1}題 題目是 <span style={{"color":"red"}}>{index[0].toUpperCase()}</span> 您的回答是 <span style={{"color":"red"}}>{index[1]}</span>
+                                    第{cnt+1}題 題目是 <span style={{"color":"red"}}>{index[0]}</span> 您的回答是 <span style={{"color":"red"}}>{index[1]}</span>
                                     </p>
                                 )
                             ))}
@@ -81,7 +81,7 @@ export default function Testresult(){
                         </div>
                         <div className={style.rightcontainer}>
                             <button onClick={()=>router.push('../../ifm/allresultview')}>總測驗結果</button>
-                            <button onClick={()=>router.push('./1/q0')}>重新測驗</button>
+                            <button onClick={()=>router.push('./2/q0')}>重新測驗</button>
                             <button onClick={()=>router.push('../../uchi')}>返回首頁</button>
                         </div>
                     </div>

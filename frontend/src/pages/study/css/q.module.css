@@ -119,3 +119,10 @@
     cursor: pointer;
     background-color: rgb(155, 155, 141); 
 }
+
+.test2pageH1 {
+    position: fixed;
+    color: black;
+    left: 34.3%;
+    top: 11%
+}

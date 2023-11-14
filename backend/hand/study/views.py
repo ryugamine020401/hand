@@ -27,7 +27,7 @@ from reg.models import UserIfm
 from study.forms import UploadEnglishForm
 # from reg.forms import LoginForm, EmailCheckForm
 from ifm.models import UseWordCard, UserDefIfm, UserSignLanguageCard
-from study.models import TeachWordCard, Test1Ans, Test2
+from study.models import TeachWordCard, Test1Ans, Test2, Test2Ans
 from study.serializers import UseWordCardSerializer
 from hand.settings import NGINX_DOMAIN
 
@@ -752,7 +752,7 @@ class TestOneViews(APIView):
                 test_instance = Test1Ans.objects.filter(user_id=token_payload['id']).latest('id')
                 print(test_instance)
             except Test1Ans.DoesNotExist as error_msg: # pylint: disable=E1101
-                print(error_msg)
+                print(error_msg, '755行')
                 data = {
                     'message' : '不正確的管道連入網站',
                     'push' : '/study/testtype/1/q0'
@@ -803,12 +803,13 @@ class TestOneViews(APIView):
                     }
                     response = JsonResponse(data, status=status.HTTP_302_FOUND)
                     return response
-            elif param1 == 2:
-                data = {
-                    'message':'獲取試驗',
-                }
-                response = JsonResponse(data=data, status=status.HTTP_200_OK)
-                return response
+            # elif param1 == 2:
+            #     data = {
+            #         'message':'獲取試驗',
+            #     }
+            #     response = JsonResponse(data=data, status=status.HTTP_200_OK)
+            #     return response
+
             data = {
                 "para1": param1,
                 "para2": param2,
@@ -822,19 +823,124 @@ class TestOneViews(APIView):
             instance.save()
             response = JsonResponse(data, status=status.HTTP_200_OK)
             return response
-        # -------------------- 測驗1 GET -----------------
-        # -------------------- 測驗2 GET -----------------
+        # ------------------------------------- 測驗1 GET ----------------------------------
+
+
+        # ------------------------------------- 測驗2 GET ----------------------------------
         elif param1 == 2:
-            print('打到2/n')
+            if param2 == 0: # 進到說明頁面
+                try:
+                    test_instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
+                    instance = Test2Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    if test_instance.kotae_go == '':    # 第五題是空白的代表上次作答沒完成
+                        print('上次作答未完成。')
+                        test_instance.delete()
+                        response = JsonResponse(data, status = status.HTTP_200_OK)
+                        return response
+                    else:
+                        print('已有上次作答，且已完成。開啟新的表格。')
+                        instance.save()
+                        response = JsonResponse(data, status = status.HTTP_200_OK)
+                        return response
+                except Test2Ans.DoesNotExist as error_msg: # pylint: disable=E1101
+                    print(error_msg)
+                    print("進入第0頁 且 從來沒有測驗過。")
+                    data = {
+                        'message' : '準備開始測驗...。'
+                    }
+
+                    instance = Test2Ans()
+                    instance.user_id = UserIfm.objects.get(id=token_payload['id'])
+                    print(instance)
+                    instance.save()
+                    response = JsonResponse(data, status = status.HTTP_200_OK)
+                    return response
+            random_int = random.randint(1, 250)
+            vocabulary = Test2.objects.get(id=random_int).vocabularie
+            try:
+                test_instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                print(test_instance)
+            except Test2Ans.DoesNotExist as error_msg: # pylint: disable=E1101
+                print(error_msg)
+                data = {
+                    'message' : '不正確的管道連入網站 870',
+                    'push' : '/study/testtype/2/q0'
+                }
+                response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                return response
+
+            instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+            if param2 > 1:
+                if len(getattr(test_instance, instance_list[param2-1])) == 1:
+                    print('沒有紀錄，跳回說明頁面.')
+                    Test2Ans.objects.filter(user_id=token_payload['id']).latest('id').delete()
+
+                    data = {
+                        'message' : '不正確的管道連入網站',
+                        'push' : '/study/testtype/2/q0'
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
+            if param2 > 5:
+                test_instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                if test_instance.kotae_go == '':
+                    print("網址錯誤")
+                    test_instance.delete()
+                    data = {
+                        'message' : '不正確的管道連入網站',
+                        'push' : '/study/testtype/2/q0'
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
+                else:
+                    # 第五題
+                    correct_cnt = 0
+                    for value, key in enumerate(vars(test_instance).items()):
+                        print(value, key)
+                        if 2 <= value <= 6:
+                            tmp = key[1].split(" ")
+                            if tmp[0] == tmp[1]:
+                                correct_cnt += 1
+                        if value == 8:
+                            test_instance.cor_rate = correct_cnt*20
+                            print(test_instance.cor_rate, correct_cnt*20)
+                            test_instance.save()
+                    data = {
+                        "message :" : '已完成測驗，跳轉至測驗結束畫面。',
+                        "push" : "/study/testtype/result2",
+                        "point": correct_cnt,
+                    }
+                    response = JsonResponse(data, status=status.HTTP_302_FOUND)
+                    return response
 
             data = {
                 "para1": param1,
                 "para2": param2,
-                "message :" : '測驗2',
+                "message :" : 'test',
                 "num" : param2+1,
+                "mondai" : vocabulary,
+
             }
+            instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+            setattr(instance, instance_list[param2], vocabulary)
+            instance.save()
             response = JsonResponse(data, status=status.HTTP_200_OK)
             return response
+
+            # print('打到2/n')
+
+            # data = {
+            #     "para1": param1,
+            #     "para2": param2,
+            #     "message :" : '測驗2',
+            #     "num" : param2+1,
+            # }
+            # response = JsonResponse(data, status=status.HTTP_200_OK)
+            # return response
         # -------------------- 測驗2 GET -----------------
     @swagger_auto_schema(
         operation_summary='加入個人字卡',
@@ -877,10 +983,10 @@ class TestOneViews(APIView):
                 }
             response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
             return response
-        
+        token = auth[1]
+        token_payload = decode_access_token(token)
+    # ----------------------------- 測驗一 POST --------------------------------
         if param1 == 1:
-            token = auth[1]
-            token_payload = decode_access_token(token)
             encoded_image = request.data['imageBase64']
             # print(request.data.keys(),' 這')
             # print(encoded_image.split(',')[0],' 這')
@@ -922,12 +1028,14 @@ class TestOneViews(APIView):
                 'detected':result['hand_exist'],
             }
             return JsonResponse(payload, status=status.HTTP_200_OK)
-        # ------------------------ 測驗2 POST ---------------------------------------------
+    # ----------------------------- 測驗一 POST --------------------------------
+    # ------------------------ 測驗2 POST ---------------------------------------------
         elif param1 == 2:
             # print('POST到測驗2', request.data['recordedVideo'])
             video_base64 = request.data['recordedVideo'].split(",")[1]
             print('POST到測驗2', inference(video_base64))
             result = inference(video_base64)
+
             if result is None:
                 payload = {
                     'message':'沒有偵測到手'
@@ -935,6 +1043,16 @@ class TestOneViews(APIView):
                 }
                 return JsonResponse(payload, status=status.HTTP_400_BAD_REQUEST)
             else:
+                instance_list = ['','kotae_ichi', 'kotae_ni', 'kotae_san', 'kotae_yon', 'kotae_go']
+                instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+                current_value = getattr(instance, instance_list[param2-1], '')  # 使用getattr，並提供默認值
+                # 串聯 'a' 到當前值
+                new_value = current_value + " " +result
+                # print(instance_list[param2], current_value)
+                print("新值", new_value)
+                # getattr(instance, instance_list[param2]) = result['result']
+                setattr(instance, instance_list[param2-1], new_value)
+                instance.save()
                 payload = {
                     'redirect_url' : f'./{param1}/q{param2+1}',
                     # 'detected':result['hand_exist'],
@@ -989,6 +1107,52 @@ class TestOneGetResultAPIView(APIView):
         return response
 # ------------------------ 測驗_1 結算 -----------------------------
 
+# ------------------------ 測驗_2 結算 -----------------------------
+class TestOneGetResult2APIView(APIView):
+    """
+    使用者測驗完成當下 call的API
+    用於獲得此次測驗對了幾題
+    """
+    def get(self, request):
+        """
+        使用者測驗完成當下 call的API
+        用於獲得此次測驗對了幾題
+        """
+        auth = get_authorization_header(request).split()
+
+        try:
+            if auth[1] == b'null':
+                data = {
+                    'message' : '沒有token',
+                }
+                response = JsonResponse(data, status= status.HTTP_401_UNAUTHORIZED)
+                return response
+
+        except IndexError as error_msg:
+            print(error_msg, 'TeachingCenterView')
+            data = {
+                    'message' : '沒有Authorization',
+                }
+            response = JsonResponse(data, status= status.HTTP_400_BAD_REQUEST)
+            return response
+        token = auth[1]
+        token_payload = decode_access_token(token)
+        test_instance = Test2Ans.objects.filter(user_id=token_payload['id']).latest('id')
+        detiallist = []
+        for value, key in enumerate(vars(test_instance).items()):
+            print(value, key)
+            if 2 <= value <= 6:
+                detiallist.append(key[1].split(" "))
+
+        data = {
+            'meseage':'成功獲取資源',
+            'point': test_instance.cor_rate/20,
+            'detial': detiallist,
+        }
+        response = JsonResponse(data, status=status.HTTP_200_OK)
+        return response
+# ------------------------ 測驗_2 結算 -----------------------------
+
 # ------------------------ 測驗總結算 ------------------------------
 class GetAllresultAPIView(APIView):
     """
@@ -1022,18 +1186,25 @@ class GetAllresultAPIView(APIView):
         instance = UserDefIfm.objects.get(user_id=token_payload['id'])
         cnt = 0 # 用來計算使用者有幾筆資料
         tmp = 0 # 用來加總使用者分數總和
+        cnt2 = 0 # 用來計算使用者有幾筆資料
+        tmp2 = 0 # 用來加總使用者分數總和
         for i in Test1Ans.objects.filter(user_id=token_payload['id']):
             if i.kotae_go != '':
                 cnt += 1
                 tmp += i.cor_rate
+        for i in Test2Ans.objects.filter(user_id=token_payload['id']):
+            if i.kotae_go != '':
+                cnt2 += 1
+                tmp2 += i.cor_rate
         # print(tmp/cnt, int((tmp/cnt)/20+1))
         try:
             data = {
                 'message':'成功獲取資源',
                 'resultScore1':tmp/cnt,
-                'start1':int((tmp/cnt)/20+1),
+                'resultScore2':tmp2/cnt2,
+                'star1':int((tmp/cnt)/20+1),
+                'star2':int((tmp2/cnt2)/20+1),
                 'headimageurl':f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
-
             }
         except ZeroDivisionError as error_msg:
             print(error_msg)

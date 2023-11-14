@@ -49,7 +49,7 @@ class Test1(models.Model):
 
 class Test2(models.Model):
     """
-    中文測驗的題目，
+    手語的學習資源，亦可拿來出題。
     """
     id = models.IntegerField(primary_key=True)
     vocabularie = models.CharField(max_length=50 ,default='')   # 單字
@@ -90,11 +90,11 @@ class Test2Ans(models.Model):
     英文測驗的題目，
     """
     id = models.AutoField(primary_key=True)
-    kotae_ichi = models.CharField(max_length=20)
-    kotae_ni = models.CharField(max_length=20)
-    kotae_san = models.CharField(max_length=20)
-    kotae_yon = models.CharField(max_length=20)
-    kotae_go = models.CharField(max_length=20)
+    kotae_ichi = models.CharField(max_length=255)
+    kotae_ni = models.CharField(max_length=255)
+    kotae_san = models.CharField(max_length=255)
+    kotae_yon = models.CharField(max_length=255)
+    kotae_go = models.CharField(max_length=255)
     user_id = models.ForeignKey('reg.UserIfm', to_field='id', on_delete=models.CASCADE)
     cor_rate = models.FloatField(default=100.0)
     objects = models.Manager()

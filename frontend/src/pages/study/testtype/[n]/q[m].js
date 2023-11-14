@@ -30,6 +30,7 @@ function TestPage() {
 		}, 5000);
 	};
 
+
 	const stopRecording = () => {
 		setRecording(false);
 		if (recordRTC) {
@@ -128,12 +129,13 @@ function TestPage() {
 			});
 			if (response.status === 200){
 				const responseData = await response.json();
-				// console.log(responseData);
+				console.log(responseData);
 				setCheckQuestion(true);
 				router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`);
 			} else {
 				const responseData = await response.json();
-				// console.log(responseData);
+				console.log(responseData);
+				router.reload();
 			}
 		} catch (error) {
 			console.error(error);
@@ -160,7 +162,7 @@ function TestPage() {
 		});
 		if (response.status === 200) {
 			const responseData = await response.json();
-			// console.log(responseData);
+			console.log(responseData);
 			setAns(responseData.mondai);
 			// console.log(ans);
 		} else {
@@ -168,7 +170,7 @@ function TestPage() {
 			// console.log(responseData);
 			if (response.status === 302) {
 				setCheckQuestion(false);
-				// console.log(responseData.message);
+				console.log(responseData.message);
 				router.push(responseData.push);
 			} else {
 				
@@ -178,7 +180,7 @@ function TestPage() {
 	} 
 
 	useEffect(()=>{
-		loginstatetest();
+		// loginstatetest();
 		// console.log('一')
 		// // console.log(parseInt(m.replace("q", ""), 10));
 		if (n && m) {
@@ -274,8 +276,30 @@ function TestPage() {
 			</div>
 		}
 		{n == 2 &&
-			<VideoRecordingDialog/>
+			<div >
+				{parseInt(m.replace("q", ""), 10) != 0 &&<h1 className={style.test2pageH1}>第 {questionNum} 題 : 請比出 {ans} 的手語!</h1>}
+				<VideoRecordingDialog/>
+				
+			</div>
+			
 		}
+
+		{n == 2 && parseInt(m.replace("q", ""), 10) == 0 &&
+			<div className={style.testillustratepagecontainer}>
+				<button className={style.repagebtn} onClick={()=>router.push('../../')}>上一頁</button>
+				{/* <h1>{ans}</h1> */}
+				<div className={style.illustratecontainer}>
+					<h1>測驗說明</h1>
+					<p>畫面上會出現有的英文單字，使用者需要開啟相機並比出相應的手語，</p>
+					<p>比出正確手語後，點擊<b>完成作答</b>或<b>按下Enter鍵</b>後進入下一題。</p>
+					<p>若作答一半退出頁面視為未完成作答，此次測驗作廢，下次測驗會重置。</p>
+					<p>考試隨機出題，一共五題。</p>
+					<p>開始測驗後，系統會提示是否開啟相機，請選擇開啟。</p>
+					<p></p>
+					<button onClick={()=>StartTestButtonClick()} ref={btnRef}>點擊開始考試</button>
+				</div>
+			</div>}
+
 	</div>
   );
 }

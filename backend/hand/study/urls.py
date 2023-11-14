@@ -9,6 +9,7 @@ from study.views import UploadStudyFileView
 from study.views import TeachingCenterEnglishView, TeachingCenterView
 from study.views import UserWordCardButtonCheckView, TestOneViews
 from study.views import TestOneGetResultAPIView, GetAllresultAPIView
+from study.views import TestOneGetResult2APIView
 from study.views import SignLanguageAPIViews, SignLanguageAddCardAPIViews
 from study.views import SignLanguageButtonCheckView
 from hand.settings import MEDIA_ROOT, MEDIA_URL
@@ -21,6 +22,7 @@ urlpatterns = [
     path('api/test/<int:param1>/<int:param2>/', TestOneViews.as_view(), name='test_one'),
     path('api/wordcardbuttoncheck', UserWordCardButtonCheckView.as_view(), name='UserworlcardCheck'),
     path('api/testoneegetresult', TestOneGetResultAPIView.as_view(), name='TestOneGetResultView'),
+    path('api/testoneegetresult2', TestOneGetResult2APIView.as_view(), name='TestOneGetResult2View'),
     path('api/getallresult', GetAllresultAPIView.as_view(), name='getAllresultAPI'),
 
     # ---- 新增 ---
