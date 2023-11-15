@@ -44,7 +44,7 @@ function UserWordCard(){
                 // console.log(responseData);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -82,12 +82,13 @@ function UserWordCard(){
         // console.log(key);
     }
 
-    const checkAcccesstoken = () => {
-        const acccess_token = localStorage.getItem('access_token');
-        if (acccess_token === null){
-            router.push('../reg/login');
-        }
-    }
+    // const checkAcccesstoken = () => {
+    //     const acccess_token = localStorage.getItem('access_token');
+    //     if (acccess_token === null){
+    //         // console.log('跳轉');
+    //         // router.push('/');
+    //     }
+    // }
 
 
 
@@ -114,7 +115,7 @@ function UserWordCard(){
         }
     }
     useEffect(()=>{
-        checkAcccesstoken();
+        // checkAcccesstoken();
         getWordcardInitial();
     }, [])
 
@@ -122,7 +123,8 @@ function UserWordCard(){
     const getWordCard = async() => {
         const access_token = localStorage.getItem('access_token');
         if (access_token === null){
-            router.push('/');
+            //console.log('跳轉');
+            router.push('/reg/login');
             return
         }
         const responst = await fetch(`${backedUrl}/ifm/api/getusersignlanguage`,{
@@ -136,12 +138,12 @@ function UserWordCard(){
         try {
             if (responst.status === 200) {
                 const responseData = await responst.json();
-                console.log(responseData.resource);
+                // console.log(responseData.resource);
                 setWordCardData(responseData.resource);
 
             } else {
                 const responseData = responst.json();
-                console.log(responseData);
+                // console.log(responseData);
             }
         } catch (error) {
             console.error(error);

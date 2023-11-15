@@ -90,19 +90,19 @@ function RecordCamComponment() {
 			});
 			if (response.status === 200){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setRecordedVideo(null);
 				setLoding(false);
 				router.push(`/study/testtype/${n}/q${parseInt(m.replace('q',"", 10))+1}`);
 				
 			} else if(response.status === 400){
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 				setErrorMsg(responseData.message);
 				setLoding(false);
 			} else {
 				const responseData = await response.json();
-				console.log(responseData);
+				// console.log(responseData);
 			}
 		} catch (error) {
 			console.error(error);

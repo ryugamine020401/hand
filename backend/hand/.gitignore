@@ -1,3 +1,4 @@
 *.env
 img.png
 db.json
+db_new.json

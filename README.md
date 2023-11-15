@@ -57,7 +57,8 @@
         > 需要設定好.env
     * 啟動容器
         ```
-        sudo docker run -it -p <host port>:8000 django --name backend
+        sudo docker run -it --name backend -p <host port>:8000 django
+        sudo docker run -it --name backend -p 37329:8000 django
         ```
         > 檢查看有沒有正常開啟
     * 連接剛剛建立的網路
@@ -74,6 +75,7 @@
     * 啟動容器
         ```
         sudo docker run -it -p <host port>:3000 nextjs
+        sudo docker run -it --name frontend -p <host port>:3000 nextjs
         ```
         > 檢查看有沒有正常開啟
 5. 啟動phpmyadmin容器
