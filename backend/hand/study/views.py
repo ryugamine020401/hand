@@ -1210,10 +1210,11 @@ class GetAllresultAPIView(APIView):
             print(error_msg)
             data = {
                 'message':'成功獲取資源',
-                'resultScore1':0,
-                'start1':1,
+                'resultScore1':0 if cnt == 0 else tmp/cnt,
+                'resultScore2':0 if cnt2 == 0 else tmp2/cnt2,
+                'star1':1 if cnt == 0 else int((tmp/cnt)/20+1),
+                'star2':1 if cnt2 == 0 else int((tmp2/cnt2)/20+1),
                 'headimageurl':f'{NGINX_DOMAIN}/api/ifm{instance.headimg.url}'
-
             }
         response = JsonResponse(data, status=status.HTTP_200_OK)
         return response

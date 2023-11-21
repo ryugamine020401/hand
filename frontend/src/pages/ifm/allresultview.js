@@ -30,7 +30,7 @@ export default function AllResultView(){
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                // console.log(responseData);
+                console.log(responseData.resultScore1);
                 setHeaderImageUrl(responseData.headimageurl);
                 setResult(responseData.resultScore1.toFixed(2));
                 setResult2(responseData.resultScore2.toFixed(2));
@@ -101,8 +101,9 @@ export default function AllResultView(){
                             alt="使用者評級圖像"
                             width={300}
                             height={380}
-                            src={`/images/study_test_start${(starUrl1+starUrl2)/2}_boy.png`}
+                            src={`/images/study_test_start${((starUrl1+starUrl2)/2) === 0 ? (1):Math.floor((starUrl1+starUrl2)/2)}_boy.png`}
                         />
+                        {console.log(starUrl2)}
                     </div>
                 </div>
                 <button className={style.gobackbutton} onClick={()=>gobackbuttonClick()}>上一頁</button>
