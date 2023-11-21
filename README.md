@@ -14,7 +14,7 @@
 * npm 10.2.0
 * node v18.17.1
 * MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
-... 詳細套件內容至前後端目錄底下[開發環境]()查看
+... 詳細套件內容至前後端目錄底下[開發環境](https://github.com/ryugamine020401/hand/tree/main/backend)查看
 ## 透過Docker
 1. 先建立一個自己的Docker網路
     ```
@@ -75,18 +75,19 @@
     * 啟動容器
         ```
         sudo docker run -it -p <host port>:3000 nextjs
-        sudo docker run -it --name frontend -p <host port>:3000 nextjs
+        sudo docker run -it --name frontend -p 31042:3000 nextjs
         ```
         > 檢查看有沒有正常開啟
 5. 啟動phpmyadmin容器
     ```
     sudo docker run --name phpmyadmin -it --link <contianer name>:db -p <host port>:80 phpmyadmin
+    sudo docker run --name phpmyadmin -it --link mysql:db -p 39876:80 phpmyadmin/phpmyadmin
     ```
     > 不用加入相同的後端網路就可以，只要設定好mysql容器的名稱
 6. 安裝redis
     * 先讓redis的容器跑起來
         ```
-        sudo docker run -it --name redis -p 9999:6379 redis
+        sudo docker run -it --name redis -p 33666:6379 redis
         ```
     * 設定redis的網路，把他加到自己設定的docker網路中
         ```
@@ -184,7 +185,7 @@ server {
 # 畫面預覽
 ## 未登入
 ![未登入主頁](Previewpage/homepage.png)
-![未登入學習中心字卡頁](Previewpage/image.png)
+![未登入學習中心字卡頁](Previewpage/image-35.png)
 ![未登入討論區](Previewpage/image-1.png)
 ![未登入聊天室](Previewpage/image-2.png)
 ![未登入登入頁](Previewpage/image-3.png)
