@@ -9,7 +9,7 @@
 ```
 # demo影片
 
-[![影片畫面預覽](Previewpage/READMEVIDEOURL.png)](https://www.youtube.com/watch?v=kx8VcTCaeH4 "123")
+[![影片畫面預覽](Previewpage/READMEVIDEOURL.png)](https://www.youtube.com/watch?v=kx8VcTCaeH4 "點擊前往youtube預覽網頁使用方法")
 
 
 # 開啟專案方式
