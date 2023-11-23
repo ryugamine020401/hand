@@ -7,14 +7,12 @@
     有趣的方式引導、吸引各種人學習，進而激發出人們對手語的了解
     並達成引人入勝的效果。
 ```
+# demo影片
+
+[![影片畫面預覽](Previewpage/READMEVIDEOURL.png)](https://www.youtube.com/watch?v=kx8VcTCaeH4 "123")
+
+
 # 開啟專案方式
-**開發環境版本**
-* Ucuntu20.04
-* Python 3.8.10
-* npm 10.2.0
-* node v18.17.1
-* MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
-... 詳細套件內容至前後端目錄底下[開發環境](https://github.com/ryugamine020401/hand/tree/main/backend)查看
 ## 透過Docker
 1. 先建立一個自己的Docker網路
     ```
@@ -180,54 +178,7 @@ server {
 
 ```
 
-
-
-# 畫面預覽
-## 未登入
-![未登入主頁](Previewpage/homepage.png)
-![未登入學習中心字卡頁](Previewpage/image-35.png)
-![未登入討論區](Previewpage/image-1.png)
-![未登入聊天室](Previewpage/image-2.png)
-![未登入登入頁](Previewpage/image-3.png)
-![未登入註冊](Previewpage/image-4.png)
-![未登入忘記密碼](Previewpage/image-5.png)
-![未登入忘記密碼1](Previewpage/image-6.png)
-![未登入忘記密碼2](Previewpage/image-7.png)
-![未登入驗證1](Previewpage/image-8.png)
-![未登入驗證2](Previewpage/image-9.png)
-
-
-## 已登入
-![主頁](Previewpage/image-12.png)
-![選單](Previewpage/image-19.png)
-![學習中心_字卡](Previewpage/image-13.png)
-![修改密碼](Previewpage/image-20.png)
-![個人資訊](Previewpage/image-21.png)
-![修改個資](Previewpage/image-22.png)
-![個人字卡](Previewpage/image-23.png)
-![成績總覽](Previewpage/image-24.png)
-![Alt text](Previewpage/study.png)
-![測驗](Previewpage/image-14.png)
-![測驗內](Previewpage/image-16.png)
-![測驗結果](Previewpage/image-15.png)
-![討論區](Previewpage/image-17.png)
-![討論區內文](Previewpage/image-11.png)
-![討論區發表](Previewpage/image-18.png)
-![線上聊天](Previewpage/image-25.png)
-![線上聊天其他使用者資訊](Previewpage/image-26.png)
-> 討論區、線上聊天室都有可以查看其他使用者個人字卡的功能
-
-![布告欄](Previewpage/image-27.png)
-![布告欄內容](Previewpage/image-28.png)
-
-## 管理員才有的頁面
-![可刪除文章](Previewpage/image-29.png)
-![可刪除回覆](Previewpage/image-30.png)
-![特殊的選單](Previewpage/image-31.png)
-![發布公告](Previewpage/image-32.png)
-![上船學習資源](Previewpage/image-33.png)
-![刪除使用者](Previewpage/image-34.png)
-
+# 本地端直接部署
 ## 前端
 1. 進入 **前端** 目錄
 ```
@@ -357,14 +308,62 @@ server {
 }
 
 ```
+# 畫面預覽
+## 未登入
+![未登入主頁](Previewpage/homepage.png)
+![未登入學習中心字卡頁](Previewpage/image-35.png)
+![未登入討論區](Previewpage/image-1.png)
+![未登入聊天室](Previewpage/image-2.png)
+![未登入登入頁](Previewpage/image-3.png)
+![未登入註冊](Previewpage/image-4.png)
+![未登入忘記密碼](Previewpage/image-5.png)
+![未登入忘記密碼1](Previewpage/image-6.png)
+![未登入忘記密碼2](Previewpage/image-7.png)
+![未登入驗證1](Previewpage/image-8.png)
+![未登入驗證2](Previewpage/image-9.png)
+
+
+## 已登入
+![主頁](Previewpage/image-12.png)
+![選單](Previewpage/image-19.png)
+![學習中心_字卡](Previewpage/image-13.png)
+![修改密碼](Previewpage/image-20.png)
+![個人資訊](Previewpage/image-21.png)
+![修改個資](Previewpage/image-22.png)
+![個人字卡](Previewpage/image-23.png)
+![成績總覽](Previewpage/image-24.png)
+![Alt text](Previewpage/study.png)
+![測驗](Previewpage/image-14.png)
+![測驗內](Previewpage/image-16.png)
+![測驗結果](Previewpage/image-15.png)
+![討論區](Previewpage/image-17.png)
+![討論區內文](Previewpage/image-11.png)
+![討論區發表](Previewpage/image-18.png)
+![線上聊天](Previewpage/image-25.png)
+![線上聊天其他使用者資訊](Previewpage/image-26.png)
+> 討論區、線上聊天室都有可以查看其他使用者個人字卡的功能
+
+![布告欄](Previewpage/image-27.png)
+![布告欄內容](Previewpage/image-28.png)
+
+## 管理員才有的頁面
+![可刪除文章](Previewpage/image-29.png)
+![可刪除回覆](Previewpage/image-30.png)
+![特殊的選單](Previewpage/image-31.png)
+![發布公告](Previewpage/image-32.png)
+![上船學習資源](Previewpage/image-33.png)
+![刪除使用者](Previewpage/image-34.png)
+
 
 # 專案相關圖表
-
 ## 心智圖
-
+![專案心智圖](Previewpage/mind.png)
 ## 流程圖
-
+![專案流程圖](Previewpage/flowchart1.png)
+![專案流程圖](Previewpage/flowchart2.png)
+![專案流程圖](Previewpage/flowchart3.png)
 ## 架構圖
+![專案架構圖](Previewpage/Architecturediagram.png)
 
 # 完成項目
 - [x] 後端 API 設計(Python Django)
@@ -372,15 +371,24 @@ server {
 - [x] 前端基本功能 (Nest js)
 - [x] nginx http 基本設定
 - [x] 網頁基本外觀
+- [x] Docker
+- [x] SSL
+- [x] 部屬上雲端
+- [x] 後端 API 文件
 
 # 未完成項目
+- [ ] 部分RWD
 
-- [ ] Docker
-- [ ] SSL
-- [ ] 部屬上雲端
-- [ ] RWD
-- [ ] 後端 API 文件
 
 # 完整流程紀錄
 * [專題歷程](https://hackmd.io/@YMZK/BkZqmiObj/%2FlrH6vsArQdWQe2UxsDDXyw)
 * [工具筆記](https://hackmd.io/@YMZK/HJK8hTWpj/%2Fd5ZJEJ7HTBu4kX2wzZVUYQ)
+
+# 開發環境版本
+**開發環境版本**
+* Ucuntu20.04
+* Python 3.8.10
+* npm 10.2.0
+* node v18.17.1
+* MySQL 8.0.34-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
+... 詳細套件內容至前後端目錄底下[開發環境](https://github.com/ryugamine020401/hand/tree/main/backend)查看
